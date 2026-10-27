@@ -1,0 +1,14 @@
+Cyber360 evidence E01-openssl-version
+==============================================================================
+Command:      openssl version
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)
+
+
+--- stderr ---
+(empty)

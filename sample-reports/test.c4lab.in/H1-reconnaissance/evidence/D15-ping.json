@@ -1,0 +1,14 @@
+{
+  "evidence_id": "D15-ping",
+  "command": [
+    "ping",
+    "-c",
+    "4",
+    "test.c4lab.in"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:38:02Z",
+  "exit_status": 0,
+  "stdout": "PING test.c4lab.in (107.180.237.42): 56 data bytes\n64 bytes from 107.180.237.42: icmp_seq=0 ttl=44 time=294.422 ms\n64 bytes from 107.180.237.42: icmp_seq=1 ttl=44 time=274.399 ms\n64 bytes from 107.180.237.42: icmp_seq=2 ttl=44 time=248.981 ms\n64 bytes from 107.180.237.42: icmp_seq=3 ttl=44 time=247.553 ms\n\n--- test.c4lab.in ping statistics ---\n4 packets transmitted, 4 packets received, 0.0% packet loss\nround-trip min/avg/max/stddev = 247.553/266.339/294.422/19.415 ms\n",
+  "stderr": ""
+}

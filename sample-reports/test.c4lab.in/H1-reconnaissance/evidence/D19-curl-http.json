@@ -1,0 +1,13 @@
+{
+  "evidence_id": "D19-curl-http",
+  "command": [
+    "curl",
+    "-sSI",
+    "http://test.c4lab.in"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:38:02Z",
+  "exit_status": 0,
+  "stdout": "HTTP/1.1 301 Moved Permanently\r\nDate: Tue, 27 Oct 2026 11:38:02 GMT\r\nServer: Apache\r\nLocation: https://test.c4lab.in/\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\n",
+  "stderr": ""
+}

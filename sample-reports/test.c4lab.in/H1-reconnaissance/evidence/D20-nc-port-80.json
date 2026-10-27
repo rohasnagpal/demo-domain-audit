@@ -1,0 +1,16 @@
+{
+  "evidence_id": "D20-nc-port-80",
+  "command": [
+    "nc",
+    "-zv",
+    "-w",
+    "2",
+    "test.c4lab.in",
+    "80"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 0,
+  "stdout": "",
+  "stderr": "Connection to test.c4lab.in port 80 [tcp/http] succeeded!\n"
+}

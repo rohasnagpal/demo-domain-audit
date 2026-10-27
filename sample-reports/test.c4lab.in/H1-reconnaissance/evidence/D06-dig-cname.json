@@ -1,0 +1,14 @@
+{
+  "evidence_id": "D06-dig-cname",
+  "command": [
+    "dig",
+    "test.c4lab.in",
+    "CNAME",
+    "+short"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 0,
+  "stdout": "",
+  "stderr": ""
+}

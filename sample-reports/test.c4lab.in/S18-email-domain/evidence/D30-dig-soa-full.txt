@@ -1,0 +1,33 @@
+Cyber360 evidence D30-dig-soa-full
+==============================================================================
+Command:      dig test.c4lab.in SOA
+Started:      2026-10-27T11:38:00Z
+Completed:    2026-10-27T11:38:00Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+
+; <<>> DiG 9.10.6 <<>> test.c4lab.in SOA
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2512
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;test.c4lab.in.			IN	SOA
+
+;; AUTHORITY SECTION:
+c4lab.in.		60	IN	SOA	ns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60
+
+;; Query time: 8 msec
+;; SERVER: 103.239.84.254#53(103.239.84.254)
+;; WHEN: Tue Oct 27 17:08:00 IST 2026
+;; MSG SIZE  rcvd: 106
+
+
+
+--- stderr ---
+(empty)

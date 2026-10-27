@@ -1,0 +1,1380 @@
+{
+  "report_id": "H1-test.c4lab.in-20261027T113759Z",
+  "agent_id": "h1",
+  "agent_name": "Reconnaissance report",
+  "category": "hacking",
+  "generated_at": "2026-10-27T11:38:09Z",
+  "scope": {
+    "target": "test.c4lab.in",
+    "authority": "yes",
+    "started_at": "2026-10-27T11:37:59Z",
+    "completed_at": "2026-10-27T11:38:09Z",
+    "in_scope": [
+      "Public DNS records of test.c4lab.in",
+      "WHOIS registration data",
+      "ICMP and traceroute to test.c4lab.in",
+      "HTTP and HTTPS requests to test.c4lab.in",
+      "TCP 80 and 443 connection tests"
+    ],
+    "exclusions": [
+      "Subdomain enumeration or brute forcing",
+      "Any other port or host",
+      "Vulnerability scanning, exploitation and credential testing",
+      "Configuration changes"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "D01-curl-version",
+      "command": [
+        "curl",
+        "--version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D01-curl-version.txt",
+      "json_path": "evidence/D01-curl-version.json",
+      "sha256": "7b3ddaa50ecdcdc30d4a531c9c18919deaf4e703868a8aec01f88e7931b09e83",
+      "excerpt": "curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0\nRelease-Date: 2024-03-27\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp\nFeatures: alt-svc AsynchDNS GSS-API HSTS HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz MultiSSL NTLM SPNEGO SSL threadsafe UnixSockets",
+      "used_by": {
+        "tooling": "curl_version"
+      },
+      "invocation": "curl_version"
+    },
+    {
+      "evidence_id": "D02-dig-version",
+      "command": [
+        "dig",
+        "-v"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D02-dig-version.txt",
+      "json_path": "evidence/D02-dig-version.json",
+      "sha256": "d9763473a8b0c490a9bddb12408879a838e5ed1094d97a8e98cedebc3d74fa73",
+      "excerpt": "DiG 9.10.6",
+      "used_by": {
+        "tooling": "dig_version"
+      },
+      "invocation": "dig_version"
+    },
+    {
+      "evidence_id": "D03-openssl-version",
+      "command": [
+        "openssl",
+        "version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D03-openssl-version.txt",
+      "json_path": "evidence/D03-openssl-version.json",
+      "sha256": "b2b63b69977f29de5a4a64813df63eaa9002b9dd6d25b3b0e62113a12259e674",
+      "excerpt": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)",
+      "used_by": {
+        "tooling": "openssl_version"
+      },
+      "invocation": "openssl_version"
+    },
+    {
+      "evidence_id": "D04-dig-a",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "A",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D04-dig-a.txt",
+      "json_path": "evidence/D04-dig-a.json",
+      "sha256": "da2e82bdc419b0eaa394632077f65babf18f175585fe89330cf3b89073a24038",
+      "excerpt": "107.180.237.42",
+      "used_by": {
+        "h1": "dig_a"
+      },
+      "invocation": "dig_a"
+    },
+    {
+      "evidence_id": "D05-dig-aaaa",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "AAAA",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D05-dig-aaaa.txt",
+      "json_path": "evidence/D05-dig-aaaa.json",
+      "sha256": "c9e4310e32b8cfd19487f59314368b9928ee4b780c029e19b96010ba9c2b1e79",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_aaaa"
+      },
+      "invocation": "dig_aaaa"
+    },
+    {
+      "evidence_id": "D06-dig-cname",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "CNAME",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D06-dig-cname.txt",
+      "json_path": "evidence/D06-dig-cname.json",
+      "sha256": "c92f77e1c83493b15891a8f26623f47b241e78cfa8c61ecdbd5c699fe20e6322",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_cname"
+      },
+      "invocation": "dig_cname"
+    },
+    {
+      "evidence_id": "D07-dig-mx",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "MX",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D07-dig-mx.txt",
+      "json_path": "evidence/D07-dig-mx.json",
+      "sha256": "b2d14890a73ad8853e5714b1c7e8eaaec422ea9d48c7e93698ca6b01e91089c3",
+      "excerpt": "10 mx1.dreamhost.com.",
+      "used_by": {
+        "h1": "dig_mx",
+        "s18": "dig_mx"
+      },
+      "invocation": "dig_mx"
+    },
+    {
+      "evidence_id": "D08-dig-txt",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "TXT",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D08-dig-txt.txt",
+      "json_path": "evidence/D08-dig-txt.json",
+      "sha256": "f67428e9d4a8f84eae8ab86a043c78d27d307be5364c4e8d04b4d7eb241599e7",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_txt",
+        "s18": "dig_txt"
+      },
+      "invocation": "dig_txt"
+    },
+    {
+      "evidence_id": "D09-dig-ns",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "NS",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D09-dig-ns.txt",
+      "json_path": "evidence/D09-dig-ns.json",
+      "sha256": "ac2bf410119b3c419a978c7eeea37af3fad4501a9505ebee39a21c2ff7cfb873",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_ns",
+        "s18": "dig_ns"
+      },
+      "invocation": "dig_ns"
+    },
+    {
+      "evidence_id": "D10-dig-soa",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "SOA",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D10-dig-soa.txt",
+      "json_path": "evidence/D10-dig-soa.json",
+      "sha256": "84bbcb19f2bc43b0eb2a5aa04f97572fb353b8a8b5be3b50d8e6d3f956e8b01f",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_soa"
+      },
+      "invocation": "dig_soa"
+    },
+    {
+      "evidence_id": "D11-dig-caa",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "CAA",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D11-dig-caa.txt",
+      "json_path": "evidence/D11-dig-caa.json",
+      "sha256": "e6587f90b252f719e15a9aa894bf57fc7f4d90659d9730d9db9f45f0ee9ad880",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_caa",
+        "s18": "dig_caa"
+      },
+      "invocation": "dig_caa"
+    },
+    {
+      "evidence_id": "D12-dig-trace",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "+trace"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D12-dig-trace.txt",
+      "json_path": "evidence/D12-dig-trace.json",
+      "sha256": "7fd7d2005d9d535106bcc4447996c4992d162b7be469a056d7679b77e3aa3c75",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in +trace\n;; global options: +cmd\n;; Received 28 bytes from 103.239.84.254#53(103.239.84.254) in 5 ms",
+      "used_by": {
+        "h1": "dig_trace",
+        "s18": "dig_trace"
+      },
+      "invocation": "dig_trace"
+    },
+    {
+      "evidence_id": "D13-host",
+      "command": [
+        "host",
+        "test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D13-host.txt",
+      "json_path": "evidence/D13-host.json",
+      "sha256": "adea6a424411c6ee0b114865c1c1f461e15207984f383886ee5e06a56071e084",
+      "excerpt": "test.c4lab.in has address 107.180.237.42\ntest.c4lab.in mail is handled by 10 mx1.dreamhost.com.",
+      "used_by": {
+        "h1": "host"
+      },
+      "invocation": "host"
+    },
+    {
+      "evidence_id": "D14-whois",
+      "command": [
+        "whois",
+        "test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D14-whois.txt",
+      "json_path": "evidence/D14-whois.json",
+      "sha256": "d581e99cbadd6631dc6cc29834b9212b4375e062b9083fc50cd7c84d3158f72c",
+      "excerpt": "% IANA WHOIS server\n% for more information on IANA, visit http://www.iana.org\n% This query returned 1 object\n\nrefer:        whois.nixiregistry.in\n\ndomain:       IN\n\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\n\ncontact:      administrative\nname:         CEO-NIXI\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\nphone:        +91 11 48202015\nfax-no:       +91 11 48202015\ne-mail:       registry@nixi.in\n\ncontact:      technical\nname:         Rohit Kumar\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\nphone:        +91 11 48202053\nfax-no:       +91 11 48202015\ne-mail:       rajiv@nixi.in\n\nnserver:      NS1.REGISTRY.IN 2620:57:4001:0:0:0:0:1 64.96.1.1\nnserver:      NS2.REGISTRY.IN 2620:57:4002:0:0:0:0:1 64.96.2.1\nnserver:      NS3.REGISTRY.IN 2620:171:812:1534:8:0:0:1 64.78.204.1\nnserver:      NS4.REGISTRY.IN 26",
+      "used_by": {
+        "h1": "whois",
+        "s18": "whois"
+      },
+      "invocation": "whois"
+    },
+    {
+      "evidence_id": "D15-ping",
+      "command": [
+        "ping",
+        "-c",
+        "4",
+        "test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:02Z",
+      "exit_status": 0,
+      "path": "evidence/D15-ping.txt",
+      "json_path": "evidence/D15-ping.json",
+      "sha256": "be7ee7437d9c33a428cfc6ebec87bfe9e552159c59561251bb7e40c480571d28",
+      "excerpt": "PING test.c4lab.in (107.180.237.42): 56 data bytes\n64 bytes from 107.180.237.42: icmp_seq=0 ttl=44 time=294.422 ms\n64 bytes from 107.180.237.42: icmp_seq=1 ttl=44 time=274.399 ms\n64 bytes from 107.180.237.42: icmp_seq=2 ttl=44 time=248.981 ms\n64 bytes from 107.180.237.42: icmp_seq=3 ttl=44 time=247.553 ms\n\n--- test.c4lab.in ping statistics ---\n4 packets transmitted, 4 packets received, 0.0% packet loss\nround-trip min/avg/max/stddev = 247.553/266.339/294.422/19.415 ms",
+      "used_by": {
+        "h1": "ping"
+      },
+      "invocation": "ping"
+    },
+    {
+      "evidence_id": "D16-traceroute",
+      "command": [
+        "traceroute",
+        "-q",
+        "1",
+        "-w",
+        "2",
+        "-m",
+        "20",
+        "test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 126,
+      "path": "evidence/D16-traceroute.txt",
+      "json_path": "evidence/D16-traceroute.json",
+      "sha256": "b7e2736ed5af2fabf9d34f3a3eccfa786d78f592a776e110be6fc2ea175ac800",
+      "excerpt": "Unable to execute command: [Errno 1] Operation not permitted: 'traceroute'",
+      "used_by": {
+        "h1": "traceroute"
+      },
+      "invocation": "traceroute"
+    },
+    {
+      "evidence_id": "D17-curl-headers",
+      "command": [
+        "curl",
+        "-IL",
+        "https://test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:01Z",
+      "exit_status": 0,
+      "path": "evidence/D17-curl-headers.txt",
+      "json_path": "evidence/D17-curl-headers.json",
+      "sha256": "7a25d9522ca3a38078118ce6775eab05fe9249489576a10be64791f54f7f9bea",
+      "excerpt": "HTTP/2 200 \r\nx-powered-by: PHP/5.6.40\r\nlast-modified: Tue, 27 Oct 2026 09:38:16 GMT\r\netag: \"cf-65ecf34c3f3d4\"\r\naccept-ranges: bytes\r\ncontent-length: 207\r\ncache-control: max-age=600\r\nexpires: Tue, 27 Oct 2026 11:48:01 GMT\r\nvary: Accept-Encoding,User-Agent\r\ncontent-type: text/html\r\ndate: Tue, 27 Oct 2026 11:38:01 GMT\r\nserver: Apache\r\n\r\n\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0",
+      "used_by": {
+        "h1": "curl_headers"
+      },
+      "invocation": "curl_headers"
+    },
+    {
+      "evidence_id": "D18-curl-timing",
+      "command": [
+        "curl",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "Status: %{http_code}\\nTime: %{time_total}s\\nRemote IP: %{remote_ip}\\n",
+        "https://test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D18-curl-timing.txt",
+      "json_path": "evidence/D18-curl-timing.json",
+      "sha256": "14b7eb34f4fa93cf777df93fc367c3036e099e86f136e3aa400b921993a6f877",
+      "excerpt": "Status: 200\nTime: 0.797314s\nRemote IP: 107.180.237.42",
+      "used_by": {
+        "h1": "curl_timing"
+      },
+      "invocation": "curl_timing"
+    },
+    {
+      "evidence_id": "D19-curl-http",
+      "command": [
+        "curl",
+        "-sSI",
+        "http://test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:02Z",
+      "exit_status": 0,
+      "path": "evidence/D19-curl-http.txt",
+      "json_path": "evidence/D19-curl-http.json",
+      "sha256": "25a78761bb39faed0d654282abd3e5c119779e259674ea92165baee070d5503b",
+      "excerpt": "HTTP/1.1 301 Moved Permanently\r\nDate: Tue, 27 Oct 2026 11:38:02 GMT\r\nServer: Apache\r\nLocation: https://test.c4lab.in/\r\nContent-Type: text/html; charset=iso-8859-1",
+      "used_by": {
+        "h1": "curl_http"
+      },
+      "invocation": "curl_http"
+    },
+    {
+      "evidence_id": "D20-nc-port-80",
+      "command": [
+        "nc",
+        "-zv",
+        "-w",
+        "2",
+        "test.c4lab.in",
+        "80"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D20-nc-port-80.txt",
+      "json_path": "evidence/D20-nc-port-80.json",
+      "sha256": "372eb8c56929253817a680ed20cd505ec40acf71aa9f6c8198f0652de92dd70d",
+      "excerpt": "Connection to test.c4lab.in port 80 [tcp/http] succeeded!",
+      "used_by": {
+        "h1": "nc_port_80"
+      },
+      "invocation": "nc_port_80"
+    },
+    {
+      "evidence_id": "D21-nc-port-443",
+      "command": [
+        "nc",
+        "-zv",
+        "-w",
+        "2",
+        "test.c4lab.in",
+        "443"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D21-nc-port-443.txt",
+      "json_path": "evidence/D21-nc-port-443.json",
+      "sha256": "45104c3252379473dcaef8ad2c382cfa09bfa7185490880f1f8ca66313d8a887",
+      "excerpt": "Connection to test.c4lab.in port 443 [tcp/https] succeeded!",
+      "used_by": {
+        "h1": "nc_port_443"
+      },
+      "invocation": "nc_port_443"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "curl",
+      "version": "curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0",
+      "evidence_id": "D01-curl-version"
+    },
+    {
+      "name": "dig",
+      "version": "DiG 9.10.6",
+      "evidence_id": "D02-dig-version"
+    },
+    {
+      "name": "host",
+      "version": "/usr/bin/host"
+    },
+    {
+      "name": "nc",
+      "version": "/usr/bin/nc"
+    },
+    {
+      "name": "openssl",
+      "version": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)",
+      "evidence_id": "D03-openssl-version"
+    },
+    {
+      "name": "ping",
+      "version": "/sbin/ping"
+    },
+    {
+      "name": "traceroute",
+      "version": "/usr/sbin/traceroute"
+    },
+    {
+      "name": "whois",
+      "version": "/usr/bin/whois"
+    }
+  ],
+  "command_purposes": {
+    "dig_a": "Resolves the apex IPv4 addresses: where the website is hosted.",
+    "dig_aaaa": "Resolves the apex IPv6 addresses.",
+    "dig_cname": "Checks whether the apex is an alias for another name.",
+    "dig_mx": "Lists the mail servers, which reveal the email provider.",
+    "dig_txt": "Reads TXT records, which reveal SPF senders and third-party verification tokens.",
+    "dig_ns": "Lists the authoritative nameservers, which reveal the DNS host.",
+    "dig_soa": "Reads the SOA record: primary nameserver, hostmaster contact and zone timers.",
+    "dig_caa": "Reads CAA records, which reveal which certificate authorities are allowed.",
+    "dig_trace": "Follows delegation from the root to the domain's nameservers to confirm the delegation path.",
+    "host": "Cross-checks address and mail records with a second resolver client.",
+    "whois": "Reads registration data: registrar, dates and EPP status codes.",
+    "ping": "Sends four ICMP echo requests to measure reachability and latency. No reply usually means ICMP is filtered.",
+    "traceroute": "Maps the network path (at most 20 hops, one probe each) to show the hosting network.",
+    "curl_headers": "Requests https://<domain> and follows redirects, recording every status code and response header.",
+    "curl_timing": "Records the final HTTPS status code, total response time and the IP address actually connected to.",
+    "curl_http": "Requests http://<domain> (plain HTTP) without following redirects, to check that it redirects to HTTPS.",
+    "nc_port_80": "Tests whether TCP port 80 (HTTP) accepts connections.",
+    "nc_port_443": "Tests whether TCP port 443 (HTTPS) accepts connections.",
+    "dig_version": "Records the dig version used.",
+    "curl_version": "Records the curl version used.",
+    "openssl_version": "Records the OpenSSL version used."
+  },
+  "glossary": [
+    [
+      "Attack surface",
+      "Everything about a domain that is reachable or visible from the internet: hostnames, IP addresses, open ports, services, software banners and third-party providers."
+    ],
+    [
+      "A / AAAA",
+      "DNS records mapping a name to an IPv4 (A) or IPv6 (AAAA) address."
+    ],
+    [
+      "CNAME",
+      "An alias from one name to another; the apex of a domain cannot normally be a CNAME."
+    ],
+    [
+      "MX",
+      "Mail exchanger records naming the servers that receive mail for the domain."
+    ],
+    [
+      "NS",
+      "Nameserver records naming the authoritative DNS servers for the domain."
+    ],
+    [
+      "SOA",
+      "Start of Authority: the primary nameserver, the responsible mailbox and the zone's timing values."
+    ],
+    [
+      "TXT",
+      "Free-form text records used for SPF, domain verification tokens and other policies."
+    ],
+    [
+      "CAA",
+      "Records naming the certificate authorities allowed to issue certificates for the domain."
+    ],
+    [
+      "HSTS",
+      "HTTP Strict Transport Security: a response header telling browsers to use only HTTPS for the site for a set period."
+    ],
+    [
+      "Banner",
+      "Software name or version disclosed in a response header, such as Server: Apache/2.4.58."
+    ]
+  ],
+  "related_reports": [
+    {
+      "label": "S11 TLS & Cryptography Security report",
+      "href": "../S11-tls/report.html"
+    },
+    {
+      "label": "S18 Email & Domain Security report",
+      "href": "../S18-email-domain/report.html"
+    }
+  ],
+  "summary": {
+    "severity_counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 2,
+      "informational": 2
+    },
+    "passed": 1,
+    "unknown": 0,
+    "not_applicable": 0,
+    "narrative": [
+      "H1 mapped what test.c4lab.in exposes to the internet. It resolves to 107.180.237.42, DNS is hosted by your DNS hosting provider, email is handled by DreamHost Mail and the domain is registered with GoDaddy.",
+      "The HTTPS site returns HTTP 200 from Apache; TCP 80 is open; TCP 443 is open.",
+      "The most significant issue is H1-001 \u201cX-Powered-By header discloses application technology\u201d (low). X-Powered-By: PHP/5.6.40",
+      "Other findings: H1-002 \u201cHTTP Strict Transport Security (HSTS) not enforced\u201d (low); H1-003 \u201cServer header discloses web server software\u201d (informational); H1-004 \u201cPublic DNS reveals third-party services\u201d (informational).",
+      "Controls in good shape: http://test.c4lab.in returns 301 redirecting to https://test.c4lab.in/."
+    ],
+    "key_facts": [
+      [
+        "IPv4 / IPv6",
+        "107.180.237.42"
+      ],
+      [
+        "DNS host",
+        "your DNS hosting provider"
+      ],
+      [
+        "Email provider",
+        "DreamHost Mail"
+      ],
+      [
+        "Registrar",
+        "GoDaddy"
+      ],
+      [
+        "Web server",
+        "Apache"
+      ],
+      [
+        "Third-party services found",
+        "1"
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "H1-001",
+      "rule_id": "H1-WEB-002",
+      "status": "confirmed",
+      "severity": "low",
+      "title": "X-Powered-By header discloses application technology",
+      "category": "Information disclosure",
+      "about": "Checks whether X-Powered-By or similar headers disclose the application framework or language version.",
+      "analysis": "X-Powered-By: PHP/5.6.40",
+      "what_we_found": "https://test.c4lab.in returns:\nX-Powered-By: PHP/5.6.40",
+      "why_it_matters": [
+        "Framework and language versions, such as PHP/8.1.2, are high-value fingerprinting data. Application-layer vulnerabilities are usually tied to a specific version."
+      ],
+      "attack_scenario": "An attacker matches the disclosed version against known application or interpreter vulnerabilities.",
+      "severity_rationale": "Low: disclosure only.",
+      "fix_steps": [
+        {
+          "text": "PHP (php.ini, or the host's PHP settings panel):",
+          "code": "expose_php = Off"
+        },
+        {
+          "text": "Express (Node.js):",
+          "code": "app.disable('x-powered-by');"
+        },
+        {
+          "text": "Apache with mod_headers (.htaccess):",
+          "code": "Header always unset X-Powered-By"
+        }
+      ],
+      "rollback": "Re-enable the setting.",
+      "verify": {
+        "command": "curl -sI https://test.c4lab.in | grep -i x-powered-by",
+        "expected": "No output."
+      },
+      "references": [
+        {
+          "title": "OWASP Secure Headers Project \u2014 headers to remove",
+          "url": "https://owasp.org/www-project-secure-headers/#div-headers"
+        },
+        {
+          "title": "PHP \u2014 expose_php",
+          "url": "https://www.php.net/manual/en/ini.core.php#ini.expose-php"
+        }
+      ],
+      "authority": null,
+      "remediation": "PHP (php.ini, or the host's PHP settings panel):",
+      "evidence": [
+        {
+          "evidence_id": "D17-curl-headers",
+          "command": [
+            "curl",
+            "-IL",
+            "https://test.c4lab.in"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D17-curl-headers.txt",
+          "sha256": "7a25d9522ca3a38078118ce6775eab05fe9249489576a10be64791f54f7f9bea",
+          "excerpt": "HTTP/2 200 \r\nx-powered-by: PHP/5.6.40\r\nlast-modified: Tue, 27 Oct 2026 09:38:16 GMT\r\netag: \"cf-65ecf34c3f3d4\"\r\naccept-ranges: bytes\r\ncontent-length: 207\r\ncache-control: max-age=600\r\nexpires: Tue, 27 Oct 2026 11:48:01 GMT\r\nvary: Accept-Encoding,User-Agent\r\ncontent-type: text/html\r\ndate: Tue, 27 Oct 2026 11:38:01 GMT\r\nserver: Apache\r\n\r\n\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0"
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "H1-002",
+      "rule_id": "H1-WEB-004",
+      "status": "confirmed",
+      "severity": "low",
+      "title": "HTTP Strict Transport Security (HSTS) not enforced",
+      "category": "Transport security",
+      "about": "Checks for a Strict-Transport-Security (HSTS) header with a max-age of at least six months, which tells browsers to use only HTTPS for the site.",
+      "analysis": "No Strict-Transport-Security header on the HTTPS response.",
+      "what_we_found": "The HTTPS response from https://test.c4lab.in has no Strict-Transport-Security header.",
+      "why_it_matters": [
+        "Even with an HTTP-to-HTTPS redirect, a browser's first request to http://test.c4lab.in goes out unencrypted, and the redirect itself can be intercepted. HSTS tells the browser to rewrite every future http:// request to https:// itself, before anything is sent, and to refuse to click through certificate warnings for the site."
+      ],
+      "attack_scenario": "SSL stripping (sslstrip): an attacker on the network intercepts the initial HTTP request, suppresses the redirect and proxies the site to the victim over HTTP while talking HTTPS to the real server.",
+      "severity_rationale": "Low: requires an on-path attacker and a user who reaches the site over HTTP first.",
+      "fix_steps": [
+        {
+          "text": "Apache (.htaccess or virtual host, with mod_headers):",
+          "code": "Header always set Strict-Transport-Security \"max-age=31536000; includeSubDomains\""
+        },
+        {
+          "text": "nginx (inside the HTTPS server block):",
+          "code": "add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"
+        },
+        "Start with a short max-age (for example 300) and increase it once every subdomain works over HTTPS. includeSubDomains applies the policy to every subdomain.",
+        "Optionally, once stable, add \"; preload\" and submit the domain at hstspreload.org so browsers enforce HTTPS from the first visit."
+      ],
+      "rollback": "Set max-age=0 to tell browsers to forget the policy.",
+      "verify": {
+        "command": "curl -sI https://test.c4lab.in | grep -i strict-transport",
+        "expected": "strict-transport-security: max-age=31536000; includeSubDomains"
+      },
+      "references": [
+        {
+          "title": "RFC 6797 \u2014 HTTP Strict Transport Security",
+          "url": "https://www.rfc-editor.org/rfc/rfc6797.html"
+        },
+        {
+          "title": "OWASP \u2014 HTTP Strict Transport Security Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html"
+        },
+        {
+          "title": "hstspreload.org \u2014 submission requirements",
+          "url": "https://hstspreload.org/"
+        }
+      ],
+      "authority": null,
+      "remediation": "Apache (.htaccess or virtual host, with mod_headers):",
+      "evidence": [
+        {
+          "evidence_id": "D17-curl-headers",
+          "command": [
+            "curl",
+            "-IL",
+            "https://test.c4lab.in"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D17-curl-headers.txt",
+          "sha256": "7a25d9522ca3a38078118ce6775eab05fe9249489576a10be64791f54f7f9bea",
+          "excerpt": "HTTP/2 200 \r\nx-powered-by: PHP/5.6.40\r\nlast-modified: Tue, 27 Oct 2026 09:38:16 GMT\r\netag: \"cf-65ecf34c3f3d4\"\r\naccept-ranges: bytes\r\ncontent-length: 207\r\ncache-control: max-age=600\r\nexpires: Tue, 27 Oct 2026 11:48:01 GMT\r\nvary: Accept-Encoding,User-Agent\r\ncontent-type: text/html\r\ndate: Tue, 27 Oct 2026 11:38:01 GMT\r\nserver: Apache\r\n\r\n\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0"
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "H1-003",
+      "rule_id": "H1-WEB-001",
+      "status": "confirmed",
+      "severity": "informational",
+      "title": "Server header discloses web server software",
+      "category": "Information disclosure",
+      "about": "Checks whether the Server response header discloses the web server product or version.",
+      "analysis": "Server: Apache discloses the product but not its version.",
+      "what_we_found": "https://test.c4lab.in returns the header:\nServer: Apache\nThe product is disclosed but not its version.",
+      "why_it_matters": [
+        "Knowing the product (Apache) narrows down which attacks and misconfigurations to try. It is minor because the version is hidden and the product can usually be identified by other means anyway."
+      ],
+      "attack_scenario": "Product-specific probing, such as Apache-specific paths and modules, without needing to fingerprint first.",
+      "severity_rationale": "Informational: product-only banners are common and give little advantage.",
+      "fix_steps": [
+        "No action is required. If you control the server and want to remove the header entirely, use a reverse proxy or CDN that rewrites it, or Apache's mod_security SecServerSignature."
+      ],
+      "rollback": "Not applicable.",
+      "verify": {
+        "command": "curl -sI https://test.c4lab.in | grep -i '^server:'",
+        "expected": "No change required."
+      },
+      "references": [
+        {
+          "title": "OWASP WSTG \u2014 Fingerprint Web Server (WSTG-INFO-02)",
+          "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Information_Gathering/02-Fingerprint_Web_Server"
+        },
+        {
+          "title": "Apache \u2014 ServerTokens directive",
+          "url": "https://httpd.apache.org/docs/2.4/mod/core.html#servertokens"
+        },
+        {
+          "title": "nginx \u2014 server_tokens directive",
+          "url": "http://nginx.org/en/docs/http/ngx_http_core_module.html#server_tokens"
+        }
+      ],
+      "authority": null,
+      "remediation": "No action is required. If you control the server and want to remove the header entirely, use a reverse proxy or CDN that rewrites it, or Apache's mod_security SecServerSignature.",
+      "evidence": [
+        {
+          "evidence_id": "D17-curl-headers",
+          "command": [
+            "curl",
+            "-IL",
+            "https://test.c4lab.in"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D17-curl-headers.txt",
+          "sha256": "7a25d9522ca3a38078118ce6775eab05fe9249489576a10be64791f54f7f9bea",
+          "excerpt": "HTTP/2 200 \r\nx-powered-by: PHP/5.6.40\r\nlast-modified: Tue, 27 Oct 2026 09:38:16 GMT\r\netag: \"cf-65ecf34c3f3d4\"\r\naccept-ranges: bytes\r\ncontent-length: 207\r\ncache-control: max-age=600\r\nexpires: Tue, 27 Oct 2026 11:48:01 GMT\r\nvary: Accept-Encoding,User-Agent\r\ncontent-type: text/html\r\ndate: Tue, 27 Oct 2026 11:38:01 GMT\r\nserver: Apache\r\n\r\n\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0"
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "H1-004",
+      "rule_id": "H1-DNS-001",
+      "status": "confirmed",
+      "severity": "informational",
+      "title": "Public DNS reveals third-party services",
+      "category": "Information disclosure",
+      "about": "Identifies the third-party services the domain's public DNS reveals (email, DNS and web hosts, SaaS verification tokens and SPF senders), the information an attacker gathers first.",
+      "analysis": "1 third-party services identified from public DNS.",
+      "what_we_found": "Public DNS for test.c4lab.in reveals these providers and services:\n\u2022 Email: DreamHost Mail (MX mx1.dreamhost.com)",
+      "why_it_matters": [
+        "This is normal and largely unavoidable: SPF, MX and verification records must be public to work. It is reported so you know exactly what an attacker learns in seconds.",
+        "Each service is a phishing pretext (\"Your Google Workspace password expires today\") and an account to protect. Verification tokens for services you no longer use add noise and can indicate forgotten accounts still linked to the domain."
+      ],
+      "attack_scenario": "An attacker sees that test.c4lab.in uses DreamHost Mail for email and clones that provider's login page for a targeted credential-phishing campaign against your staff.",
+      "severity_rationale": "Informational: no misconfiguration. Exposure is inherent to how these records work.",
+      "fix_steps": [
+        "Remove verification TXT records and SPF includes for services you no longer use. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+        "Enforce multi-factor authentication on every listed service, especially the email provider (DreamHost Mail) and the DNS host (your DNS hosting provider), whose accounts control the domain.",
+        "Brief staff that phishing will imitate these specific providers."
+      ],
+      "rollback": "Not applicable.",
+      "verify": {
+        "command": "dig test.c4lab.in TXT +short",
+        "expected": "Only records for services in active use."
+      },
+      "references": [
+        {
+          "title": "MITRE ATT&CK T1590.002 \u2014 Gather Victim Network Information: DNS",
+          "url": "https://attack.mitre.org/techniques/T1590/002/"
+        },
+        {
+          "title": "MITRE ATT&CK T1593 \u2014 Search Open Websites/Domains",
+          "url": "https://attack.mitre.org/techniques/T1593/"
+        }
+      ],
+      "authority": null,
+      "remediation": "Remove verification TXT records and SPF includes for services you no longer use. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+      "evidence": [
+        {
+          "evidence_id": "D08-dig-txt",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "TXT",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D08-dig-txt.txt",
+          "sha256": "f67428e9d4a8f84eae8ab86a043c78d27d307be5364c4e8d04b4d7eb241599e7",
+          "excerpt": ""
+        },
+        {
+          "evidence_id": "D07-dig-mx",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "MX",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D07-dig-mx.txt",
+          "sha256": "b2d14890a73ad8853e5714b1c7e8eaaec422ea9d48c7e93698ca6b01e91089c3",
+          "excerpt": "10 mx1.dreamhost.com."
+        },
+        {
+          "evidence_id": "D09-dig-ns",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "NS",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D09-dig-ns.txt",
+          "sha256": "ac2bf410119b3c419a978c7eeea37af3fad4501a9505ebee39a21c2ff7cfb873",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    }
+  ],
+  "controls": [
+    {
+      "rule_id": "H1-WEB-001",
+      "status": "confirmed",
+      "detail": "Server: Apache discloses the product but not its version.",
+      "evidence_ids": [
+        "D17-curl-headers"
+      ],
+      "variant": "product_only",
+      "facts": {
+        "server_header": "Apache"
+      },
+      "severity": "informational",
+      "category": "Information disclosure",
+      "about": "Checks whether the Server response header discloses the web server product or version.",
+      "explanation": "Server: Apache discloses the product but not its version."
+    },
+    {
+      "rule_id": "H1-WEB-002",
+      "status": "confirmed",
+      "detail": "X-Powered-By: PHP/5.6.40",
+      "evidence_ids": [
+        "D17-curl-headers"
+      ],
+      "variant": "default",
+      "facts": {
+        "powered_by": "PHP/5.6.40"
+      },
+      "severity": "low",
+      "category": "Information disclosure",
+      "about": "Checks whether X-Powered-By or similar headers disclose the application framework or language version.",
+      "explanation": "X-Powered-By: PHP/5.6.40"
+    },
+    {
+      "rule_id": "H1-WEB-004",
+      "status": "confirmed",
+      "detail": "No Strict-Transport-Security header on the HTTPS response.",
+      "evidence_ids": [
+        "D17-curl-headers"
+      ],
+      "variant": "missing",
+      "facts": {},
+      "severity": "low",
+      "category": "Transport security",
+      "about": "Checks for a Strict-Transport-Security (HSTS) header with a max-age of at least six months, which tells browsers to use only HTTPS for the site.",
+      "explanation": "No Strict-Transport-Security header on the HTTPS response."
+    },
+    {
+      "rule_id": "H1-WEB-003",
+      "status": "pass",
+      "detail": "http:// returns 301 to https://test.c4lab.in/.",
+      "evidence_ids": [
+        "D19-curl-http",
+        "D20-nc-port-80"
+      ],
+      "variant": "default",
+      "facts": {
+        "http_status": 301,
+        "http_location": "https://test.c4lab.in/"
+      },
+      "category": "Transport security",
+      "about": "Checks that plain HTTP on port 80 permanently redirects to HTTPS, so visitors who type the bare domain or follow an old link end up on the encrypted site.",
+      "explanation": "http://test.c4lab.in returns 301 redirecting to https://test.c4lab.in/."
+    },
+    {
+      "rule_id": "H1-DNS-001",
+      "status": "confirmed",
+      "detail": "1 third-party services identified from public DNS.",
+      "evidence_ids": [
+        "D08-dig-txt",
+        "D07-dig-mx",
+        "D09-dig-ns"
+      ],
+      "variant": "default",
+      "facts": {
+        "services_list": "\u2022 Email: DreamHost Mail (MX mx1.dreamhost.com)"
+      },
+      "severity": "informational",
+      "category": "Information disclosure",
+      "about": "Identifies the third-party services the domain's public DNS reveals (email, DNS and web hosts, SaaS verification tokens and SPF senders), the information an attacker gathers first.",
+      "explanation": "1 third-party services identified from public DNS."
+    }
+  ],
+  "unknowns": [],
+  "technical_sections": [
+    {
+      "title": "DNS footprint",
+      "subtitle": "What public DNS reveals about the domain",
+      "intro": "Each record type is listed with what it tells an attacker. Values are exactly as returned by dig.",
+      "items": [
+        {
+          "label": "A (IPv4)",
+          "value": [
+            "107.180.237.42"
+          ],
+          "explanation": "IPv4 addresses the domain's website resolves to. An attacker uses these to find the hosting provider and to look for other sites and services on the same IP addresses.",
+          "evidence_ids": [
+            "D04-dig-a"
+          ]
+        },
+        {
+          "label": "AAAA (IPv6)",
+          "value": [],
+          "explanation": "IPv6 addresses. Services reachable over IPv6 sometimes have weaker firewall rules than their IPv4 equivalents.",
+          "evidence_ids": [
+            "D05-dig-aaaa"
+          ]
+        },
+        {
+          "label": "CNAME",
+          "value": [],
+          "explanation": "An apex alias, if any. CNAMEs pointing at deprovisioned third-party services are the classic source of subdomain takeovers.",
+          "evidence_ids": [
+            "D06-dig-cname"
+          ]
+        },
+        {
+          "label": "MX",
+          "value": [
+            "10 mx1.dreamhost.com"
+          ],
+          "explanation": "Mail servers. They reveal the email provider, which tells an attacker which login page to clone for credential phishing.",
+          "evidence_ids": [
+            "D07-dig-mx"
+          ]
+        },
+        {
+          "label": "NS",
+          "value": [],
+          "explanation": "Authoritative nameservers. They reveal the DNS host; whoever controls that account controls the domain's website and email.",
+          "evidence_ids": [
+            "D09-dig-ns"
+          ]
+        },
+        {
+          "label": "SOA",
+          "value": [],
+          "explanation": "The primary nameserver, the responsible-party mailbox and the zone's refresh, retry, expire and minimum TTL timers.",
+          "evidence_ids": [
+            "D10-dig-soa"
+          ]
+        },
+        {
+          "label": "TXT",
+          "value": [],
+          "explanation": "TXT records: SPF, verification tokens and other policies. They reveal the SaaS services the organisation uses.",
+          "evidence_ids": [
+            "D08-dig-txt"
+          ]
+        },
+        {
+          "label": "CAA",
+          "value": [],
+          "explanation": "Certificate authorities allowed to issue certificates. An empty list means any CA may issue.",
+          "evidence_ids": [
+            "D11-dig-caa"
+          ]
+        },
+        {
+          "label": "Delegation trace",
+          "value": "completed from the root to the domain's nameservers",
+          "explanation": "Whether a full trace from the root servers reached the domain's nameservers.",
+          "evidence_ids": [
+            "D12-dig-trace"
+          ]
+        },
+        {
+          "label": "host cross-check",
+          "value": [
+            "test.c4lab.in has address 107.180.237.42",
+            "test.c4lab.in mail is handled by 10 mx1.dreamhost.com."
+          ],
+          "explanation": "A second resolver client confirming the address and mail records.",
+          "evidence_ids": [
+            "D13-host"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Registration",
+      "subtitle": "WHOIS data for the domain",
+      "items": [
+        {
+          "label": "Registrar",
+          "value": "GoDaddy",
+          "explanation": "The company the domain is registered through. Its account controls the domain's nameservers.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        },
+        {
+          "label": "Created",
+          "value": "2026-08-06T14:42:25.765Z",
+          "explanation": "Registration date.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        },
+        {
+          "label": "Expires",
+          "value": "2027-08-06T14:42:25.765Z",
+          "explanation": "If this date passes without renewal, the domain can be lost.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        },
+        {
+          "label": "Last updated",
+          "value": "2026-08-11T14:43:05.041Z",
+          "explanation": "Last change to the registration record.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        },
+        {
+          "label": "EPP status",
+          "value": [
+            "ACTIVE",
+            "clientDeleteProhibited",
+            "clientRenewProhibited",
+            "clientTransferProhibited",
+            "clientUpdateProhibited"
+          ],
+          "explanation": "Registry locks. clientTransferProhibited blocks unauthorised transfers.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "table",
+      "title": "HTTPS response chain",
+      "subtitle": "curl -IL https://test.c4lab.in",
+      "columns": [
+        [
+          "status",
+          "Status"
+        ],
+        [
+          "location",
+          "Redirect to"
+        ],
+        [
+          "server",
+          "Server header"
+        ]
+      ],
+      "rows": [
+        {
+          "status": 200,
+          "location": null,
+          "server": "Apache"
+        }
+      ]
+    },
+    {
+      "kind": "table",
+      "title": "HTTPS response headers",
+      "subtitle": "Final response headers; security headers are explained by the web application agent when implemented",
+      "columns": [
+        [
+          "name",
+          "Header"
+        ],
+        [
+          "value",
+          "Value"
+        ]
+      ],
+      "rows": [
+        {
+          "name": "x-powered-by",
+          "value": "PHP/5.6.40"
+        },
+        {
+          "name": "last-modified",
+          "value": "Tue, 27 Oct 2026 09:38:16 GMT"
+        },
+        {
+          "name": "etag",
+          "value": "\"cf-65ecf34c3f3d4\""
+        },
+        {
+          "name": "accept-ranges",
+          "value": "bytes"
+        },
+        {
+          "name": "content-length",
+          "value": "207"
+        },
+        {
+          "name": "cache-control",
+          "value": "max-age=600"
+        },
+        {
+          "name": "expires",
+          "value": "Tue, 27 Oct 2026 11:48:01 GMT"
+        },
+        {
+          "name": "vary",
+          "value": "Accept-Encoding,User-Agent"
+        },
+        {
+          "name": "content-type",
+          "value": "text/html"
+        },
+        {
+          "name": "date",
+          "value": "Tue, 27 Oct 2026 11:38:01 GMT"
+        },
+        {
+          "name": "server",
+          "value": "Apache"
+        }
+      ]
+    },
+    {
+      "title": "Reachability and exposure",
+      "subtitle": "Ports 80 and 443, ICMP and the network path",
+      "items": [
+        {
+          "label": "TCP 80 (HTTP)",
+          "value": "open",
+          "explanation": "Whether the standard web ports accept TCP connections. No other ports were tested.",
+          "evidence_ids": [
+            "D20-nc-port-80"
+          ]
+        },
+        {
+          "label": "TCP 443 (HTTPS)",
+          "value": "open",
+          "explanation": "Whether the standard web ports accept TCP connections. No other ports were tested.",
+          "evidence_ids": [
+            "D21-nc-port-443"
+          ]
+        },
+        {
+          "label": "HTTPS result",
+          "value": "HTTP 200 in 0.797314s from 107.180.237.42",
+          "explanation": "Final status, total response time and the IP address actually connected to.",
+          "evidence_ids": [
+            "D18-curl-timing"
+          ]
+        },
+        {
+          "label": "Ping",
+          "value": "replied; loss 0.0%; average 266.339 ms",
+          "explanation": "ICMP and traceroute results, which show the hosting network and whether ICMP is filtered.",
+          "evidence_ids": [
+            "D15-ping"
+          ]
+        },
+        {
+          "label": "Traceroute",
+          "value": "failed; 0 hops; last: None",
+          "explanation": "Hops showing * did not reply to probes; this is common and does not mean the path is broken.",
+          "evidence_ids": [
+            "D16-traceroute"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "table",
+      "title": "Third-party services",
+      "subtitle": "Providers identified from MX, NS, SPF and TXT records",
+      "columns": [
+        [
+          "service",
+          "Service"
+        ]
+      ],
+      "rows": [
+        {
+          "service": "Email: DreamHost Mail (MX mx1.dreamhost.com)"
+        }
+      ]
+    }
+  ],
+  "inventory": {
+    "dns": {
+      "a": [
+        "107.180.237.42"
+      ],
+      "aaaa": [],
+      "cname": [],
+      "mx": [
+        {
+          "preference": 10,
+          "host": "mx1.dreamhost.com"
+        }
+      ],
+      "ns": [],
+      "soa": [],
+      "txt": [],
+      "caa": [],
+      "delegation_traced": true
+    },
+    "host": [
+      "test.c4lab.in has address 107.180.237.42",
+      "test.c4lab.in mail is handled by 10 mx1.dreamhost.com."
+    ],
+    "registration": {
+      "registrar": "GoDaddy",
+      "created": "2026-08-06T14:42:25.765Z",
+      "expires": "2027-08-06T14:42:25.765Z",
+      "updated": "2026-08-11T14:43:05.041Z",
+      "statuses": [
+        "ACTIVE",
+        "clientDeleteProhibited",
+        "clientRenewProhibited",
+        "clientTransferProhibited",
+        "clientUpdateProhibited"
+      ]
+    },
+    "http": {
+      "chain": [
+        {
+          "status": 200,
+          "location": null,
+          "server": "Apache"
+        }
+      ],
+      "final_headers": {
+        "x-powered-by": "PHP/5.6.40",
+        "last-modified": "Tue, 27 Oct 2026 09:38:16 GMT",
+        "etag": "\"cf-65ecf34c3f3d4\"",
+        "accept-ranges": "bytes",
+        "content-length": "207",
+        "cache-control": "max-age=600",
+        "expires": "Tue, 27 Oct 2026 11:48:01 GMT",
+        "vary": "Accept-Encoding,User-Agent",
+        "content-type": "text/html",
+        "date": "Tue, 27 Oct 2026 11:38:01 GMT",
+        "server": "Apache"
+      },
+      "timing": {
+        "status": "200",
+        "time": "0.797314s",
+        "remote_ip": "107.180.237.42"
+      }
+    },
+    "ports": [
+      {
+        "port": 80,
+        "state": "open"
+      },
+      {
+        "port": 443,
+        "state": "open"
+      }
+    ],
+    "reachability": {
+      "ping": {
+        "status": "replied",
+        "packet_loss_percent": 0.0,
+        "average_rtt_ms": 266.339
+      },
+      "traceroute": {
+        "status": "failed",
+        "hops": 0,
+        "last_hop": null
+      }
+    }
+  },
+  "chart_data": {
+    "surface_nodes": [
+      [
+        "IP address",
+        "107.180.237.42"
+      ],
+      [
+        "DNS host",
+        "your DNS hosting provider"
+      ],
+      [
+        "Email provider",
+        "DreamHost Mail"
+      ],
+      [
+        "Registrar",
+        "GoDaddy"
+      ],
+      [
+        "Web server",
+        "Apache"
+      ]
+    ],
+    "hops": [],
+    "destination_ip": "107.180.237.42"
+  },
+  "limitations": [
+    "The previous run's reports were moved to cyber360-reports/test.c4lab.in/archive/20261027T113727Z/.",
+    "Point-in-time observation from one resolver and network path.",
+    "Only the apex domain was examined; subdomains were not enumerated."
+  ],
+  "assumptions": [
+    "The domain's public DNS answers seen from this network are the same ones other internet users receive."
+  ]
+}

@@ -1,0 +1,29 @@
+Cyber360 evidence D17-curl-headers
+==============================================================================
+Command:      curl -IL https://test.c4lab.in
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:38:01Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+HTTP/2 200 
+x-powered-by: PHP/5.6.40
+last-modified: Tue, 27 Oct 2026 09:38:16 GMT
+etag: "cf-65ecf34c3f3d4"
+accept-ranges: bytes
+content-length: 207
+cache-control: max-age=600
+expires: Tue, 27 Oct 2026 11:48:01 GMT
+vary: Accept-Encoding,User-Agent
+content-type: text/html
+date: Tue, 27 Oct 2026 11:38:01 GMT
+server: Apache
+
+
+
+--- stderr ---
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+

@@ -1,0 +1,18 @@
+Cyber360 evidence D12-dig-trace
+==============================================================================
+Command:      dig test.c4lab.in +trace
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+
+; <<>> DiG 9.10.6 <<>> test.c4lab.in +trace
+;; global options: +cmd
+;; Received 28 bytes from 103.239.84.254#53(103.239.84.254) in 5 ms
+
+
+
+--- stderr ---
+(empty)

@@ -1,0 +1,29 @@
+Cyber360 evidence E02-testssl-version
+==============================================================================
+Command:      testssl.sh --version
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:38:00Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+
+[1m
+#####################################################################[m
+  [1mtestssl.sh[m version [1m3.2.4[m from [1mhttps://testssl.sh/[m
+[1m
+  This program is free software. Distribution and modification under
+  GPLv2 permitted. USAGE w/o ANY WARRANTY. USE IT AT YOUR OWN RISK![m
+
+  Please file bugs @ [1mhttps://testssl.sh/bugs/[m
+[1m#####################################################################[m
+
+  Using [3mOpenSSL 4.0.3 (Sep 29 2026)[m  [~96 ciphers]
+  on Samairahs-MacBook-Air:/opt/homebrew/opt/openssl@4/bin/openssl
+  built: [3mTue Sep 29 13:44:55 2026[m, platform: [3mdarwin64-arm64-cc[m
+  Using [3mbash 3.2.57[m
+
+
+
+--- stderr ---
+(empty)

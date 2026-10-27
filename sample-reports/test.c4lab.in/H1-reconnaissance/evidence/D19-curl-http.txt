@@ -1,0 +1,19 @@
+Cyber360 evidence D19-curl-http
+==============================================================================
+Command:      curl -sSI http://test.c4lab.in
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:38:02Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+HTTP/1.1 301 Moved Permanently
+Date: Tue, 27 Oct 2026 11:38:02 GMT
+Server: Apache
+Location: https://test.c4lab.in/
+Content-Type: text/html; charset=iso-8859-1
+
+
+
+--- stderr ---
+(empty)

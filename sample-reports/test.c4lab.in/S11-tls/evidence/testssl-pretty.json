@@ -1,0 +1,42 @@
+{
+          "clientProblem1" : [
+                            {
+                                "id"           : "engine_problem",
+                                "severity"     : "WARN",
+                                "finding"      : "No engine or GOST support via engine with your /opt/homebrew/opt/openssl@4/bin/openssl"
+                           }
+          ],
+          "Invocation"  : "testssl.sh --quiet --warnings batch --color 0 --mapping iana --server-defaults --server-preference --protocols --categories --forward-secrecy --cipher-per-proto --client-simulation --jsonfile-pretty /Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json --overwrite test.c4lab.in:443",
+          "at"          : "Samairahs-MacBook-Air:/opt/homebrew/opt/openssl@4/bin/openssl",
+          "version"     : "3.2.4 ",
+          "openssl"     : "OpenSSL 4.0.3 from Tue Sep 29 13:44:55 2026",
+          "startTime"   : "1793101082",
+          "scanResult"  : [
+          {
+                    "targetHost"      : "test.c4lab.in",
+                    "ip"              : "107.180.237.42",
+                    "port"            : "443",
+                    "rDNS"            : "apache2-yohimbe.iad1-shared-d12-06.dreamhost.com.",
+                    "service"         : "Couldn't determine service, skipping all HTTP checks",
+                    "pretest"           : [
+                            {
+                                "id"           : "pre_128cipher",
+                                "severity"     : "INFO",
+                                "finding"      : "No 128 cipher limit bug"
+                           }
+                    ],
+                    "protocols"         : [
+                            {
+                                "id"           : "SSLv2",
+                                "severity"     : "OK",
+                                "finding"      : "not offered"
+                           },{
+                                "id"           : "scanProblem",
+                                "severity"     : "FATAL",
+                                "finding"      : "repeated TCP connect problems, giving up"
+                           }
+                    ]
+          }
+          ],
+                    "scanTime"  : "Scan interrupted"
+}

@@ -1,0 +1,29 @@
+{
+  "evidence_id": "E07-testssl-raw",
+  "command": [
+    "testssl.sh",
+    "--quiet",
+    "--warnings",
+    "batch",
+    "--color",
+    "0",
+    "--mapping",
+    "iana",
+    "--server-defaults",
+    "--server-preference",
+    "--protocols",
+    "--categories",
+    "--forward-secrecy",
+    "--cipher-per-proto",
+    "--client-simulation",
+    "--jsonfile-pretty",
+    "/Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json",
+    "--overwrite",
+    "test.c4lab.in:443"
+  ],
+  "started_at": "2026-10-27T11:38:02Z",
+  "completed_at": "2026-10-27T11:38:09Z",
+  "exit_status": 246,
+  "stdout": "\n\n Start 2026-10-27 17:08:05        -->> 107.180.237.42:443 (test.c4lab.in) <<--\n\n rDNS (107.180.237.42):  apache2-yohimbe.iad1-shared-d12-06.dreamhost.com.\n Oops: TCP connect problem\n\nUnable to open a socket to 107.180.237.42:443.  Service detected:       Couldn't determine what's running on port 443, assuming no HTTP service => skipping all HTTP checks\n\n Testing protocols via sockets except NPN+ALPN \n\n SSLv2      not offered (OK)\n SSLv3      \n\n",
+  "stderr": "/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: connect: Interrupted system call\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 12108: /dev/tcp/107.180.237.42/443: Interrupted system call\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: connect: Interrupted system call\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 12108: /dev/tcp/107.180.237.42/443: Interrupted system call\nFatal error: repeated TCP connect problems, giving up\nConsider increasing MAX_SOCKET_FAIL (currently: 2)\n"
+}

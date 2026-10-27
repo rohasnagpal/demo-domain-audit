@@ -1,0 +1,24 @@
+Cyber360 evidence E06-identity-and-trust
+==============================================================================
+Command:      openssl s_client -connect test.c4lab.in:443 -servername test.c4lab.in -verify_hostname test.c4lab.in -verify_return_error -brief
+Started:      2026-10-27T11:38:01Z
+Completed:    2026-10-27T11:38:02Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+(empty)
+
+--- stderr ---
+Connecting to 107.180.237.42
+CONNECTION ESTABLISHED
+Protocol version: TLSv1.3
+Ciphersuite: TLS_AES_256_GCM_SHA384
+Peer certificate: CN=www.test.c4lab.in
+Hash used: SHA256
+Signature type: rsa_pss_rsae_sha256
+Verification: OK
+Verified peername: test.c4lab.in
+Peer Temp Key: X25519, 253 bits
+DONE
+

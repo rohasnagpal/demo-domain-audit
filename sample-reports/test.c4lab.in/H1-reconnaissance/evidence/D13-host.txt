@@ -1,0 +1,15 @@
+Cyber360 evidence D13-host
+==============================================================================
+Command:      host test.c4lab.in
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+test.c4lab.in has address 107.180.237.42
+test.c4lab.in mail is handled by 10 mx1.dreamhost.com.
+
+
+--- stderr ---
+(empty)

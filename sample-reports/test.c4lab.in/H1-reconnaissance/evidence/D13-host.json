@@ -1,0 +1,12 @@
+{
+  "evidence_id": "D13-host",
+  "command": [
+    "host",
+    "test.c4lab.in"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 0,
+  "stdout": "test.c4lab.in has address 107.180.237.42\ntest.c4lab.in mail is handled by 10 mx1.dreamhost.com.\n",
+  "stderr": ""
+}

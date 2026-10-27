@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber360 H1 — test.c4lab.in</title><style>/* Cyber360 report theme: design tokens.
+   Change the look of every report here. Component styles live in report.css.
+   Severity and status colours carry meaning: keep them distinct from each other
+   and always paired with a text label or icon in the markup. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0c2538;          /* top bar, footer, dark nodes */
+  --accent:#28c76f;        /* top-bar rule */
+  --teal:#087f8c;          /* section headings, eyebrow text */
+  --green:#31b64b;         /* score bars */
+  --blue:#1787c9;
+  --amber:#eea72e;
+  --red:#d84a4a;
+  --page:#edf1f2;          /* outside the report column */
+  --paper:#ffffff;         /* report column and cards */
+  --wash:#f3f7f8;          /* subtle fills */
+
+  /* Text */
+  --ink:#14202b;
+  --muted:#667784;
+  --muted-2:#5d707b;
+
+  /* Lines */
+  --line:#d9e4e8;
+  --line-soft:#d7e3e6;
+  --border-strong:#a9c9d0;
+
+  /* Code blocks */
+  --code-bg:#0d2230;
+  --code-ink:#d7edf1;
+
+  /* Type */
+  --font-sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* Effects */
+  --shadow:0 12px 32px rgba(12,37,56,.08);
+
+  /* Severity scale (findings, bars, card borders). Ordered critical → informational. */
+  --sev-critical:#d03b3b;
+  --sev-high:#ec835a;
+  --sev-medium:#fab219;
+  --sev-low:#2a78d6;
+  --sev-informational:#8a8985;
+
+  /* Control status */
+  --st-good:#0ca30c;
+  --st-unknown:#b9c1c6;
+  --st-na:#e3e7e9;
+
+  /* Charts */
+  --series-1:#2a78d6;
+  --series-3:#1baf7a;
+  --chart-line:#c9d6da;    /* connectors and spokes */
+  --chart-arrow:#9fb1b8;   /* flow arrows and node outlines */
+  --chart-box:#f3f7f8;     /* flow-diagram boxes */
+  --chart-box-line:#c9d6da;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#52606b;
+  --viz-ink-3:#7d8a93;
+  --viz-grid:#e3e9eb;
+
+  /* Protocol matrix cells */
+  --cell-ok-bg:#dcf3dc;   --cell-ok-ink:#0a5c0a;
+  --cell-weak-bg:#fde7c4; --cell-weak-ink:#7a4c00;
+  --cell-bad-bg:#f8d4d4;  --cell-bad-ink:#8f1f1f;
+  --cell-off-bg:#f1f3f4;  --cell-off-ink:#7d8a93;
+}
+
+/* Cyber360 report theme: components.
+   Uses only variables from tokens.css for colour and type where practical.
+   Class names are a contract with the renderers - see the report-design skill in .claude/skills/report-design. */
+
+/* ==== Page shell: top bar, main column, report header, panels, footer ==== */
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:14px/1.55 var(--font-sans)}.topbar{height:74px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 max(28px,calc((100vw - 1180px)/2));position:sticky;top:0;z-index:4;box-shadow:0 3px 16px rgba(0,0,0,.16)}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#13a5ae,#36c65a);display:grid;place-items:center;font-weight:900;letter-spacing:-1px}.brand strong{display:block;font-size:18px}.brand small{color:#b8d3dd}.topbar button{border:1px solid #547080;background:#17384e;color:#fff;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}main{max-width:1180px;margin:auto;padding:38px 24px 72px}.report-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:24px}.eyebrow{color:var(--teal);font-weight:800;letter-spacing:.16em;font-size:12px}.report-head h1{font-size:34px;letter-spacing:-.03em;margin:3px 0}.report-head p{color:var(--muted);margin:0}.report-id{text-align:right}.report-id span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em}.report-id code{font-size:12px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:18px 0;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:18px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#f9fbfc)}.panel-head h2{font-size:18px;margin:0}.section-subtitle{color:var(--muted);font-size:12px;margin:2px 0 0}.score-layout{padding:28px;display:grid;grid-template-columns:190px 1fr;gap:34px;align-items:center}.grade{height:166px;border-radius:18px;background:linear-gradient(145deg,#1f9639,#43cc5b);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24),0 14px 30px rgba(49,182,75,.22)}.grade span{text-transform:uppercase;letter-spacing:.12em;font-size:11px}.grade strong{font-size:70px;line-height:1;font-weight:900}.grade small{opacity:.88}.grade-n-a{background:linear-gradient(145deg,#60717c,#8a9aa3);box-shadow:none}.score-row{margin:0 0 15px}.score-row>div:first-child{display:flex;justify-content:space-between;margin-bottom:6px}.track{height:10px;background:#e6eef0;border-radius:30px;overflow:hidden}.track i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:30px}.grade-basis,.empty{color:var(--muted);font-size:12px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:12px}.metric-grid div{background:var(--wash);padding:16px;border-radius:10px}.metric-grid strong{display:block;font-size:28px}.metric-grid span{color:var(--muted);font-size:12px}.compact{margin-bottom:0}.assessment{margin:0 28px 24px;padding:20px 22px;background:#eff8fa;border-left:4px solid var(--teal);border-radius:8px}.assessment h3{margin:0 0 6px}.assessment p{margin:0}.notice{margin:0 28px 10px;border-radius:7px;padding:11px 14px;display:flex;gap:12px}.notice:last-child{margin-bottom:28px}.notice b{min-width:78px}.notice.warning{background:#fff5d8;border:1px solid #f0d675}.notice.info{background:#e8f5fb;border:1px solid #a9d8eb}.good-state{margin:24px;display:flex;gap:14px;align-items:center;background:#ecf9ef;border:1px solid #b9e5c2;padding:18px;border-radius:10px}.good-state>span{width:34px;height:34px;background:var(--green);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:900}.good-state p{margin:2px 0 0;color:#45624a}.good-state.small{padding:12px}.finding,.unknown,.subpanel{margin:18px 22px;border:1px solid var(--line);border-radius:10px;padding:18px}.finding{border-left-width:5px}.severity-critical{border-left-color:#961f1f}.severity-high{border-left-color:var(--red)}.severity-medium{border-left-color:var(--amber)}.severity-low{border-left-color:var(--blue)}.severity-informational{border-left-color:#8798a3}.finding-title>div,.subpanel-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.finding-title h3,.subpanel-title h3{margin:8px 0}.finding-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;background:var(--wash);padding:14px;border-radius:8px}.finding-grid h4,.finding-grid p{margin:0}.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;background:#e8eff2;color:#38505d;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.badge.pass,.badge.passed,.badge.supported,.badge.success,.badge.verified-fixed{background:#dff5e4;color:#177130}.badge.fail,.badge.failed,.badge.critical,.badge.high{background:#fbe1e1;color:#a12525}.badge.medium,.badge.warning,.badge.unknown{background:#fff1cd;color:#8b5b00}.badge.low,.badge.informational,.badge.observed{background:#e4f3fb;color:#176994}.data-list{margin:0}.data-row{display:grid;grid-template-columns:210px 1fr;border-top:1px solid #edf2f3;padding:9px 0}.data-row:first-child{border-top:0}.data-row dt{font-weight:700;color:#425763}.data-row dd{margin:0;overflow-wrap:anywhere}.subpanel-title{border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:8px}.table-wrap{overflow:auto;padding:8px 22px 22px}table{width:100%;border-collapse:collapse;min-width:700px}th{text-align:left;color:#526773;font-size:11px;text-transform:uppercase;letter-spacing:.06em;background:#f1f6f7}th,td{padding:10px 12px;border-bottom:1px solid #e6edef}.control-list,.tool-list{list-style:none;margin:0;padding:14px 22px 22px}.control-list li,.tool-list li{display:grid;grid-template-columns:150px 1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid #e6edef}.tool-list li{grid-template-columns:130px 1fr}.control-list small,.tool-list span{color:var(--muted)}.unknown>div{display:flex;justify-content:space-between}.unknown p:last-child{margin-bottom:0}.two-col{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.two-col .panel{margin:0}.two-col .data-list{padding:14px 22px 22px}.two-col .data-row{grid-template-columns:130px 1fr}.empty{padding:20px 22px;margin:0}.evidence-list{font-size:12px}footer{background:var(--navy);color:#bdd0d9;padding:26px max(28px,calc((100vw - 1180px)/2));display:flex;gap:20px;justify-content:space-between}footer strong{color:#fff}@media(max-width:760px){.topbar{padding:0 16px}.brand small{display:none}main{padding:24px 12px}.report-head,.score-layout,.two-col{display:block}.report-id{text-align:left;margin-top:16px}.score-details{margin-top:22px}.grade{max-width:180px}.data-row{grid-template-columns:1fr}.data-row dt{margin-bottom:3px}.finding-grid{grid-template-columns:1fr}.control-list li,.tool-list li{grid-template-columns:1fr}.report-head h1{font-size:27px}}@media print{body{background:#fff}.topbar{position:static}.topbar button{display:none}main{max-width:none;padding:20px}.panel{box-shadow:none;break-inside:avoid}.report-head h1{font-size:28px}footer{background:#fff;color:#555;border-top:1px solid #bbb}.grade{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* ==== TLS report (S11): grades, provider visuals and the compact report layout shared by all agents ==== */
+.grade-b,.grade-c{background:linear-gradient(145deg,#bd7800,#eea72e)}
+.grade-d,.grade-e,.grade-f,.grade-t,.grade-m{background:linear-gradient(145deg,#a52b2b,#d84a4a)}
+.padded{padding:14px 22px 22px}.api-messages{margin:0 22px 22px;padding:13px 16px;background:#eef8fb;border:1px solid #b8dce7;border-radius:9px}.api-messages h3{margin:0 0 7px;font-size:13px}.api-messages ul{margin:0;padding-left:20px}.api-value{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}.json-block{margin:10px 0 0;padding:14px;background:var(--code-bg);color:var(--code-ink);border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.5 var(--font-mono);max-height:none}.raw-response{margin:20px 22px}.raw-response summary{cursor:pointer;font-weight:800}
+.provider-visuals{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:22px}.endpoint-grades{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.endpoint-grade{background:linear-gradient(145deg,#1f9639,#43cc5b);color:#fff;border-radius:12px;padding:16px;text-align:center}.endpoint-grade span,.endpoint-grade small{display:block;overflow-wrap:anywhere}.endpoint-grade strong{display:block;font-size:38px;line-height:1.2}.cipher-chart{background:var(--wash);border-radius:12px;padding:15px}.cipher-chart h3{margin:0 0 10px}.chart-row{display:grid;grid-template-columns:80px 1fr 25px;gap:8px;align-items:center;margin:7px 0}.chart-row i{height:10px;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:10px}.chart-row b{text-align:right}
+.evidence-row{display:grid;grid-template-columns:150px 1fr 82px;gap:12px;align-items:center;margin:10px 0}.evidence-row strong{text-align:right;font-size:12px}.evidence-row .track{height:14px;border-radius:2px}.evidence-row .available{background:var(--green)}.evidence-row .absent{background:#aebbc2}.bar-note{margin:12px 0 0;color:var(--muted);font-size:11px}.disclosure{padding:0}.disclosure summary{cursor:pointer;font-weight:800;padding:13px 15px;background:#f5fafb;border-bottom:1px solid var(--line)}.disclosure .json-block{margin:0;border-radius:0;background:#f9fbfc;color:#213744}.report-block{padding:16px 20px;border-top:1px solid var(--line)}.report-block:first-child{border-top:0}.report-block>h3{margin:0;color:var(--teal);font-size:15px}.report-block>p{margin:2px 0 10px;color:var(--muted);font-size:11px}
+.notice.success{background:#ddf5e2;border:1px solid #8bd39b}.notice.caution{background:#ffe5b8;border:1px solid #e7b65b}
+.chain-card{margin:10px 14px;padding:10px 12px;border:1px solid var(--line);background:#fff}.chain-card h4{margin:0 0 7px;color:var(--teal)}.chain-card .table-wrap{padding:8px 0 0}
+/* Compact Cyber360 audit-report layout: similar density, independently designed. */
+body{background:var(--page);font-size:13px}.topbar{height:58px;border-top:5px solid var(--accent);background:var(--navy);padding:0 max(20px,calc((100vw - 1040px)/2));position:static}.brand-mark{width:34px;height:34px;border-radius:5px;font-size:11px}.brand strong{font-size:16px}.topbar button{padding:7px 11px;border-radius:3px}main{max-width:1040px;background:#fff;padding:24px 26px 56px}.report-head{align-items:start;margin-bottom:12px}.report-head h1{font-size:25px}.panel{border:1px solid var(--border-strong);border-radius:2px;margin:12px 0;box-shadow:none}.panel-head{padding:10px 14px;border-bottom:1px solid var(--border-strong);background:#f7fafb}.panel-head h2{font-size:15px}.score-layout{padding:18px;grid-template-columns:170px 1fr;gap:28px}.grade{height:145px;border-radius:6px}.grade strong{font-size:62px}.assessment{margin:0 18px 14px;padding:12px 14px;border-radius:2px}.notice{margin:0 18px 5px;border-radius:1px;padding:7px 10px;font-size:11px}.notice:last-child{margin-bottom:16px}.finding,.unknown,.subpanel{margin:10px 14px;border-radius:2px;padding:12px}.data-row{padding:6px 0}.table-wrap{padding:4px 14px 14px}th,td{padding:7px 9px}.provider-visuals{padding:8px 0 14px}.endpoint-grade{border-radius:4px;padding:10px}.endpoint-grade strong{font-size:32px}.cipher-chart{border-radius:2px;padding:10px}.good-state{margin:14px;border-radius:2px;padding:12px}.json-block{border-radius:2px}.api-messages{border-radius:2px}.raw-response{margin:14px}.two-col{gap:12px}footer{padding:18px max(20px,calc((100vw - 1040px)/2))}
+@media print{@page{size:A4;margin:12mm}body{font-size:10px}.panel,.subpanel,.chain-card{break-inside:auto!important}.panel-head,.finding,.data-row,tr{break-inside:avoid}.panel-head{break-after:avoid}.table-wrap{overflow:visible;padding:4px 8px 12px}table{min-width:0;font-size:8px}th,td{padding:5px}.json-block{font-size:7px}}
+
+/* ==== Agent reports (H1, S18): layout adjustments ==== */
+body{background:var(--page);font-size:13px}.topbar{height:58px;border-top:5px solid var(--accent);background:var(--navy);padding:0 max(20px,calc((100vw - 1100px)/2));position:static}
+main{max-width:1100px;background:#fff;padding:24px 26px 56px}.panel{border:1px solid var(--border-strong);border-radius:2px;margin:14px 0;box-shadow:none}
+.panel-head{padding:10px 14px;border-bottom:1px solid var(--border-strong);background:#f7fafb}.panel-head h2{font-size:16px}
+.padded{padding:10px 18px 16px}.data-row{grid-template-columns:200px 1fr}.data-row .about{color:var(--muted-2);font-size:11px;margin-top:4px}
+.unknown{margin:10px 14px;border-radius:2px;padding:12px}.related{padding:6px 18px 14px}
+
+/* ==== Findings, evidence, controls, methodology, glossary ==== */
+.finding-detail{margin:16px 14px;border:1px solid var(--line-soft);border-left:6px solid #8798a3;border-radius:4px;background:#fff}
+.finding-detail.severity-critical{border-left-color:var(--sev-critical)}.finding-detail.severity-high{border-left-color:var(--sev-high)}
+.finding-detail.severity-medium{border-left-color:var(--sev-medium)}.finding-detail.severity-low{border-left-color:var(--sev-low)}
+.finding-detail>header{padding:14px 18px;border-bottom:1px solid #e3ecee;background:#fafcfc}
+.finding-detail>header .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.finding-detail>header h3{margin:8px 0 4px;font-size:18px}.finding-meta{color:var(--muted-2);font-size:12px}
+.finding-body{padding:6px 18px 16px}.finding-body h4{margin:16px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+.finding-body p{margin:0 0 8px}.observed{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--wash);border:1px solid #dbe6e9;border-radius:3px;padding:10px 12px;font:12px/1.55 var(--font-mono)}
+.callout{background:#fff6e6;border-left:4px solid #eea72e;padding:10px 12px;border-radius:2px}
+.fix-steps{margin:0;padding-left:22px}.fix-steps li{margin:0 0 10px}
+pre.code{margin:6px 0 0;padding:10px 12px;background:var(--code-bg);color:var(--code-ink);border-radius:3px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 var(--font-mono)}
+.verify-grid{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;align-items:start}.verify-grid dt{font-weight:700;color:#425763}.verify-grid dd{margin:0}
+.ref-list{margin:0;padding-left:20px}.evidence-items{list-style:none;margin:0;padding:0}
+.evidence-items li{border:1px solid #e1eaec;border-radius:3px;padding:8px 10px;margin:0 0 8px}
+.evidence-items .meta{color:var(--muted-2);font-size:11px;margin:2px 0 6px}
+a.evidence-link{font-weight:700;text-decoration:none;color:#0b6f7a}a.evidence-link:hover{text-decoration:underline}
+.excerpt{margin:0;max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#f7fafb;padding:6px 8px;font:11px/1.45 var(--font-mono)}
+.summary-tiles{display:grid;grid-template-columns:repeat(8,minmax(80px,1fr));gap:8px;padding:16px}
+.summary-tiles div{background:var(--wash);border-radius:4px;padding:10px;text-align:center}.summary-tiles strong{display:block;font-size:26px;line-height:1.1}
+.summary-tiles span{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.05em}
+.tile-critical strong{color:var(--sev-critical)}.tile-high strong{color:#c4561f}.tile-medium strong{color:#a86b00}.tile-low strong{color:var(--sev-low)}.tile-pass strong{color:#177130}
+.narrative{padding:0 18px 8px}.narrative p{margin:0 0 10px}
+.control-table td:nth-child(4){min-width:280px}.control-table .about{color:var(--muted-2);font-size:11px;margin-top:3px}
+.toc{columns:2;padding:10px 22px 16px;margin:0}.toc li{margin:2px 0}
+.glossary dt{font-weight:700;margin-top:8px}.glossary dd{margin:2px 0 0 0;color:#38505d}.glossary{padding:4px 22px 18px}
+.badge.finding,.badge.confirmed{background:#fbe1e1;color:#a12525}.badge.not-applicable{background:#eef1f2;color:#5b6b74}
+@media(max-width:760px){.summary-tiles{grid-template-columns:repeat(4,1fr)}.toc{columns:1}.verify-grid{grid-template-columns:1fr}}
+@media print{.finding-detail{break-inside:auto}.excerpt{max-height:none}}
+
+/* ==== Charts (inline SVG and HTML) ==== */
+.viz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:14px}
+.viz-grid .wide{grid-column:1/-1}
+.viz-card{border:1px solid var(--line-soft);border-radius:4px;padding:12px 14px;background:var(--viz-surface);min-width:0}
+.viz-card h3{margin:0 0 2px;font-size:14px}.viz-card .viz-sub{margin:0 0 8px;color:var(--viz-ink-2);font-size:11.5px}
+.viz-card svg{display:block;width:100%;height:auto;overflow:visible}
+.viz-card svg text{font-family:inherit;fill:var(--viz-ink)}.viz-card svg .muted{fill:var(--viz-ink-2)}.viz-card svg .faint{fill:var(--viz-ink-3)}
+.viz-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;padding:0;list-style:none;font-size:11.5px;color:var(--viz-ink-2)}
+.viz-legend li{display:flex;align-items:center;gap:6px}.viz-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.viz-table{margin-top:8px;font-size:11.5px}.viz-table summary{cursor:pointer;color:var(--viz-ink-2)}
+.viz-table table{min-width:0;margin-top:6px}.viz-table td,.viz-table th{padding:4px 8px}
+[data-tip]{cursor:default}[data-tip]:hover,[data-tip]:focus{opacity:.82;outline:none}
+.viz-tip{position:fixed;z-index:20;pointer-events:none;background:var(--code-bg);color:#fff;padding:6px 9px;border-radius:4px;font-size:12px;line-height:1.35;max-width:320px;box-shadow:0 6px 18px rgba(0,0,0,.18);display:none}
+.viz-tip strong{display:block;font-size:13px}
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.check-tile{border:1px solid #dbe4e7;border-top:4px solid var(--st-unknown);border-radius:4px;padding:8px 10px;background:#fbfcfc}
+.check-tile .icon{font-weight:900;font-size:15px;margin-right:4px}.check-tile strong{font-size:13px}
+.check-tile .state{display:block;font-size:11px;color:var(--viz-ink-2);margin-top:3px}
+.check-tile.good{border-top-color:var(--st-good)}.check-tile.good .icon{color:#087a08}
+.check-tile.critical{border-top-color:var(--sev-critical)}.check-tile.critical .icon{color:var(--sev-critical)}
+.check-tile.high{border-top-color:var(--sev-high)}.check-tile.high .icon{color:#c4561f}
+.check-tile.medium{border-top-color:var(--sev-medium)}.check-tile.medium .icon{color:#a86b00}
+.check-tile.low{border-top-color:var(--sev-low)}.check-tile.low .icon{color:var(--sev-low)}
+.check-tile.informational{border-top-color:var(--sev-informational)}.check-tile.na{opacity:.7}
+.matrix td.cell{text-align:center;font-size:11.5px;font-weight:700;border:2px solid #fff}
+.matrix td.ok{background:var(--cell-ok-bg);color:var(--cell-ok-ink)}.matrix td.weak{background:var(--cell-weak-bg);color:var(--cell-weak-ink)}.matrix td.bad{background:var(--cell-bad-bg);color:var(--cell-bad-ink)}
+.matrix td.off{background:var(--cell-off-bg);color:var(--cell-off-ink);font-weight:400}
+.client-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.client-chips span{font-size:11px;border:1px solid var(--line-soft);border-radius:12px;padding:2px 8px;background:#f7fafb}
+.client-chips span b{font-weight:700}.client-chips .fail{border-color:#f0b4b4;background:#fdf0f0}
+.scroll-x{overflow-x:auto}
+@media(max-width:760px){.viz-grid{grid-template-columns:1fr}}
+@media print{.viz-tip{display:none!important}.viz-card{break-inside:avoid}}
+
+.viz-card svg text.on-dark{fill:#fff}
+.viz-table .table-wrap{padding:0;margin-top:6px}
+
+/* Cyber360 "assurance" theme: design tokens.
+   A calm, document-like audit theme: deep ink brand, one teal accent, and a
+   severity scale that does all the alarming. Component styles live in report.css.
+
+   Every colour variable from the default theme is redefined here with the same
+   name, so the charts (which read --sev-*, --st-*, --series-*, --chart-*, --cell-*)
+   restyle automatically. Type, spacing and radius variables are additions used
+   only by this theme's report.css.
+
+   Contrast against --paper (#fff), measured with WCAG 2 relative luminance:
+     text  --ink 17.5  --muted 5.9  --muted-2 8.3  --viz-ink-3 5.0  --teal 6.1
+     marks --sev-critical 6.9  --sev-high 4.3  --sev-medium 3.8  --sev-low 5.6
+           --sev-informational 5.0  --st-good 5.0  --st-unknown 5.7  --st-na 3.1
+           --series-1 5.8  --chart-arrow 3.8
+   Severity and status colours are never the only signal: every use in the markup
+   is paired with a text label or an icon, and report.css adds shape cues. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0b1a2a;          /* top bar, footer, dark chart nodes, step numbers */
+  --accent:#2bb5a5;        /* thin rule under the top bar (decorative, on navy) */
+  --teal:#0f6e6a;          /* links, eyebrow, "how to fix" emphasis */
+  --green:#16803c;         /* positive grades and evidence bars */
+  --blue:#1f63cf;
+  --amber:#b07800;
+  --red:#b3102e;
+  --page:#eef1f4;          /* behind the report */
+  --paper:#ffffff;         /* panels and cards */
+  --wash:#f6f7f9;          /* table heads, quiet fills */
+
+  /* Text */
+  --ink:#111a24;
+  --muted:#5b6573;         /* secondary text, 5.9:1 on paper, 5.5:1 on wash */
+  --muted-2:#454f5c;       /* labels (dt, meta), 8.3:1 */
+
+  /* Lines */
+  --line:#e1e5ea;          /* hairlines between rows */
+  --line-soft:#eaedf1;     /* inner dividers */
+  --border-strong:#c9d0d8; /* card and panel outlines */
+
+  /* Code blocks */
+  --code-bg:#0f1b28;
+  --code-ink:#dde6ef;      /* 14.6:1 on --code-bg */
+
+  /* Type: system fonts only, no downloads */
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono","DejaVu Sans Mono",monospace;
+  --fs-2xs:10.5px;         /* table heads, overlines */
+  --fs-xs:11.5px;          /* badges, meta, captions */
+  --fs-sm:12.5px;          /* code, secondary text */
+  --fs-base:14px;          /* body */
+  --fs-md:16px;            /* lede, card titles */
+  --fs-lg:19px;            /* section (panel) titles, finding titles */
+  --fs-xl:24px;            /* summary numbers */
+  --fs-2xl:30px;           /* report title */
+  --fs-display:64px;       /* evidence grade */
+  --lh-tight:1.25;
+  --lh-base:1.6;
+  --fw-medium:500;
+  --fw-semibold:600;
+  --fw-bold:700;
+
+  /* Spacing (4px base) */
+  --sp-1:4px;
+  --sp-2:8px;
+  --sp-3:12px;
+  --sp-4:16px;
+  --sp-5:24px;
+  --sp-6:32px;
+  --sp-7:48px;
+
+  /* Corner radii */
+  --radius-sm:4px;         /* badges, code, cells */
+  --radius:8px;            /* cards, notices */
+  --radius-lg:12px;        /* panels */
+  --radius-pill:999px;
+
+  /* Effects */
+  --shadow:0 1px 2px rgba(11,26,42,.06),0 4px 16px rgba(11,26,42,.05);
+
+  /* Severity scale (findings, bars, card bands). Ordered critical → informational:
+     hue runs from crimson to grey, and only critical and high get solid badges. */
+  --sev-critical:#b3102e;
+  --sev-high:#d9480f;
+  --sev-medium:#b07800;
+  --sev-low:#1f63cf;
+  --sev-informational:#667080;
+
+  /* Control status */
+  --st-good:#16803c;
+  --st-unknown:#7353b8;    /* violet: unverified, never confused with a pass or a severity */
+  --st-na:#8c949c;
+
+  /* Charts */
+  --series-1:#0e6f86;      /* neutral data series: petrol blue, distinct from --sev-low */
+  --series-3:#3d4f7c;
+  --chart-line:#c3cad3;    /* connectors and spokes */
+  --chart-arrow:#7b8591;   /* flow arrows and node outlines, 3.8:1 */
+  --chart-box:#f6f7f9;     /* flow-diagram boxes */
+  --chart-box-line:#c9d0d8;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#4c5663;     /* chart labels, 7.5:1 */
+  --viz-ink-3:#65707d;     /* faint chart text, still 5.0:1 */
+  --viz-grid:#e6e9ed;
+
+  /* Protocol matrix cells (every cell also carries a text label) */
+  --cell-ok-bg:#e2f1e7;   --cell-ok-ink:#145c2e;
+  --cell-weak-bg:#fbefd6; --cell-weak-ink:#6b4900;
+  --cell-bad-bg:#f9dfe4;  --cell-bad-ink:#8b0c24;
+  --cell-off-bg:#f1f3f5;  --cell-off-ink:#5b6573;
+}
+
+/* Cyber360 "assurance" theme: components.
+   Loads after the default theme, so every rule here restates the properties it
+   changes (backgrounds, borders, shadows) rather than relying on defaults.
+   Colours come from tokens.css. Toned components (badges, tiles, cards, notices)
+   set a local --tone and derive their tint and ink from it with color-mix(), so a
+   recoloured token restyles them; each such rule has a plain fallback first.
+   Class names are a contract with the renderers - see .claude/skills/report-design. */
+
+/* ==== Base ==== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:var(--fs-base)/var(--lh-base) var(--font-sans);font-feature-settings:"tnum" 1;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{line-height:var(--lh-tight);color:var(--ink)}
+a{color:var(--teal);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,summary:focus-visible,[data-tip]:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:2px}
+code{font:.92em/1.45 var(--font-mono);color:var(--ink);overflow-wrap:anywhere}
+::selection{background:#cfe8e5}
+
+/* ==== Page shell: top bar, main column, report heading, panels, footer ==== */
+.topbar{height:60px;position:static;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:0 max(20px,calc((100vw - 1080px)/2));background:var(--navy);color:#fff;border:0;border-bottom:3px solid var(--accent);box-shadow:none}
+.brand{display:flex;align-items:center;gap:var(--sp-3);min-width:0}
+.brand-mark{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:var(--radius);background:transparent;border:1.5px solid var(--accent);color:#fff;font:var(--fw-bold) 11px/1 var(--font-sans);letter-spacing:.02em}
+.brand strong{display:block;font-size:15px;font-weight:var(--fw-semibold);letter-spacing:.01em;line-height:1.2}
+.brand small{display:block;color:#b9c6d3;font-size:var(--fs-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar button{flex:none;padding:7px 14px;border:1px solid #4a5d70;border-radius:var(--radius-sm);background:transparent;color:#fff;font:var(--fw-semibold) var(--fs-sm)/1 var(--font-sans);cursor:pointer}
+.topbar button:hover{background:#1a2d42;border-color:#6e8296}
+
+main{max-width:1080px;margin:0 auto;padding:var(--sp-6) 20px var(--sp-7);background:transparent}
+
+.report-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--sp-5);margin:0 0 var(--sp-5);padding:0 0 var(--sp-5);border-bottom:1px solid var(--border-strong)}
+.report-head>div:first-child{min-width:0}
+.eyebrow{margin:0 0 var(--sp-2);color:var(--teal);font-size:var(--fs-xs);font-weight:var(--fw-bold);letter-spacing:.14em;text-transform:uppercase}
+.report-head h1{margin:0 0 var(--sp-2);font-size:var(--fs-2xl);font-weight:var(--fw-bold);letter-spacing:-.02em;overflow-wrap:anywhere}
+.report-head p{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.report-id{flex:none;max-width:100%;text-align:left;padding:var(--sp-2) var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.report-id span{display:block;margin:0 0 2px;color:var(--muted);font-size:var(--fs-2xs);font-weight:var(--fw-semibold);letter-spacing:.1em;text-transform:uppercase}
+.report-id code{display:block;font-size:var(--fs-sm);overflow-wrap:anywhere}
+
+.panel{margin:0 0 var(--sp-4);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:var(--sp-4) var(--sp-5);background:var(--paper);border-bottom:1px solid var(--line)}
+.panel-head h2{margin:0;font-size:var(--fs-lg);font-weight:var(--fw-semibold);letter-spacing:-.01em}
+.section-subtitle{margin:var(--sp-1) 0 0;color:var(--muted);font-size:var(--fs-sm);overflow-wrap:anywhere}
+.padded{padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.compact{margin-bottom:0}
+.related{margin:0;padding:var(--sp-3) var(--sp-5) 0;color:var(--muted);font-size:var(--fs-xs);font-weight:var(--fw-semibold);letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--line-soft)}
+.empty{margin:0;padding:var(--sp-4) var(--sp-5);color:var(--muted);font-size:var(--fs-sm)}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.two-col{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:var(--sp-4);margin:0 0 var(--sp-4)}
+.two-col .panel{margin:0}
+.two-col .data-list{padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.two-col .data-row{grid-template-columns:130px minmax(0,1fr)}
+
+footer{display:flex;justify-content:space-between;gap:var(--sp-5);padding:var(--sp-5) max(20px,calc((100vw - 1080px)/2));background:var(--navy);color:#b9c6d3;font-size:var(--fs-sm);border-top:3px solid var(--accent)}
+footer strong{color:#fff;font-weight:var(--fw-semibold)}
+
+/* ==== Contents list (also the findings index) ==== */
+.toc{columns:2;column-gap:var(--sp-6);margin:0;padding:var(--sp-3) var(--sp-5) var(--sp-4);list-style:none}
+.toc li{break-inside:avoid;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:0;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:var(--fs-base)}
+.toc a{font-weight:var(--fw-medium);text-decoration:none;color:var(--ink)}
+.toc a::before{content:"→";display:inline-block;margin-right:8px;color:var(--teal);font-weight:var(--fw-bold)}
+.toc a:hover{color:var(--teal);text-decoration:underline}
+#findings>.toc a,.toc:has(.badge) a{font-family:var(--font-mono);font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+#findings>.toc a::before,.toc:has(.badge) a::before{content:none}
+.toc .badge{flex:none}
+#findings>.toc,.toc:has(.badge){columns:1;padding-bottom:var(--sp-3)}
+#findings>.toc li,.toc:has(.badge) li{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;column-gap:var(--sp-3)}
+
+/* ==== Notices ==== */
+.notice{--tone:var(--sev-informational);display:flex;gap:var(--sp-3);align-items:baseline;margin:0 var(--sp-5) var(--sp-2);padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--tone);border-radius:var(--radius-sm);background:var(--wash);background:color-mix(in srgb,var(--tone) 7%,#fff);font-size:var(--fs-sm);color:var(--ink)}
+.notice:first-child{margin-top:var(--sp-4)}
+.notice:last-child{margin-bottom:var(--sp-5)}
+.notice b{flex:none;min-width:88px;color:var(--ink);color:color-mix(in srgb,var(--tone) 70%,#000);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase}
+.notice b::before{margin-right:6px;font-size:var(--fs-xs)}
+.notice span{min-width:0;overflow-wrap:anywhere}
+.notice.warning{--tone:var(--sev-medium);border:1px solid var(--line);border-left:3px solid var(--sev-medium);background:color-mix(in srgb,var(--sev-medium) 8%,#fff)}
+.notice.warning b::before{content:"▲"}
+.notice.info{--tone:var(--series-1);border:1px solid var(--line);border-left:3px solid var(--series-1);background:color-mix(in srgb,var(--series-1) 6%,#fff)}
+.notice.info b::before{content:"●";font-size:.7em;vertical-align:1px}
+.notice.success{--tone:var(--st-good);border:1px solid var(--line);border-left:3px solid var(--st-good);background:color-mix(in srgb,var(--st-good) 7%,#fff)}
+.notice.success b::before{content:"✓"}
+.notice.caution{--tone:var(--sev-high);border:1px solid var(--line);border-left:3px solid var(--sev-high);background:color-mix(in srgb,var(--sev-high) 7%,#fff)}
+.notice.caution b::before{content:"!"}
+
+/* ==== Badges: status and severity ====
+   Every badge already carries its word; a leading glyph adds a shape cue.
+   Only critical and high are solid, so the eye lands on them first. */
+.badge{--tone:var(--sev-informational);display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:2px 8px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--wash);color:var(--muted-2);font:var(--fw-bold) var(--fs-2xs)/1.5 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
+.badge::before{content:"";font-size:.95em;line-height:1}
+.badge.pass,.badge.passed,.badge.success,.badge.verified-fixed{--tone:var(--st-good)}
+.badge.fail,.badge.failed,.badge.finding,.badge.confirmed{--tone:var(--sev-critical)}
+.badge.unknown{--tone:var(--st-unknown)}
+/* "finding" and "unknown" are also card classes in the default theme: undo that box model on badges. */
+.badge.finding,.badge.unknown{margin:0;padding:2px 8px;border-width:1px;border-style:solid;border-radius:var(--radius-sm)}
+.badge.warning{--tone:var(--sev-medium)}
+.badge.critical{--tone:var(--sev-critical)}
+.badge.high{--tone:var(--sev-high)}
+.badge.medium{--tone:var(--sev-medium)}
+.badge.low{--tone:var(--sev-low)}
+.badge.informational{--tone:var(--sev-informational)}
+/* Tinted badges: tone at 10% behind tone-darkened ink (all at least 6:1). */
+.badge.pass,.badge.passed,.badge.success,.badge.verified-fixed,.badge.fail,.badge.failed,.badge.finding,.badge.confirmed,.badge.unknown,.badge.warning,.badge.medium,.badge.low,.badge.informational{border-color:var(--line);border-color:color-mix(in srgb,var(--tone) 30%,#fff);background:var(--wash);background:color-mix(in srgb,var(--tone) 10%,#fff);color:var(--ink);color:color-mix(in srgb,var(--tone) 70%,#000)}
+/* Solid badges: the two most urgent severities. */
+.badge.critical{border-color:var(--sev-critical);background:var(--sev-critical);color:#fff}
+.badge.high{border-color:#b83d0d;border-color:color-mix(in srgb,var(--sev-high) 85%,#000);background:#b83d0d;background:color-mix(in srgb,var(--sev-high) 85%,#000);color:#fff}
+.badge.critical::before{content:"◆"}
+.badge.high::before{content:"▲"}
+.badge.medium::before{content:"■";font-size:.8em}
+.badge.low::before{content:"●";font-size:.8em}
+.badge.informational::before{content:"○";font-size:.85em}
+.badge.pass::before,.badge.passed::before,.badge.success::before,.badge.verified-fixed::before{content:"✓"}
+.badge.fail::before,.badge.failed::before{content:"✕"}
+.badge.finding::before,.badge.confirmed::before{content:"!";font-weight:900}
+.badge.unknown::before{content:"?"}
+.badge.warning::before{content:"!"}
+/* Neutral facts: no judgement implied (a supported protocol is not necessarily good). */
+.badge.supported,.badge.not-supported,.badge.accepted,.badge.observed{border-color:var(--border-strong);background:var(--paper);color:var(--muted-2)}
+.badge.supported::before,.badge.accepted::before{content:"●";font-size:.7em}
+.badge.not-supported::before{content:"–"}
+.badge.observed::before{content:"◉";font-size:.8em}
+.badge.not-applicable{border:1px dashed var(--st-na);background:var(--paper);color:var(--muted)}
+.badge.not-applicable::before{content:"–"}
+.badge.not-started{border:1px dashed var(--border-strong);background:var(--paper);color:var(--muted-2)}
+.badge.not-started::before{content:"○"}
+
+/* ==== Executive summary ==== */
+.summary-tiles{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--sp-2);padding:var(--sp-5) var(--sp-5) var(--sp-4)}
+.summary-tiles div{--tone:var(--st-na);position:relative;min-width:0;padding:var(--sp-3) 10px 10px;background:var(--wash);border:1px solid var(--line);border-top:4px solid var(--line);border-radius:var(--radius);text-align:left}
+.summary-tiles strong{display:block;color:var(--ink);font-size:var(--fs-xl);font-weight:var(--fw-bold);line-height:1.1;letter-spacing:-.02em}
+.summary-tiles span{display:block;margin-top:var(--sp-1);color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-semibold);letter-spacing:.04em;text-transform:uppercase;overflow-wrap:normal;hyphens:auto}
+/* Severity tiles: white, a top band in the severity colour, number in that colour (large text, 3:1+). */
+.summary-tiles .tile-critical,.summary-tiles .tile-high,.summary-tiles .tile-medium,.summary-tiles .tile-low,.summary-tiles .tile-informational{background:var(--paper);border:1px solid var(--border-strong);border-top:4px solid var(--tone)}
+.summary-tiles .tile-critical{--tone:var(--sev-critical)}
+.summary-tiles .tile-high{--tone:var(--sev-high)}
+.summary-tiles .tile-medium{--tone:var(--sev-medium)}
+.summary-tiles .tile-low{--tone:var(--sev-low)}
+.summary-tiles .tile-informational{--tone:var(--sev-informational)}
+.tile-critical strong{color:var(--sev-critical)}.tile-high strong{color:var(--sev-high)}.tile-medium strong{color:var(--sev-medium)}
+.tile-low strong{color:var(--sev-low)}.tile-informational strong{color:var(--sev-informational)}
+.summary-tiles .tile-critical{background:color-mix(in srgb,var(--sev-critical) 5%,#fff)}
+.summary-tiles .tile-critical span::before{content:"◆ ";color:var(--sev-critical)}
+.summary-tiles .tile-high span::before{content:"▲ ";color:var(--sev-high)}
+/* Status tiles: quiet wash, no band; the pass tile has a green number and tick. */
+.summary-tiles .tile-pass{--tone:var(--st-good)}
+.tile-pass strong{color:var(--st-good)}
+.summary-tiles .tile-pass span::before{content:"✓ ";color:var(--st-good)}
+
+.narrative{max-width:78ch;padding:var(--sp-2) var(--sp-5) var(--sp-3)}
+.narrative p{margin:0 0 var(--sp-3);color:var(--ink)}
+.narrative p:first-child{font-size:var(--fs-md);line-height:1.55;font-weight:var(--fw-medium)}
+.narrative+.data-list{margin:0 var(--sp-5) var(--sp-5);padding:var(--sp-1) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+
+/* ==== Key facts and technical-detail rows ==== */
+.data-list{margin:0}
+.data-row{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--sp-4);padding:10px 0;border-top:1px solid var(--line-soft)}
+.data-row:first-child{border-top:0}
+.data-row dt{color:var(--muted-2);font-size:var(--fs-sm);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.data-row dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.data-row dd .observed{margin:var(--sp-1) 0 0}
+.data-row dd .observed:first-child{margin-top:0}
+.data-row .about{margin-top:var(--sp-1);color:var(--muted);font-size:var(--fs-xs)}
+.data-row .finding-meta{margin-top:var(--sp-1)}
+
+/* ==== Finding card ====
+   Header: severity band, badge, ID and title. Body: a label gutter on the left
+   (h4) and content on the right, one ruled row per sub-section. */
+.finding-detail{--tone:var(--sev-informational);margin:var(--sp-4) var(--sp-5) var(--sp-5);background:var(--paper);border:1px solid var(--border-strong);border-left:5px solid var(--tone);border-radius:var(--radius);overflow:hidden}
+.finding-detail.severity-critical{--tone:var(--sev-critical);border-left-color:var(--sev-critical)}
+.finding-detail.severity-high{--tone:var(--sev-high);border-left-color:var(--sev-high)}
+.finding-detail.severity-medium{--tone:var(--sev-medium);border-left-color:var(--sev-medium)}
+.finding-detail.severity-low{--tone:var(--sev-low);border-left-color:var(--sev-low)}
+.finding-detail.severity-informational{--tone:var(--sev-informational);border-left-color:var(--sev-informational)}
+.finding-detail>header{padding:var(--sp-4) var(--sp-5);background:var(--wash);background:color-mix(in srgb,var(--tone) 6%,#fff);border-bottom:1px solid var(--line)}
+.finding-detail>header .row{display:flex;justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:var(--sp-2) var(--sp-3)}
+.finding-detail>header .row code{color:var(--muted-2);font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+.finding-detail>header h3{margin:var(--sp-2) 0 var(--sp-1);font-size:var(--fs-lg);font-weight:var(--fw-semibold);letter-spacing:-.01em;overflow-wrap:anywhere}
+.finding-meta{color:var(--muted-2);font-size:var(--fs-xs);overflow-wrap:anywhere}
+
+.finding-body{display:grid;grid-template-columns:168px minmax(0,1fr);column-gap:var(--sp-5);padding:var(--sp-1) var(--sp-5) var(--sp-5);overflow:hidden}
+.finding-body>*{grid-column:2;margin:var(--sp-2) 0 0;min-width:0}
+.finding-body>h4{grid-column:1;position:relative;margin:0;padding:19px 0 0;color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.09em;line-height:1.4;text-transform:uppercase}
+.finding-body>h4::before{content:"";position:absolute;left:0;top:0;width:4000px;border-top:1px solid var(--line-soft)}
+.finding-body>h4:first-child::before{display:none}
+.finding-body>h4+*{margin-top:var(--sp-4)}
+.finding-body>h4:first-child,.finding-body>h4:first-child+*{padding-top:0;margin-top:var(--sp-3)}
+.finding-body>h4:first-child{padding-top:3px}
+.finding-body p{margin:var(--sp-2) 0 0}
+.finding-body>h4+p{margin-top:var(--sp-4)}
+.finding-body>h4:first-child+p{margin-top:var(--sp-3)}
+/* "How to fix it" is the section IT staff came for. */
+.finding-body>h4:has(+ .fix-steps){color:var(--teal)}
+.finding-body>h4:has(+ .fix-steps)::after{content:"Action";display:block;width:max-content;margin-top:6px;padding:1px 6px;border-radius:var(--radius-sm);background:var(--teal);color:#fff;font-size:9.5px;letter-spacing:.1em}
+
+/* What we found: evidence text, monospace, never truncated. */
+.observed{margin:0;padding:var(--sp-3) 14px;background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--border-strong);border-radius:var(--radius-sm);color:var(--ink);font:var(--fs-sm)/1.6 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.finding-body>.observed{border-left-color:var(--tone)}
+/* How an attacker would use it. */
+.callout{padding:var(--sp-3) 14px;background:var(--wash);border:0;border-left:3px solid var(--navy);border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:var(--ink)}
+/* How to fix it: numbered steps with code. */
+.fix-steps{counter-reset:fix;margin:0;padding:0;list-style:none}
+.fix-steps li{counter-increment:fix;position:relative;margin:0;padding:var(--sp-3) 0 var(--sp-3) 38px;border-top:1px solid var(--line-soft)}
+.fix-steps li:first-child{border-top:0;padding-top:0}
+.fix-steps li::before{content:counter(fix);position:absolute;left:0;top:10px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:var(--navy);color:#fff;font:var(--fw-bold) var(--fs-xs)/1 var(--font-sans)}
+.fix-steps li:first-child::before{top:-2px}
+.fix-steps li:last-child{padding-bottom:0}
+pre.code{margin:var(--sp-2) 0 0;padding:var(--sp-3) 14px;background:var(--code-bg);color:var(--code-ink);border:0;border-radius:var(--radius-sm);font:var(--fs-sm)/1.6 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;tab-size:2}
+/* How to verify the fix. */
+.verify-grid{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--sp-2) var(--sp-3);align-items:baseline;margin:0;padding:var(--sp-3) 14px;background:var(--wash);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.verify-grid dt{color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase}
+.verify-grid dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.verify-grid dd pre.code{margin:0}
+/* References. */
+.ref-list{margin:0;padding:0 0 0 18px}
+.ref-list li{margin:0 0 var(--sp-1);padding-left:2px;overflow-wrap:anywhere}
+.ref-list li::marker{color:var(--muted)}
+.ref-list a::after{content:" ↗";font-size:.85em;text-decoration:none}
+/* Evidence links and excerpts. */
+.evidence-items{margin:0;padding:0;list-style:none}
+.evidence-items li{margin:0 0 var(--sp-2);padding:10px var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-sm);overflow-wrap:anywhere}
+.evidence-items li>code{margin-left:var(--sp-2);font-size:var(--fs-sm);color:var(--muted-2)}
+.evidence-items .meta{margin:var(--sp-1) 0 var(--sp-2);color:var(--muted);font:var(--fs-xs)/1.5 var(--font-mono)}
+a.evidence-link{color:var(--teal);font:var(--fw-bold) var(--fs-sm)/1.4 var(--font-mono);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;overflow-wrap:anywhere}
+a.evidence-link:hover{text-decoration:underline;text-decoration-thickness:2px}
+.excerpt,pre.excerpt{margin:0;max-height:none;overflow:visible;padding:var(--sp-2) 10px;background:var(--wash);border-left:2px solid var(--border-strong);border-radius:0;color:var(--ink);font:var(--fs-xs)/1.55 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.evidence-list{font-size:var(--fs-sm)}
+.finding-body>.empty{padding:0;color:var(--muted)}
+
+/* No findings / nothing unresolved. */
+.good-state{display:flex;gap:var(--sp-3);align-items:flex-start;margin:var(--sp-5);padding:var(--sp-4) var(--sp-5);background:var(--wash);background:color-mix(in srgb,var(--st-good) 6%,#fff);border:1px solid var(--line);border-color:color-mix(in srgb,var(--st-good) 28%,#fff);border-radius:var(--radius)}
+.good-state>span{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--st-good);color:#fff;font-weight:var(--fw-bold);font-size:15px;line-height:1}
+.good-state strong{display:block;margin-top:3px;font-size:var(--fs-base);font-weight:var(--fw-semibold)}
+.good-state p{margin:var(--sp-1) 0 0;color:var(--muted-2);font-size:var(--fs-sm);max-width:72ch}
+.good-state.small{margin:var(--sp-4) var(--sp-5);padding:var(--sp-3) var(--sp-4);align-items:center}
+.good-state.small>span{width:22px;height:22px;font-size:12px}
+.good-state.small strong{margin-top:0;font-size:var(--fs-sm)}
+
+/* Older compact finding layout (TLS renderer fallback). */
+.finding:not(.badge),.subpanel{margin:var(--sp-4) var(--sp-5);padding:var(--sp-4);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.finding:not(.badge){--tone:var(--sev-informational);border-left:5px solid var(--tone)}
+.finding.severity-critical{--tone:var(--sev-critical);border-left-color:var(--sev-critical)}
+.finding.severity-high{--tone:var(--sev-high);border-left-color:var(--sev-high)}
+.finding.severity-medium{--tone:var(--sev-medium);border-left-color:var(--sev-medium)}
+.finding.severity-low{--tone:var(--sev-low);border-left-color:var(--sev-low)}
+.finding.severity-informational{border-left-color:var(--sev-informational)}
+.finding-title>div,.subpanel-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-2)}
+.finding-title>div{justify-content:flex-start}
+.finding-title h3,.subpanel-title h3{margin:var(--sp-2) 0;font-size:var(--fs-md);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.subpanel-title{margin-bottom:var(--sp-2);padding-bottom:var(--sp-2);border-bottom:1px solid var(--line)}
+.subpanel-title h3{margin:0}
+.finding-grid{display:grid;grid-template-columns:2fr 1fr;gap:var(--sp-4);margin-top:var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--wash);border-radius:var(--radius-sm)}
+.finding-grid h4{margin:0 0 var(--sp-1);color:var(--muted-2);font-size:var(--fs-2xs);letter-spacing:.09em;text-transform:uppercase}
+.finding-grid p{margin:0}
+
+/* ==== Tables: controls, methodology, technical tables ==== */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:var(--sp-2) var(--sp-5) var(--sp-5)}
+table{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;font-size:var(--fs-sm)}
+th{position:static;padding:9px 12px;background:var(--wash);color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase;text-align:left;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--border-strong)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:break-word}
+th:first-child{border-top-left-radius:var(--radius-sm)}th:last-child{border-top-right-radius:var(--radius-sm)}
+tbody tr:hover td{background:#fafbfc}
+td code{font-size:var(--fs-xs)}
+td .badge+.badge{margin-left:4px}
+.control-table td:first-child{white-space:nowrap}
+.control-table td:first-child code{font-weight:var(--fw-semibold)}
+.control-table td:nth-child(4){min-width:300px}
+.control-table .about{margin-top:var(--sp-1);color:var(--muted);font-size:var(--fs-xs)}
+.control-table td:nth-child(3) .badge{margin:0 4px 4px 0}
+.control-table td:nth-child(3) .badge+.badge{margin-left:0}
+td a.evidence-link{white-space:nowrap;margin-right:6px}
+#methodology td:nth-last-child(-n+2){white-space:nowrap}
+
+/* Lists of controls and tools. */
+.control-list,.tool-list{margin:0;padding:var(--sp-2) var(--sp-5) var(--sp-4);list-style:none}
+.control-list li,.tool-list li{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:var(--sp-3);align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.control-list li:last-child,.tool-list li:last-child{border-bottom:0}
+.control-list code{font-weight:var(--fw-semibold)}
+.control-list small{color:var(--muted);font:var(--fs-xs)/1.4 var(--font-mono)}
+.tool-list li{grid-template-columns:110px minmax(0,1fr)}
+.tool-list strong{font:var(--fw-semibold) var(--fs-sm)/1.4 var(--font-mono)}
+.tool-list span{color:var(--muted-2);font:var(--fs-xs)/1.5 var(--font-mono);overflow-wrap:anywhere}
+
+/* Unknowns: dashed violet edge = "not verified". Scoped to article: badges and
+   checklist tiles also carry the class "unknown". */
+article.unknown{margin:var(--sp-4) var(--sp-5);padding:var(--sp-3) var(--sp-4) var(--sp-4);background:var(--paper);border:1px dashed var(--border-strong);border-left:4px solid var(--st-unknown);border-radius:var(--radius)}
+article.unknown>div{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-2)}
+article.unknown>div code{font-weight:var(--fw-semibold);font-size:var(--fs-sm)}
+article.unknown p{margin:var(--sp-2) 0 0;overflow-wrap:anywhere}
+article.unknown p strong{color:var(--muted-2);font-weight:var(--fw-semibold)}
+article.unknown p:last-child{margin-bottom:0}
+
+/* Glossary. */
+.glossary{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr);margin:0;padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.glossary dt{margin:0;padding:10px var(--sp-4) 10px 0;font-weight:var(--fw-semibold);border-top:1px solid var(--line-soft);overflow-wrap:anywhere}
+.glossary dd{margin:0;padding:10px 0;color:var(--muted-2);border-top:1px solid var(--line-soft);overflow-wrap:anywhere}
+.glossary dt:first-of-type,.glossary dd:first-of-type{border-top:0}
+
+/* ==== S11: evidence grade, score bars, assessment, provider data ==== */
+.score-layout{display:grid;grid-template-columns:184px minmax(0,1fr);gap:var(--sp-6);align-items:center;padding:var(--sp-5)}
+.grade{--tone:var(--st-good);height:auto;min-height:168px;padding:var(--sp-4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:var(--radius-lg);background:var(--st-good);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -40px 60px rgba(0,0,0,.08)}
+.grade span{font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.14em;text-transform:uppercase;opacity:1}
+.grade strong{font-size:var(--fs-display);font-weight:var(--fw-bold);line-height:1;letter-spacing:-.03em}
+.grade small{font-size:var(--fs-sm);font-weight:var(--fw-semibold);opacity:1}
+.grade.grade-b,.grade.grade-c{background:#7b5400;background:color-mix(in srgb,var(--sev-medium) 78%,#000)}
+.grade.grade-d,.grade.grade-e{background:#a33a0b;background:color-mix(in srgb,var(--sev-high) 80%,#000)}
+.grade.grade-f,.grade.grade-t,.grade.grade-m{background:var(--sev-critical)}
+.grade.grade-n-a{background:var(--muted);box-shadow:none}
+.score-details{min-width:0}
+.score-row{margin:0 0 var(--sp-4)}
+.score-row>div:first-child{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3);margin-bottom:6px;font-size:var(--fs-sm)}
+.score-row>div:first-child span{color:var(--muted-2)}
+.score-row>div:first-child strong{font-size:var(--fs-md);font-weight:var(--fw-bold)}
+.track{height:8px;background:var(--viz-grid);border-radius:var(--radius-pill);overflow:hidden}
+.track i{display:block;height:100%;background:var(--teal);border-radius:var(--radius-pill)}
+.grade-basis{margin:var(--sp-2) 0 0;color:var(--muted);font-size:var(--fs-xs)}
+.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3)}
+.metric-grid div{padding:var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+.metric-grid strong{display:block;font-size:var(--fs-xl);font-weight:var(--fw-bold)}
+.metric-grid span{color:var(--muted-2);font-size:var(--fs-xs)}
+.assessment{margin:0 var(--sp-5) var(--sp-4);padding:var(--sp-4) var(--sp-5);background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--navy);border-radius:var(--radius-sm)}
+.assessment h3{margin:0 0 var(--sp-1);font-size:var(--fs-2xs);color:var(--muted-2);letter-spacing:.09em;text-transform:uppercase}
+.assessment p{margin:0;font-size:var(--fs-md)}
+.api-messages{margin:0 var(--sp-5) var(--sp-5);padding:var(--sp-3) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--series-1);border-radius:var(--radius-sm)}
+.api-messages h3{margin:0 0 var(--sp-2);font-size:var(--fs-sm)}
+.api-messages ul{margin:0;padding-left:20px}
+.api-value{font:var(--fs-xs)/1.5 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.json-block{margin:var(--sp-2) 0 0;padding:var(--sp-3) 14px;max-height:none;background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius-sm);font:var(--fs-xs)/1.55 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.raw-response{margin:var(--sp-4) var(--sp-5)}
+.raw-response summary,.disclosure summary{cursor:pointer;font-weight:var(--fw-semibold)}
+.provider-visuals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);padding:var(--sp-4) var(--sp-5)}
+.endpoint-grades{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--sp-2)}
+.endpoint-grade{padding:var(--sp-3);background:var(--st-good);color:#fff;border-radius:var(--radius);text-align:center}
+.endpoint-grade span,.endpoint-grade small{display:block;font-size:var(--fs-xs);overflow-wrap:anywhere}
+.endpoint-grade strong{display:block;font-size:32px;line-height:1.2;font-weight:var(--fw-bold)}
+.cipher-chart{padding:var(--sp-3) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+.cipher-chart h3{margin:0 0 var(--sp-2);font-size:var(--fs-base)}
+.chart-row{display:grid;grid-template-columns:80px minmax(0,1fr) 28px;gap:var(--sp-2);align-items:center;margin:6px 0;font-size:var(--fs-xs)}
+.chart-row i{height:8px;background:var(--series-1);border-radius:var(--radius-pill)}
+.chart-row b{text-align:right}
+.evidence-row{display:grid;grid-template-columns:150px minmax(0,1fr) 82px;gap:var(--sp-3);align-items:center;margin:var(--sp-2) 0;font-size:var(--fs-sm)}
+.evidence-row strong{text-align:right;font-size:var(--fs-xs)}
+.evidence-row .track{height:12px;border-radius:var(--radius-sm)}
+.evidence-row .available{background:var(--st-good)}
+.evidence-row .absent{background:var(--st-na)}
+.bar-note{margin:var(--sp-3) 0 0;color:var(--muted);font-size:var(--fs-xs)}
+.disclosure{padding:0}
+.disclosure summary{padding:var(--sp-3) var(--sp-4);background:var(--wash);border-bottom:1px solid var(--line)}
+.disclosure .json-block{margin:0;border-radius:0;background:var(--wash);color:var(--ink)}
+.report-block{padding:var(--sp-4) var(--sp-5);border-top:1px solid var(--line)}
+.report-block:first-child{border-top:0}
+.report-block>h3{margin:0;color:var(--ink);font-size:var(--fs-md);font-weight:var(--fw-semibold)}
+.report-block>p{margin:2px 0 var(--sp-3);color:var(--muted);font-size:var(--fs-xs)}
+.chain-card{margin:var(--sp-3) var(--sp-4);padding:var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.chain-card h4{margin:0 0 var(--sp-2);color:var(--ink);font-size:var(--fs-sm)}
+.chain-card .table-wrap{padding:var(--sp-2) 0 0}
+
+/* ==== Charts ==== */
+.viz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);padding:var(--sp-5)}
+.viz-grid .wide{grid-column:1/-1}
+.viz-card{min-width:0;margin:0;padding:var(--sp-4) var(--sp-4) var(--sp-3);background:var(--viz-surface);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.viz-card h3{margin:0;font-size:var(--fs-base);font-weight:var(--fw-semibold)}
+.viz-card .viz-sub{margin:2px 0 var(--sp-3);color:var(--viz-ink-2);font-size:var(--fs-xs)}
+.viz-card svg{display:block;width:100%;height:auto;overflow:visible}
+.viz-card svg text{font-family:var(--font-sans);fill:var(--viz-ink)}
+.viz-card svg .muted{fill:var(--viz-ink-2)}
+.viz-card svg .faint{fill:var(--viz-ink-3)}
+.viz-card svg text.on-dark{fill:#fff}
+.viz-card .scroll-x{margin:0 calc(-1 * var(--sp-2));padding:0 var(--sp-2)}
+/* No data for a chart: a dashed placeholder the same height as a small chart. */
+.viz-card>.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:120px;margin:0;padding:var(--sp-4);background:var(--wash);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);color:var(--muted);font-size:var(--fs-sm);text-align:center}
+.viz-card>.empty::before{content:"No data";display:block;color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.1em;text-transform:uppercase}
+.viz-legend{display:flex;flex-wrap:wrap;gap:6px var(--sp-4);margin:var(--sp-3) 0 0;padding:0;list-style:none;color:var(--viz-ink-2);font-size:var(--fs-xs)}
+.viz-legend li{display:flex;align-items:center;gap:6px}
+.viz-legend i{width:12px;height:12px;flex:none;display:inline-block;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(11,26,42,.28)}
+.viz-table{margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--line-soft);font-size:var(--fs-xs)}
+.viz-table summary{cursor:pointer;color:var(--teal);font-weight:var(--fw-semibold);width:max-content;max-width:100%}
+.viz-table table{min-width:0;margin-top:var(--sp-2);font-size:var(--fs-xs)}
+.viz-table td,.viz-table th{padding:5px 8px}
+[data-tip]{cursor:default}
+[data-tip]:hover,[data-tip]:focus{opacity:.85;outline:none}
+.viz-tip{position:fixed;z-index:20;display:none;max-width:320px;padding:7px 10px;pointer-events:none;background:var(--navy);color:#fff;border-radius:var(--radius-sm);font-size:var(--fs-xs);line-height:1.4;box-shadow:0 6px 20px rgba(11,26,42,.25)}
+.viz-tip strong{display:block;font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+
+/* Protection checklist tiles: coloured edge + icon disc + state text. */
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--sp-2)}
+.check-tile{--tone:var(--st-unknown);display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--sp-2);align-items:center;align-content:center;padding:10px var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-left:4px solid var(--tone);border-radius:var(--radius-sm);opacity:1}
+.check-tile.good{--tone:var(--st-good)}
+.check-tile.critical{--tone:var(--sev-critical)}
+.check-tile.high{--tone:var(--sev-high)}
+.check-tile.medium{--tone:var(--sev-medium)}
+.check-tile.low{--tone:var(--sev-low)}
+.check-tile.informational{--tone:var(--sev-informational)}
+.check-tile.unknown{--tone:var(--st-unknown)}
+.check-tile.na{--tone:var(--st-na)}
+.check-tile.good,.check-tile.critical,.check-tile.high,.check-tile.medium,.check-tile.low,.check-tile.informational,.check-tile.unknown,.check-tile.na{border-top-color:var(--border-strong);border-left-color:var(--tone)}
+.check-tile.unknown{margin:0;padding:10px var(--sp-3);border-radius:var(--radius-sm)}
+.check-tile.unknown,.check-tile.na{border-style:dashed;border-left-style:solid;opacity:1}
+.check-tile.critical{background:color-mix(in srgb,var(--sev-critical) 5%,#fff)}
+.check-tile .icon,.check-tile.good .icon,.check-tile.critical .icon,.check-tile.high .icon,.check-tile.medium .icon,.check-tile.low .icon,.check-tile.informational .icon,.check-tile.unknown .icon,.check-tile.na .icon{grid-row:span 2;width:22px;height:22px;margin:0;display:grid;place-items:center;border-radius:50%;background:var(--tone);color:#fff;font-size:12px;font-weight:var(--fw-bold);line-height:1}
+.check-tile strong{font-size:var(--fs-sm);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.check-tile .state{display:block;margin:0;color:var(--viz-ink-2);font-size:var(--fs-xs);line-height:1.35}
+
+/* Protocol x cipher matrix. */
+.matrix{border-collapse:separate;border-spacing:3px}
+.matrix th{border:0;border-radius:var(--radius-sm);white-space:normal;vertical-align:bottom}
+.matrix td{border-bottom:0}
+.matrix td.cell{padding:7px 8px;border:0;border-radius:var(--radius-sm);text-align:center;font-size:var(--fs-xs);font-weight:var(--fw-semibold);white-space:nowrap}
+.matrix td.ok{background:var(--cell-ok-bg);color:var(--cell-ok-ink)}
+.matrix td.weak{background:var(--cell-weak-bg);color:var(--cell-weak-ink)}
+.matrix td.bad{background:var(--cell-bad-bg);color:var(--cell-bad-ink);box-shadow:inset 0 0 0 1.5px var(--cell-bad-ink)}
+.matrix td.off{background:var(--cell-off-bg);color:var(--cell-off-ink);font-weight:400}
+tbody tr:hover .matrix td.cell{background:inherit}
+
+/* Client compatibility chips: the markup marks failures with a cross; passes get a tick here. */
+.client-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-3)}
+.client-chips span{padding:2px 8px;background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-sm);color:var(--ink);font-size:var(--fs-xs)}
+.client-chips span::before{content:"✓ ";color:var(--st-good);font-weight:var(--fw-bold)}
+.client-chips span b{font-weight:var(--fw-semibold)}
+.client-chips .fail{border-color:var(--sev-critical);background:color-mix(in srgb,var(--sev-critical) 7%,#fff);color:#7d0b20;color:color-mix(in srgb,var(--sev-critical) 70%,#000)}
+.client-chips .fail::before{content:none}
+
+/* ==== Narrow screens and A4: eight summary tiles become two rows of four ==== */
+@media (max-width:1000px){.summary-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media print{.summary-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* ==== Phone width ==== */
+@media screen and (max-width:760px){
+  .topbar{height:auto;min-height:54px;padding:8px 16px}
+  .brand small{display:none}
+  .topbar button{padding:6px 10px;font-size:var(--fs-xs)}
+  main{padding:var(--sp-4) 12px var(--sp-6)}
+  .report-head{display:block;padding-bottom:var(--sp-4);margin-bottom:var(--sp-4)}
+  .report-head h1{font-size:23px}
+  .report-id{margin-top:var(--sp-3)}
+  .panel{border-radius:var(--radius);margin-bottom:var(--sp-3)}
+  .panel-head{padding:var(--sp-3) var(--sp-4)}
+  .panel-head h2{font-size:17px}
+  .toc{columns:1;padding:var(--sp-2) var(--sp-4) var(--sp-3)}
+  #findings>.toc li,.toc:has(.badge) li{grid-template-columns:auto minmax(0,1fr)}
+  #findings>.toc li .badge,.toc:has(.badge) li .badge{grid-column:2;grid-row:1;justify-self:start}
+  .related,.empty{padding-left:var(--sp-4);padding-right:var(--sp-4)}
+  .notice{flex-direction:column;gap:2px;margin-left:var(--sp-4);margin-right:var(--sp-4)}
+  .summary-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:var(--sp-4)}
+  .summary-tiles div{display:flex;align-items:baseline;gap:var(--sp-2);padding:var(--sp-2) 10px}
+  .summary-tiles strong{font-size:20px;min-width:1.4em}
+  .summary-tiles span{margin:0;font-size:var(--fs-2xs);white-space:nowrap}
+  .narrative{padding:var(--sp-1) var(--sp-4) var(--sp-2)}
+  .narrative p:first-child{font-size:15px}
+  .narrative+.data-list{margin:0 var(--sp-4) var(--sp-4);padding:var(--sp-1) var(--sp-3)}
+  .padded,.two-col .data-list{padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .data-row,.two-col .data-row{grid-template-columns:1fr;gap:2px}
+  .finding-detail{margin:var(--sp-3) var(--sp-3) var(--sp-4);border-left-width:4px}
+  .finding-detail>header{padding:var(--sp-3) var(--sp-4)}
+  .finding-detail>header h3{font-size:17px}
+  .finding-body{display:block;padding:0 var(--sp-4) var(--sp-4)}
+  .finding-body>h4{padding:var(--sp-4) 0 0;margin:var(--sp-4) 0 0;border-top:1px solid var(--line-soft)}
+  .finding-body>h4::before{display:none}
+  .finding-body>h4:first-child{margin-top:0;border-top:0;padding-top:var(--sp-3)}
+  .finding-body>h4+*,.finding-body>h4+p,.finding-body>h4:first-child+*,.finding-body>h4:first-child+p{margin-top:var(--sp-2)}
+  .finding-body>h4:has(+ .fix-steps)::after{display:inline-block;margin:0 0 0 8px;vertical-align:1px}
+  .fix-steps li{padding-left:34px}
+  .verify-grid{grid-template-columns:1fr;gap:2px}
+  .verify-grid dd+dt{margin-top:var(--sp-2)}
+  .table-wrap{padding:var(--sp-1) var(--sp-4) var(--sp-4)}
+  .control-list,.tool-list{padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .control-list li,.tool-list li{grid-template-columns:1fr;gap:2px}
+  article.unknown{margin:var(--sp-3)}
+  .glossary{grid-template-columns:1fr;padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .glossary dt{padding:10px 0 0}
+  .glossary dd{padding:2px 0 10px;border-top:0}
+  .two-col{display:block}
+  .two-col .panel{margin-bottom:var(--sp-3)}
+  .score-layout{display:block;padding:var(--sp-4)}
+  .grade{max-width:none;min-height:0;flex-direction:row;justify-content:flex-start;gap:var(--sp-4);padding:var(--sp-3) var(--sp-4)}
+  .grade strong{font-size:44px;order:-1}
+  .score-details{margin-top:var(--sp-4)}
+  .assessment,.api-messages{margin-left:var(--sp-4);margin-right:var(--sp-4)}
+  .finding:not(.badge),.subpanel{margin:var(--sp-3);padding:var(--sp-3)}
+  .finding-grid,.provider-visuals{grid-template-columns:1fr}
+  .evidence-row{grid-template-columns:1fr 60px}
+  .evidence-row .track{grid-column:1/-1;grid-row:2}
+  .viz-grid{grid-template-columns:1fr;gap:var(--sp-3);padding:var(--sp-4)}
+  .viz-card{padding:var(--sp-3)}
+  .checklist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  footer{flex-direction:column;gap:var(--sp-1);padding:var(--sp-4) 16px}
+}
+
+/* ==== Print (A4) ==== */
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  html,body{background:#fff}
+  body{font-size:9.5pt;line-height:1.5}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .topbar{position:static;height:auto;padding:0 0 6pt;background:#fff;color:var(--ink);border-bottom:1.5pt solid var(--navy)}
+  .topbar button{display:none}
+  .brand-mark{border-color:var(--navy);background:var(--navy);color:#fff}
+  .brand strong{color:var(--ink)}
+  .brand small{display:block;color:var(--muted)}
+  main{max-width:none;margin:0;padding:12pt 0 0}
+  .report-head{padding-bottom:10pt;margin-bottom:12pt;break-after:avoid}
+  .report-head h1{font-size:20pt}
+  .panel{margin:0 0 10pt;box-shadow:none;border-radius:6px;overflow:visible;break-inside:auto}
+  .panel-head{padding:7pt 10pt;break-after:avoid;break-inside:avoid}
+  .panel-head h2{font-size:13pt}
+  .toc li,.data-row,tr,.unknown,.evidence-items li,.fix-steps li,.notice,.check-tile,.summary-tiles div,.glossary dt{break-inside:avoid}
+  .summary-tiles{padding:10pt}
+  .finding-detail{margin:10pt;break-inside:auto;overflow:visible}
+  .finding-detail>header{break-inside:avoid;break-after:avoid}
+  /* Grid rows cannot split across pages, so the finding body stacks in print:
+     label above content, each sub-section free to break between paragraphs and steps. */
+  .finding-body{display:block;padding:0 12pt 12pt;overflow:visible}
+  .finding-body>h4{margin:10pt 0 0;padding:8pt 0 0;border-top:1px solid var(--line-soft);font-size:7pt;break-after:avoid}
+  .finding-body>h4::before{display:none}
+  .finding-body>h4:first-child{margin-top:0;border-top:0;padding-top:8pt}
+  .finding-body>h4+*,.finding-body>h4+p,.finding-body>h4:first-child+*,.finding-body>h4:first-child+p{margin-top:4pt}
+  .finding-body>h4:has(+ .fix-steps)::after{display:inline-block;margin:0 0 0 6pt;vertical-align:1px}
+  .finding-body p,.finding-body li{orphans:3;widows:3}
+  .observed,pre.code,.excerpt,pre.excerpt,.json-block{font-size:8pt;max-height:none;overflow:visible}
+  /* Code prints dark-on-light to save toner and stay legible when photocopied. */
+  pre.code,.json-block{background:var(--wash);color:var(--ink);border:1px solid var(--border-strong)}
+  .ref-list a::after{content:" — " attr(href);color:var(--muted);font-size:7.5pt;overflow-wrap:anywhere}
+  .evidence-items a.evidence-link::after{content:" (" attr(href) ")";color:var(--muted);font-weight:400}
+  .table-wrap{overflow:visible;padding:4pt 10pt 10pt}
+  table{min-width:0;font-size:8pt}
+  th{font-size:6.5pt;padding:4pt 5pt}
+  td{padding:4pt 5pt}
+  .matrix td.cell{font-size:7pt;padding:3pt}
+  thead{display:table-header-group}
+  tbody tr:hover td{background:transparent}
+  .control-table td:nth-child(4){min-width:0}
+  .control-table td:first-child,td a.evidence-link,#methodology td:nth-last-child(-n+2){white-space:normal}
+  .viz-grid{gap:8pt;padding:10pt}
+  .viz-card{break-inside:avoid;padding:8pt}
+  .viz-tip{display:none!important}
+  .viz-table{display:none}
+  .two-col{gap:8pt}
+  .grade{min-height:120pt}
+  footer{background:#fff;color:var(--muted);border-top:1pt solid var(--border-strong);padding:8pt 0}
+  footer strong{color:var(--ink)}
+  a{color:var(--ink)}
+  a.evidence-link{color:var(--teal)}
+}
+</style></head>
+<body><header class="topbar"><div class="brand"><span class="brand-mark">360</span><div><strong>Cyber360</strong><small>H1 Reconnaissance report</small></div></div><button data-print>Print / Save PDF</button></header>
+<main>
+  <section class="report-head"><div><p class="eyebrow">H1 · HACKING</p><h1>Reconnaissance report: test.c4lab.in</h1>
+  <p>Point-in-time, evidence-based assessment generated 2026-10-27T11:38:09Z</p></div>
+  <div class="report-id"><span>Report ID</span><code>H1-test.c4lab.in-20261027T113759Z</code></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Contents</h2></div></header><ul class="toc"><li><a href="#summary">Executive summary</a></li><li><a href="#glance">At a glance (charts)</a></li><li><a href="#findings">Findings</a></li><li><a href="#controls">Every control checked</a></li><li><a href="#technical">Technical detail</a></li><li><a href="#unknowns">Unknowns</a></li><li><a href="#methodology">Methodology and evidence</a></li><li><a href="#glossary">Glossary</a></li><li><a href="#scope">Scope, tools and limitations</a></li></ul>
+  <p class="related">Other reports from this run:</p><ul class="toc"><li><a href="../S11-tls/report.html" target="_blank" rel="noopener">S11 TLS &amp; Cryptography Security report</a></li><li><a href="../S18-email-domain/report.html" target="_blank" rel="noopener">S18 Email &amp; Domain Security report</a></li></ul></section>
+  <section class="panel" id="summary"><header class="panel-head"><div><h2>Executive summary</h2><p class="section-subtitle">What this assessment found, in plain language</p></div></header><div class="summary-tiles"><div class="tile-critical"><strong>0</strong><span>critical</span></div><div class="tile-high"><strong>0</strong><span>high</span></div><div class="tile-medium"><strong>0</strong><span>medium</span></div><div class="tile-low"><strong>2</strong><span>low</span></div><div class="tile-informational"><strong>2</strong><span>informational</span></div><div class="tile-pass"><strong>1</strong><span>passed</span></div><div><strong>0</strong><span>unknown</span></div><div><strong>0</strong><span>n/a</span></div></div><div class="narrative"><p>H1 mapped what test.c4lab.in exposes to the internet. It resolves to 107.180.237.42, DNS is hosted by your DNS hosting provider, email is handled by DreamHost Mail and the domain is registered with GoDaddy.</p><p>The HTTPS site returns HTTP 200 from Apache; TCP 80 is open; TCP 443 is open.</p><p>The most significant issue is H1-001 “X-Powered-By header discloses application technology” (low). X-Powered-By: PHP/5.6.40</p><p>Other findings: H1-002 “HTTP Strict Transport Security (HSTS) not enforced” (low); H1-003 “Server header discloses web server software” (informational); H1-004 “Public DNS reveals third-party services” (informational).</p><p>Controls in good shape: http://test.c4lab.in returns 301 redirecting to https://test.c4lab.in/.</p></div><dl class="data-list padded"><div class="data-row"><dt>IPv4 / IPv6</dt><dd>107.180.237.42</dd></div><div class="data-row"><dt>DNS host</dt><dd>your DNS hosting provider</dd></div><div class="data-row"><dt>Email provider</dt><dd>DreamHost Mail</dd></div><div class="data-row"><dt>Registrar</dt><dd>GoDaddy</dd></div><div class="data-row"><dt>Web server</dt><dd>Apache</dd></div><div class="data-row"><dt>Third-party services found</dt><dd>1</dd></div></dl></section>
+  <section class="panel" id="glance"><header class="panel-head"><div><h2>At a glance</h2><p class="section-subtitle">Hover or focus any mark for detail; each chart has a data table</p></div></header><div class="viz-root viz-grid"><figure class="viz-card" role="group" aria-label="Findings by severity"><h3>Findings by severity</h3><p class="viz-sub">4 confirmed findings</p><svg viewBox="0 0 460 158" role="img" aria-label="Findings by severity"><g data-tip="0 critical findings|Severity: Critical"><rect x="0" y="2" width="460" height="28" fill="transparent"/><text x="82" y="19" text-anchor="end" font-size="12" class="muted">Critical</text><line x1="92" x2="94" y1="15" y2="15" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="19" font-size="12" font-weight="700">0</text></g><g data-tip="0 high findings|Severity: High"><rect x="0" y="32" width="460" height="28" fill="transparent"/><text x="82" y="49" text-anchor="end" font-size="12" class="muted">High</text><line x1="92" x2="94" y1="45" y2="45" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="49" font-size="12" font-weight="700">0</text></g><g data-tip="0 medium findings|Severity: Medium"><rect x="0" y="62" width="460" height="28" fill="transparent"/><text x="82" y="79" text-anchor="end" font-size="12" class="muted">Medium</text><line x1="92" x2="94" y1="75" y2="75" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="79" font-size="12" font-weight="700">0</text></g><g data-tip="2 low findings|Severity: Low"><rect x="0" y="92" width="460" height="28" fill="transparent"/><text x="82" y="109" text-anchor="end" font-size="12" class="muted">Low</text><path d="M92,98 h324.0 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-324.0 z" fill="var(--sev-low)"/><text x="428.0" y="109" font-size="12" font-weight="700">2</text></g><g data-tip="2 info findings|Severity: Info"><rect x="0" y="122" width="460" height="28" fill="transparent"/><text x="82" y="139" text-anchor="end" font-size="12" class="muted">Info</text><path d="M92,128 h324.0 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-324.0 z" fill="var(--sev-informational)"/><text x="428.0" y="139" font-size="12" font-weight="700">2</text></g></svg><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Severity</th><th>Findings</th></tr></thead><tbody><tr><td>Critical</td><td>0</td></tr><tr><td>High</td><td>0</td></tr><tr><td>Medium</td><td>0</td></tr><tr><td>Low</td><td>2</td></tr><tr><td>Info</td><td>2</td></tr></tbody></table></div></details></figure><figure class="viz-card" role="group" aria-label="Control results"><h3>Control results</h3><p class="viz-sub">Unknown controls are never counted as passes</p><svg viewBox="0 0 340 160" role="img" aria-label="Control results"><circle cx="80" cy="80" r="54" fill="none" stroke="var(--st-good)" stroke-width="20" stroke-dasharray="65.86 339.29" stroke-dashoffset="-0.00" transform="rotate(-90 80 80)" data-tip="1 passed|20% of 5 controls"/><circle cx="80" cy="80" r="54" fill="none" stroke="var(--sev-high)" stroke-width="20" stroke-dasharray="269.43 339.29" stroke-dashoffset="-67.86" transform="rotate(-90 80 80)" data-tip="4 findings|80% of 5 controls"/><text x="80" y="78" text-anchor="middle" font-size="26" font-weight="800">5</text><text x="80" y="96" text-anchor="middle" font-size="11" class="muted">controls</text><text x="190" y="40" font-size="12"><tspan font-weight="700">1</tspan><tspan class="muted"> Passed</tspan></text><rect x="174" y="30" width="10" height="10" rx="2" fill="var(--st-good)"/><text x="190" y="64" font-size="12"><tspan font-weight="700">4</tspan><tspan class="muted"> Findings</tspan></text><rect x="174" y="54" width="10" height="10" rx="2" fill="var(--sev-high)"/><text x="190" y="88" font-size="12"><tspan font-weight="700">0</tspan><tspan class="muted"> Unknown</tspan></text><rect x="174" y="78" width="10" height="10" rx="2" fill="var(--st-unknown)"/><text x="190" y="112" font-size="12"><tspan font-weight="700">0</tspan><tspan class="muted"> Not applicable</tspan></text><rect x="174" y="102" width="10" height="10" rx="2" fill="var(--st-na)"/></svg><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Result</th><th>Controls</th></tr></thead><tbody><tr><td>Passed</td><td>1</td></tr><tr><td>Findings</td><td>4</td></tr><tr><td>Unknown</td><td>0</td></tr><tr><td>Not applicable</td><td>0</td></tr></tbody></table></div></details></figure><figure class="viz-card wide" role="group" aria-label="Attack-surface map"><h3>Attack-surface map</h3><p class="viz-sub">What an attacker learns about the domain from public sources</p><div class="scroll-x"><svg viewBox="0 0 760 420" role="img" aria-label="Attack-surface map"><line x1="380.0" y1="210.0" x2="380.0" y2="50.0" stroke="var(--chart-line)" stroke-width="1.5"/><g data-tip="IP address|107.180.237.42"><rect x="292.0" y="30.0" width="176" height="40" rx="6" fill="var(--paper)" stroke="var(--chart-arrow)"/><text x="380.0" y="46.0" text-anchor="middle" font-size="10" class="muted" letter-spacing=".06em">IP ADDRESS</text><text x="380.0" y="61.0" text-anchor="middle" font-size="11.5" font-weight="700">107.180.237.42</text></g><line x1="380.0" y1="210.0" x2="655.8" y2="160.6" stroke="var(--chart-line)" stroke-width="1.5"/><g data-tip="DNS host|your DNS hosting provider"><rect x="567.8" y="140.6" width="176" height="40" rx="6" fill="var(--paper)" stroke="var(--chart-arrow)"/><text x="655.8" y="156.6" text-anchor="middle" font-size="10" class="muted" letter-spacing=".06em">DNS HOST</text><text x="655.8" y="171.6" text-anchor="middle" font-size="11.5" font-weight="700">your DNS hosting provider</text></g><line x1="380.0" y1="210.0" x2="550.5" y2="339.4" stroke="var(--chart-line)" stroke-width="1.5"/><g data-tip="Email provider|DreamHost Mail"><rect x="462.5" y="319.4" width="176" height="40" rx="6" fill="var(--paper)" stroke="var(--chart-arrow)"/><text x="550.5" y="335.4" text-anchor="middle" font-size="10" class="muted" letter-spacing=".06em">EMAIL PROVIDER</text><text x="550.5" y="350.4" text-anchor="middle" font-size="11.5" font-weight="700">DreamHost Mail</text></g><line x1="380.0" y1="210.0" x2="209.5" y2="339.4" stroke="var(--chart-line)" stroke-width="1.5"/><g data-tip="Registrar|GoDaddy"><rect x="121.5" y="319.4" width="176" height="40" rx="6" fill="var(--paper)" stroke="var(--chart-arrow)"/><text x="209.5" y="335.4" text-anchor="middle" font-size="10" class="muted" letter-spacing=".06em">REGISTRAR</text><text x="209.5" y="350.4" text-anchor="middle" font-size="11.5" font-weight="700">GoDaddy</text></g><line x1="380.0" y1="210.0" x2="104.2" y2="160.6" stroke="var(--chart-line)" stroke-width="1.5"/><g data-tip="Web server|Apache"><rect x="16.2" y="140.6" width="176" height="40" rx="6" fill="var(--paper)" stroke="var(--chart-arrow)"/><text x="104.2" y="156.6" text-anchor="middle" font-size="10" class="muted" letter-spacing=".06em">WEB SERVER</text><text x="104.2" y="171.6" text-anchor="middle" font-size="11.5" font-weight="700">Apache</text></g><circle cx="380.0" cy="210.0" r="48" fill="var(--navy)"/><text x="380.0" y="215.0" text-anchor="middle" font-size="13" font-weight="800" class="on-dark">test.c4lab.in</text></svg></div><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Type</th><th>Value</th></tr></thead><tbody><tr><td>IP address</td><td>107.180.237.42</td></tr><tr><td>DNS host</td><td>your DNS hosting provider</td></tr><tr><td>Email provider</td><td>DreamHost Mail</td></tr><tr><td>Registrar</td><td>GoDaddy</td></tr><tr><td>Web server</td><td>Apache</td></tr></tbody></table></div></details></figure><figure class="viz-card wide" role="group" aria-label="Network path"><h3>Network path</h3><p class="viz-sub">No traceroute data was captured</p><p class="empty">Not available.</p></figure></div></section>
+  <section class="panel" id="findings"><header class="panel-head"><div><h2>Findings</h2><p class="section-subtitle">Each finding explains the problem, why it matters, how to fix it and how to verify the fix</p></div></header><ul class="toc"><li><a href="#H1-001">H1-001</a> <span class="badge low">low</span> X-Powered-By header discloses application technology</li><li><a href="#H1-002">H1-002</a> <span class="badge low">low</span> HTTP Strict Transport Security (HSTS) not enforced</li><li><a href="#H1-003">H1-003</a> <span class="badge informational">informational</span> Server header discloses web server software</li><li><a href="#H1-004">H1-004</a> <span class="badge informational">informational</span> Public DNS reveals third-party services</li></ul><article class="finding-detail severity-low" id="H1-001">
+      <header><div class="row"><span class="badge low">low</span><code>H1-001</code></div>
+      <h3>X-Powered-By header discloses application technology</h3><div class="finding-meta">Control H1-WEB-002 · Information disclosure</div></header>
+      <div class="finding-body"><h4>What this control checks</h4><p>Checks whether X-Powered-By or similar headers disclose the application framework or language version.</p><h4>What we found</h4><div class="observed">https://test.c4lab.in returns:
+X-Powered-By: PHP/5.6.40</div><h4>Why it matters</h4><p>Framework and language versions, such as PHP/8.1.2, are high-value fingerprinting data. Application-layer vulnerabilities are usually tied to a specific version.</p><h4>How an attacker would use it</h4><p class="callout">An attacker matches the disclosed version against known application or interpreter vulnerabilities.</p><h4>Why low</h4><p>Low: disclosure only.</p><h4>How to fix it</h4><ol class="fix-steps"><li>PHP (php.ini, or the host&#x27;s PHP settings panel):<pre class="code">expose_php = Off</pre></li><li>Express (Node.js):<pre class="code">app.disable(&#x27;x-powered-by&#x27;);</pre></li><li>Apache with mod_headers (.htaccess):<pre class="code">Header always unset X-Powered-By</pre></li></ol><h4>Rollback</h4><p>Re-enable the setting.</p><h4>How to verify the fix</h4><dl class="verify-grid"><dt>Run</dt><dd><pre class="code">curl -sI https://test.c4lab.in | grep -i x-powered-by</pre></dd><dt>Expect</dt><dd>No output.</dd><dt>Status</dt><dd><span class="badge not-started">not started</span></dd></dl><h4>References</h4><ul class="ref-list"><li><a href="https://owasp.org/www-project-secure-headers/#div-headers" target="_blank" rel="noopener">OWASP Secure Headers Project — headers to remove</a></li><li><a href="https://www.php.net/manual/en/ini.core.php#ini.expose-php" target="_blank" rel="noopener">PHP — expose_php</a></li></ul><h4>Evidence</h4><ul class="evidence-items"><li><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a> <code>curl -IL https://test.c4lab.in</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 7a25d9522ca3a380…</div><pre class="excerpt">HTTP/2 200 
+x-powered-by: PHP/5.6.40
+last-modified: Tue, 27 Oct 2026 09:38:16 GMT
+etag: &quot;cf-65ecf34c3f3d4&quot;
+accept-ranges: bytes
+content-length: 207
+cache-control: max-age=600
+expires: Tue, 27 Oct 2026 11:48:01 GMT
+vary: Accept-Encoding,User-Agent
+content-type: text/html
+date: Tue, 27 Oct 2026 11:38:01 GMT
+server: Apache
+
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0</pre></li></ul></div></article><article class="finding-detail severity-low" id="H1-002">
+      <header><div class="row"><span class="badge low">low</span><code>H1-002</code></div>
+      <h3>HTTP Strict Transport Security (HSTS) not enforced</h3><div class="finding-meta">Control H1-WEB-004 · Transport security</div></header>
+      <div class="finding-body"><h4>What this control checks</h4><p>Checks for a Strict-Transport-Security (HSTS) header with a max-age of at least six months, which tells browsers to use only HTTPS for the site.</p><h4>What we found</h4><div class="observed">The HTTPS response from https://test.c4lab.in has no Strict-Transport-Security header.</div><h4>Why it matters</h4><p>Even with an HTTP-to-HTTPS redirect, a browser&#x27;s first request to http://test.c4lab.in goes out unencrypted, and the redirect itself can be intercepted. HSTS tells the browser to rewrite every future http:// request to https:// itself, before anything is sent, and to refuse to click through certificate warnings for the site.</p><h4>How an attacker would use it</h4><p class="callout">SSL stripping (sslstrip): an attacker on the network intercepts the initial HTTP request, suppresses the redirect and proxies the site to the victim over HTTP while talking HTTPS to the real server.</p><h4>Why low</h4><p>Low: requires an on-path attacker and a user who reaches the site over HTTP first.</p><h4>How to fix it</h4><ol class="fix-steps"><li>Apache (.htaccess or virtual host, with mod_headers):<pre class="code">Header always set Strict-Transport-Security &quot;max-age=31536000; includeSubDomains&quot;</pre></li><li>nginx (inside the HTTPS server block):<pre class="code">add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains&quot; always;</pre></li><li>Start with a short max-age (for example 300) and increase it once every subdomain works over HTTPS. includeSubDomains applies the policy to every subdomain.</li><li>Optionally, once stable, add &quot;; preload&quot; and submit the domain at hstspreload.org so browsers enforce HTTPS from the first visit.</li></ol><h4>Rollback</h4><p>Set max-age=0 to tell browsers to forget the policy.</p><h4>How to verify the fix</h4><dl class="verify-grid"><dt>Run</dt><dd><pre class="code">curl -sI https://test.c4lab.in | grep -i strict-transport</pre></dd><dt>Expect</dt><dd>strict-transport-security: max-age=31536000; includeSubDomains</dd><dt>Status</dt><dd><span class="badge not-started">not started</span></dd></dl><h4>References</h4><ul class="ref-list"><li><a href="https://www.rfc-editor.org/rfc/rfc6797.html" target="_blank" rel="noopener">RFC 6797 — HTTP Strict Transport Security</a></li><li><a href="https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP — HTTP Strict Transport Security Cheat Sheet</a></li><li><a href="https://hstspreload.org/" target="_blank" rel="noopener">hstspreload.org — submission requirements</a></li></ul><h4>Evidence</h4><ul class="evidence-items"><li><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a> <code>curl -IL https://test.c4lab.in</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 7a25d9522ca3a380…</div><pre class="excerpt">HTTP/2 200 
+x-powered-by: PHP/5.6.40
+last-modified: Tue, 27 Oct 2026 09:38:16 GMT
+etag: &quot;cf-65ecf34c3f3d4&quot;
+accept-ranges: bytes
+content-length: 207
+cache-control: max-age=600
+expires: Tue, 27 Oct 2026 11:48:01 GMT
+vary: Accept-Encoding,User-Agent
+content-type: text/html
+date: Tue, 27 Oct 2026 11:38:01 GMT
+server: Apache
+
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0</pre></li></ul></div></article><article class="finding-detail severity-informational" id="H1-003">
+      <header><div class="row"><span class="badge informational">informational</span><code>H1-003</code></div>
+      <h3>Server header discloses web server software</h3><div class="finding-meta">Control H1-WEB-001 · Information disclosure</div></header>
+      <div class="finding-body"><h4>What this control checks</h4><p>Checks whether the Server response header discloses the web server product or version.</p><h4>What we found</h4><div class="observed">https://test.c4lab.in returns the header:
+Server: Apache
+The product is disclosed but not its version.</div><h4>Why it matters</h4><p>Knowing the product (Apache) narrows down which attacks and misconfigurations to try. It is minor because the version is hidden and the product can usually be identified by other means anyway.</p><h4>How an attacker would use it</h4><p class="callout">Product-specific probing, such as Apache-specific paths and modules, without needing to fingerprint first.</p><h4>Why informational</h4><p>Informational: product-only banners are common and give little advantage.</p><h4>How to fix it</h4><ol class="fix-steps"><li>No action is required. If you control the server and want to remove the header entirely, use a reverse proxy or CDN that rewrites it, or Apache&#x27;s mod_security SecServerSignature.</li></ol><h4>Rollback</h4><p>Not applicable.</p><h4>How to verify the fix</h4><dl class="verify-grid"><dt>Run</dt><dd><pre class="code">curl -sI https://test.c4lab.in | grep -i &#x27;^server:&#x27;</pre></dd><dt>Expect</dt><dd>No change required.</dd><dt>Status</dt><dd><span class="badge not-started">not started</span></dd></dl><h4>References</h4><ul class="ref-list"><li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Information_Gathering/02-Fingerprint_Web_Server" target="_blank" rel="noopener">OWASP WSTG — Fingerprint Web Server (WSTG-INFO-02)</a></li><li><a href="https://httpd.apache.org/docs/2.4/mod/core.html#servertokens" target="_blank" rel="noopener">Apache — ServerTokens directive</a></li><li><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#server_tokens" target="_blank" rel="noopener">nginx — server_tokens directive</a></li></ul><h4>Evidence</h4><ul class="evidence-items"><li><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a> <code>curl -IL https://test.c4lab.in</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 7a25d9522ca3a380…</div><pre class="excerpt">HTTP/2 200 
+x-powered-by: PHP/5.6.40
+last-modified: Tue, 27 Oct 2026 09:38:16 GMT
+etag: &quot;cf-65ecf34c3f3d4&quot;
+accept-ranges: bytes
+content-length: 207
+cache-control: max-age=600
+expires: Tue, 27 Oct 2026 11:48:01 GMT
+vary: Accept-Encoding,User-Agent
+content-type: text/html
+date: Tue, 27 Oct 2026 11:38:01 GMT
+server: Apache
+
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0</pre></li></ul></div></article><article class="finding-detail severity-informational" id="H1-004">
+      <header><div class="row"><span class="badge informational">informational</span><code>H1-004</code></div>
+      <h3>Public DNS reveals third-party services</h3><div class="finding-meta">Control H1-DNS-001 · Information disclosure</div></header>
+      <div class="finding-body"><h4>What this control checks</h4><p>Identifies the third-party services the domain&#x27;s public DNS reveals (email, DNS and web hosts, SaaS verification tokens and SPF senders), the information an attacker gathers first.</p><h4>What we found</h4><div class="observed">Public DNS for test.c4lab.in reveals these providers and services:
+• Email: DreamHost Mail (MX mx1.dreamhost.com)</div><h4>Why it matters</h4><p>This is normal and largely unavoidable: SPF, MX and verification records must be public to work. It is reported so you know exactly what an attacker learns in seconds.</p><p>Each service is a phishing pretext (&quot;Your Google Workspace password expires today&quot;) and an account to protect. Verification tokens for services you no longer use add noise and can indicate forgotten accounts still linked to the domain.</p><h4>How an attacker would use it</h4><p class="callout">An attacker sees that test.c4lab.in uses DreamHost Mail for email and clones that provider&#x27;s login page for a targeted credential-phishing campaign against your staff.</p><h4>Why informational</h4><p>Informational: no misconfiguration. Exposure is inherent to how these records work.</p><h4>How to fix it</h4><ol class="fix-steps"><li>Remove verification TXT records and SPF includes for services you no longer use. In your DNS hosting provider: Open the control panel of the provider that hosts the domain&#x27;s DNS (the nameservers listed in this report) and add or edit the record there.</li><li>Enforce multi-factor authentication on every listed service, especially the email provider (DreamHost Mail) and the DNS host (your DNS hosting provider), whose accounts control the domain.</li><li>Brief staff that phishing will imitate these specific providers.</li></ol><h4>Rollback</h4><p>Not applicable.</p><h4>How to verify the fix</h4><dl class="verify-grid"><dt>Run</dt><dd><pre class="code">dig test.c4lab.in TXT +short</pre></dd><dt>Expect</dt><dd>Only records for services in active use.</dd><dt>Status</dt><dd><span class="badge not-started">not started</span></dd></dl><h4>References</h4><ul class="ref-list"><li><a href="https://attack.mitre.org/techniques/T1590/002/" target="_blank" rel="noopener">MITRE ATT&amp;CK T1590.002 — Gather Victim Network Information: DNS</a></li><li><a href="https://attack.mitre.org/techniques/T1593/" target="_blank" rel="noopener">MITRE ATT&amp;CK T1593 — Search Open Websites/Domains</a></li></ul><h4>Evidence</h4><ul class="evidence-items"><li><a class="evidence-link" href="evidence/D08-dig-txt.txt" target="_blank" rel="noopener">D08-dig-txt ↗</a> <code>dig test.c4lab.in TXT +short</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 f67428e9d4a8f84e…</div></li><li><a class="evidence-link" href="evidence/D07-dig-mx.txt" target="_blank" rel="noopener">D07-dig-mx ↗</a> <code>dig test.c4lab.in MX +short</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 b2d14890a73ad885…</div><pre class="excerpt">10 mx1.dreamhost.com.</pre></li><li><a class="evidence-link" href="evidence/D09-dig-ns.txt" target="_blank" rel="noopener">D09-dig-ns ↗</a> <code>dig test.c4lab.in NS +short</code><div class="meta">exit 0 · captured 2026-10-27T11:37:59Z · sha256 ac2bf410119b3c41…</div></li></ul></div></article></section>
+  <section class="panel" id="controls"><header class="panel-head"><div><h2>Every control checked</h2><p class="section-subtitle">Passes, findings, unknowns and not-applicable controls, each with its evidence</p></div></header><div class="table-wrap"><table class="control-table"><thead><tr><th>Control</th><th>Category</th><th>Result</th><th>Outcome and what the control checks</th><th>Evidence</th></tr></thead><tbody><tr><td><code>H1-WEB-001</code></td><td>Information disclosure</td><td><span class="badge finding">finding</span> <span class="badge informational">informational</span></td><td>Server: Apache discloses the product but not its version.<div class="about">Checks whether the Server response header discloses the web server product or version.</div></td><td><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a></td></tr><tr><td><code>H1-WEB-002</code></td><td>Information disclosure</td><td><span class="badge finding">finding</span> <span class="badge low">low</span></td><td>X-Powered-By: PHP/5.6.40<div class="about">Checks whether X-Powered-By or similar headers disclose the application framework or language version.</div></td><td><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a></td></tr><tr><td><code>H1-WEB-004</code></td><td>Transport security</td><td><span class="badge finding">finding</span> <span class="badge low">low</span></td><td>No Strict-Transport-Security header on the HTTPS response.<div class="about">Checks for a Strict-Transport-Security (HSTS) header with a max-age of at least six months, which tells browsers to use only HTTPS for the site.</div></td><td><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a></td></tr><tr><td><code>H1-WEB-003</code></td><td>Transport security</td><td><span class="badge pass">pass</span></td><td>http://test.c4lab.in returns 301 redirecting to https://test.c4lab.in/.<div class="about">Checks that plain HTTP on port 80 permanently redirects to HTTPS, so visitors who type the bare domain or follow an old link end up on the encrypted site.</div></td><td><a class="evidence-link" href="evidence/D19-curl-http.txt" target="_blank" rel="noopener">D19-curl-http ↗</a>, <a class="evidence-link" href="evidence/D20-nc-port-80.txt" target="_blank" rel="noopener">D20-nc-port-80 ↗</a></td></tr><tr><td><code>H1-DNS-001</code></td><td>Information disclosure</td><td><span class="badge finding">finding</span> <span class="badge informational">informational</span></td><td>1 third-party services identified from public DNS.<div class="about">Identifies the third-party services the domain&#x27;s public DNS reveals (email, DNS and web hosts, SaaS verification tokens and SPF senders), the information an attacker gathers first.</div></td><td><a class="evidence-link" href="evidence/D08-dig-txt.txt" target="_blank" rel="noopener">D08-dig-txt ↗</a>, <a class="evidence-link" href="evidence/D07-dig-mx.txt" target="_blank" rel="noopener">D07-dig-mx ↗</a>, <a class="evidence-link" href="evidence/D09-dig-ns.txt" target="_blank" rel="noopener">D09-dig-ns ↗</a></td></tr></tbody></table></div></section>
+  <div id="technical"><section class="panel"><header class="panel-head"><div><h2>DNS footprint</h2><p class="section-subtitle">What public DNS reveals about the domain</p></div></header><p class="narrative">Each record type is listed with what it tells an attacker. Values are exactly as returned by dig.</p><dl class="data-list padded"><div class="data-row"><dt>A (IPv4)</dt><dd><div class="observed">107.180.237.42</div><div class="about">IPv4 addresses the domain&#x27;s website resolves to. An attacker uses these to find the hosting provider and to look for other sites and services on the same IP addresses.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D04-dig-a.txt" target="_blank" rel="noopener">D04-dig-a ↗</a></div></dd></div><div class="data-row"><dt>AAAA (IPv6)</dt><dd><div class="observed">none</div><div class="about">IPv6 addresses. Services reachable over IPv6 sometimes have weaker firewall rules than their IPv4 equivalents.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D05-dig-aaaa.txt" target="_blank" rel="noopener">D05-dig-aaaa ↗</a></div></dd></div><div class="data-row"><dt>CNAME</dt><dd><div class="observed">none</div><div class="about">An apex alias, if any. CNAMEs pointing at deprovisioned third-party services are the classic source of subdomain takeovers.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D06-dig-cname.txt" target="_blank" rel="noopener">D06-dig-cname ↗</a></div></dd></div><div class="data-row"><dt>MX</dt><dd><div class="observed">10 mx1.dreamhost.com</div><div class="about">Mail servers. They reveal the email provider, which tells an attacker which login page to clone for credential phishing.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D07-dig-mx.txt" target="_blank" rel="noopener">D07-dig-mx ↗</a></div></dd></div><div class="data-row"><dt>NS</dt><dd><div class="observed">none</div><div class="about">Authoritative nameservers. They reveal the DNS host; whoever controls that account controls the domain&#x27;s website and email.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D09-dig-ns.txt" target="_blank" rel="noopener">D09-dig-ns ↗</a></div></dd></div><div class="data-row"><dt>SOA</dt><dd><div class="observed">none</div><div class="about">The primary nameserver, the responsible-party mailbox and the zone&#x27;s refresh, retry, expire and minimum TTL timers.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D10-dig-soa.txt" target="_blank" rel="noopener">D10-dig-soa ↗</a></div></dd></div><div class="data-row"><dt>TXT</dt><dd><div class="observed">none</div><div class="about">TXT records: SPF, verification tokens and other policies. They reveal the SaaS services the organisation uses.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D08-dig-txt.txt" target="_blank" rel="noopener">D08-dig-txt ↗</a></div></dd></div><div class="data-row"><dt>CAA</dt><dd><div class="observed">none</div><div class="about">Certificate authorities allowed to issue certificates. An empty list means any CA may issue.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D11-dig-caa.txt" target="_blank" rel="noopener">D11-dig-caa ↗</a></div></dd></div><div class="data-row"><dt>Delegation trace</dt><dd><div class="observed">completed from the root to the domain&#x27;s nameservers</div><div class="about">Whether a full trace from the root servers reached the domain&#x27;s nameservers.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D12-dig-trace.txt" target="_blank" rel="noopener">D12-dig-trace ↗</a></div></dd></div><div class="data-row"><dt>host cross-check</dt><dd><div class="observed">test.c4lab.in has address 107.180.237.42
+test.c4lab.in mail is handled by 10 mx1.dreamhost.com.</div><div class="about">A second resolver client confirming the address and mail records.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D13-host.txt" target="_blank" rel="noopener">D13-host ↗</a></div></dd></div></dl></section><section class="panel"><header class="panel-head"><div><h2>Registration</h2><p class="section-subtitle">WHOIS data for the domain</p></div></header><dl class="data-list padded"><div class="data-row"><dt>Registrar</dt><dd><div class="observed">GoDaddy</div><div class="about">The company the domain is registered through. Its account controls the domain&#x27;s nameservers.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></div></dd></div><div class="data-row"><dt>Created</dt><dd><div class="observed">2026-08-06T14:42:25.765Z</div><div class="about">Registration date.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></div></dd></div><div class="data-row"><dt>Expires</dt><dd><div class="observed">2027-08-06T14:42:25.765Z</div><div class="about">If this date passes without renewal, the domain can be lost.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></div></dd></div><div class="data-row"><dt>Last updated</dt><dd><div class="observed">2026-08-11T14:43:05.041Z</div><div class="about">Last change to the registration record.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></div></dd></div><div class="data-row"><dt>EPP status</dt><dd><div class="observed">ACTIVE
+clientDeleteProhibited
+clientRenewProhibited
+clientTransferProhibited
+clientUpdateProhibited</div><div class="about">Registry locks. clientTransferProhibited blocks unauthorised transfers.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></div></dd></div></dl></section><section class="panel"><header class="panel-head"><div><h2>HTTPS response chain</h2><p class="section-subtitle">curl -IL https://test.c4lab.in</p></div></header><div class="table-wrap"><table><thead><tr><th>Status</th><th>Redirect to</th><th>Server header</th></tr></thead><tbody><tr><td><span class="badge 200">200</span></td><td></td><td>Apache</td></tr></tbody></table></div></section><section class="panel"><header class="panel-head"><div><h2>HTTPS response headers</h2><p class="section-subtitle">Final response headers; security headers are explained by the web application agent when implemented</p></div></header><div class="table-wrap"><table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td>x-powered-by</td><td>PHP/5.6.40</td></tr><tr><td>last-modified</td><td>Tue, 27 Oct 2026 09:38:16 GMT</td></tr><tr><td>etag</td><td>&quot;cf-65ecf34c3f3d4&quot;</td></tr><tr><td>accept-ranges</td><td>bytes</td></tr><tr><td>content-length</td><td>207</td></tr><tr><td>cache-control</td><td>max-age=600</td></tr><tr><td>expires</td><td>Tue, 27 Oct 2026 11:48:01 GMT</td></tr><tr><td>vary</td><td>Accept-Encoding,User-Agent</td></tr><tr><td>content-type</td><td>text/html</td></tr><tr><td>date</td><td>Tue, 27 Oct 2026 11:38:01 GMT</td></tr><tr><td>server</td><td>Apache</td></tr></tbody></table></div></section><section class="panel"><header class="panel-head"><div><h2>Reachability and exposure</h2><p class="section-subtitle">Ports 80 and 443, ICMP and the network path</p></div></header><dl class="data-list padded"><div class="data-row"><dt>TCP 80 (HTTP)</dt><dd><div class="observed">open</div><div class="about">Whether the standard web ports accept TCP connections. No other ports were tested.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D20-nc-port-80.txt" target="_blank" rel="noopener">D20-nc-port-80 ↗</a></div></dd></div><div class="data-row"><dt>TCP 443 (HTTPS)</dt><dd><div class="observed">open</div><div class="about">Whether the standard web ports accept TCP connections. No other ports were tested.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D21-nc-port-443.txt" target="_blank" rel="noopener">D21-nc-port-443 ↗</a></div></dd></div><div class="data-row"><dt>HTTPS result</dt><dd><div class="observed">HTTP 200 in 0.797314s from 107.180.237.42</div><div class="about">Final status, total response time and the IP address actually connected to.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D18-curl-timing.txt" target="_blank" rel="noopener">D18-curl-timing ↗</a></div></dd></div><div class="data-row"><dt>Ping</dt><dd><div class="observed">replied; loss 0.0%; average 266.339 ms</div><div class="about">ICMP and traceroute results, which show the hosting network and whether ICMP is filtered.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D15-ping.txt" target="_blank" rel="noopener">D15-ping ↗</a></div></dd></div><div class="data-row"><dt>Traceroute</dt><dd><div class="observed">failed; 0 hops; last: None</div><div class="about">Hops showing * did not reply to probes; this is common and does not mean the path is broken.</div><div class="finding-meta">Evidence: <a class="evidence-link" href="evidence/D16-traceroute.txt" target="_blank" rel="noopener">D16-traceroute ↗</a></div></dd></div></dl></section><section class="panel"><header class="panel-head"><div><h2>Third-party services</h2><p class="section-subtitle">Providers identified from MX, NS, SPF and TXT records</p></div></header><div class="table-wrap"><table><thead><tr><th>Service</th></tr></thead><tbody><tr><td>Email: DreamHost Mail (MX mx1.dreamhost.com)</td></tr></tbody></table></div></section></div>
+  <section class="panel" id="unknowns"><header class="panel-head"><div><h2>Unknowns and evidence gaps</h2><p class="section-subtitle">Unresolved controls are never counted as passes</p></div></header><div class="good-state small"><span>✓</span><div><strong>No unresolved controls</strong></div></div></section>
+  <section class="panel" id="methodology"><header class="panel-head"><div><h2>Methodology and evidence</h2><p class="section-subtitle">Every command run, why it was run and its raw output (opens in a new tab)</p></div></header><div class="table-wrap"><table><thead><tr><th>Evidence</th><th>Command</th><th>Purpose</th><th>Exit</th><th>Captured (UTC)</th></tr></thead><tbody><tr><td><a class="evidence-link" href="evidence/D01-curl-version.txt" target="_blank" rel="noopener">D01-curl-version ↗</a></td><td><code>curl --version</code></td><td>Records the curl version used.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D02-dig-version.txt" target="_blank" rel="noopener">D02-dig-version ↗</a></td><td><code>dig -v</code></td><td>Records the dig version used.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D03-openssl-version.txt" target="_blank" rel="noopener">D03-openssl-version ↗</a></td><td><code>openssl version</code></td><td>Records the OpenSSL version used.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D04-dig-a.txt" target="_blank" rel="noopener">D04-dig-a ↗</a></td><td><code>dig test.c4lab.in A +short</code></td><td>Resolves the apex IPv4 addresses: where the website is hosted.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D05-dig-aaaa.txt" target="_blank" rel="noopener">D05-dig-aaaa ↗</a></td><td><code>dig test.c4lab.in AAAA +short</code></td><td>Resolves the apex IPv6 addresses.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D06-dig-cname.txt" target="_blank" rel="noopener">D06-dig-cname ↗</a></td><td><code>dig test.c4lab.in CNAME +short</code></td><td>Checks whether the apex is an alias for another name.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D07-dig-mx.txt" target="_blank" rel="noopener">D07-dig-mx ↗</a></td><td><code>dig test.c4lab.in MX +short</code></td><td>Lists the mail servers, which reveal the email provider.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D08-dig-txt.txt" target="_blank" rel="noopener">D08-dig-txt ↗</a></td><td><code>dig test.c4lab.in TXT +short</code></td><td>Reads TXT records, which reveal SPF senders and third-party verification tokens.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D09-dig-ns.txt" target="_blank" rel="noopener">D09-dig-ns ↗</a></td><td><code>dig test.c4lab.in NS +short</code></td><td>Lists the authoritative nameservers, which reveal the DNS host.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D10-dig-soa.txt" target="_blank" rel="noopener">D10-dig-soa ↗</a></td><td><code>dig test.c4lab.in SOA +short</code></td><td>Reads the SOA record: primary nameserver, hostmaster contact and zone timers.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D11-dig-caa.txt" target="_blank" rel="noopener">D11-dig-caa ↗</a></td><td><code>dig test.c4lab.in CAA +short</code></td><td>Reads CAA records, which reveal which certificate authorities are allowed.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D12-dig-trace.txt" target="_blank" rel="noopener">D12-dig-trace ↗</a></td><td><code>dig test.c4lab.in +trace</code></td><td>Follows delegation from the root to the domain&#x27;s nameservers to confirm the delegation path.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D13-host.txt" target="_blank" rel="noopener">D13-host ↗</a></td><td><code>host test.c4lab.in</code></td><td>Cross-checks address and mail records with a second resolver client.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D14-whois.txt" target="_blank" rel="noopener">D14-whois ↗</a></td><td><code>whois test.c4lab.in</code></td><td>Reads registration data: registrar, dates and EPP status codes.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D15-ping.txt" target="_blank" rel="noopener">D15-ping ↗</a></td><td><code>ping -c 4 test.c4lab.in</code></td><td>Sends four ICMP echo requests to measure reachability and latency. No reply usually means ICMP is filtered.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D16-traceroute.txt" target="_blank" rel="noopener">D16-traceroute ↗</a></td><td><code>traceroute -q 1 -w 2 -m 20 test.c4lab.in</code></td><td>Maps the network path (at most 20 hops, one probe each) to show the hosting network.</td><td>126</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D17-curl-headers.txt" target="_blank" rel="noopener">D17-curl-headers ↗</a></td><td><code>curl -IL https://test.c4lab.in</code></td><td>Requests https://&lt;domain&gt; and follows redirects, recording every status code and response header.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D18-curl-timing.txt" target="_blank" rel="noopener">D18-curl-timing ↗</a></td><td><code>curl -sS -o /dev/null -w Status: %{http_code}\nTime: %{time_total}s\nRemote IP: %{remote_ip}\n https://test.c4lab.in</code></td><td>Records the final HTTPS status code, total response time and the IP address actually connected to.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D19-curl-http.txt" target="_blank" rel="noopener">D19-curl-http ↗</a></td><td><code>curl -sSI http://test.c4lab.in</code></td><td>Requests http://&lt;domain&gt; (plain HTTP) without following redirects, to check that it redirects to HTTPS.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D20-nc-port-80.txt" target="_blank" rel="noopener">D20-nc-port-80 ↗</a></td><td><code>nc -zv -w 2 test.c4lab.in 80</code></td><td>Tests whether TCP port 80 (HTTP) accepts connections.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/D21-nc-port-443.txt" target="_blank" rel="noopener">D21-nc-port-443 ↗</a></td><td><code>nc -zv -w 2 test.c4lab.in 443</code></td><td>Tests whether TCP port 443 (HTTPS) accepts connections.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr></tbody></table></div></section>
+  <section class="panel" id="glossary"><header class="panel-head"><div><h2>Glossary</h2><p class="section-subtitle">Terms used in this report</p></div></header><dl class="glossary"><dt>Attack surface</dt><dd>Everything about a domain that is reachable or visible from the internet: hostnames, IP addresses, open ports, services, software banners and third-party providers.</dd><dt>A / AAAA</dt><dd>DNS records mapping a name to an IPv4 (A) or IPv6 (AAAA) address.</dd><dt>CNAME</dt><dd>An alias from one name to another; the apex of a domain cannot normally be a CNAME.</dd><dt>MX</dt><dd>Mail exchanger records naming the servers that receive mail for the domain.</dd><dt>NS</dt><dd>Nameserver records naming the authoritative DNS servers for the domain.</dd><dt>SOA</dt><dd>Start of Authority: the primary nameserver, the responsible mailbox and the zone&#x27;s timing values.</dd><dt>TXT</dt><dd>Free-form text records used for SPF, domain verification tokens and other policies.</dd><dt>CAA</dt><dd>Records naming the certificate authorities allowed to issue certificates for the domain.</dd><dt>HSTS</dt><dd>HTTP Strict Transport Security: a response header telling browsers to use only HTTPS for the site for a set period.</dd><dt>Banner</dt><dd>Software name or version disclosed in a response header, such as Server: Apache/2.4.58.</dd></dl></section>
+  <section id="scope" class="two-col">
+    <section class="panel"><header class="panel-head"><div><h2>Scope and authority</h2></div></header><dl class="data-list padded"><div class="data-row"><dt>Target</dt><dd>test.c4lab.in</dd></div><div class="data-row"><dt>Agent</dt><dd>H1 Reconnaissance report</dd></div><div class="data-row"><dt>Authority</dt><dd>yes</dd></div><div class="data-row"><dt>Started (UTC)</dt><dd>2026-10-27T11:37:59Z</dd></div><div class="data-row"><dt>Completed (UTC)</dt><dd>2026-10-27T11:38:09Z</dd></div><div class="data-row"><dt>In scope</dt><dd>Public DNS records of test.c4lab.in; WHOIS registration data; ICMP and traceroute to test.c4lab.in; HTTP and HTTPS requests to test.c4lab.in; TCP 80 and 443 connection tests</dd></div><div class="data-row"><dt>Exclusions</dt><dd>Subdomain enumeration or brute forcing; Any other port or host; Vulnerability scanning, exploitation and credential testing; Configuration changes</dd></div></dl></section>
+    <section class="panel"><header class="panel-head"><div><h2>Tools</h2><p class="section-subtitle">Locally executed tooling</p></div></header><ul class="tool-list"><li><strong>curl</strong><span>curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0</span></li><li><strong>dig</strong><span>DiG 9.10.6</span></li><li><strong>host</strong><span>/usr/bin/host</span></li><li><strong>nc</strong><span>/usr/bin/nc</span></li><li><strong>openssl</strong><span>OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)</span></li><li><strong>ping</strong><span>/sbin/ping</span></li><li><strong>traceroute</strong><span>/usr/sbin/traceroute</span></li><li><strong>whois</strong><span>/usr/bin/whois</span></li></ul></section>
+  </section>
+  <section class="panel"><header class="panel-head"><div><h2>Limitations and assumptions</h2></div></header><div class="notice warning"><b>Limitation</b><span>The previous run&#x27;s reports were moved to cyber360-reports/test.c4lab.in/archive/20261027T113727Z/.</span></div><div class="notice warning"><b>Limitation</b><span>Point-in-time observation from one resolver and network path.</span></div><div class="notice warning"><b>Limitation</b><span>Only the apex domain was examined; subdomains were not enumerated.</span></div><div class="notice info"><b>Assumption</b><span>The domain&#x27;s public DNS answers seen from this network are the same ones other internet users receive.</span></div></section>
+</main>
+<footer><strong>Cyber360</strong><span>Local-first evidence. Findings are limited to the stated scope, tests and assessment time.</span></footer>
+<script>document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>window.print()));(()=>{const t=document.createElement('div');t.className='viz-tip';t.setAttribute('role','tooltip');document.body.appendChild(t);
+const show=(el,x,y)=>{const [a,b]=(el.getAttribute('data-tip')||'').split('|');t.textContent='';const s=document.createElement('strong');s.textContent=a||'';t.appendChild(s);
+if(b){const d=document.createElement('span');d.textContent=b;t.appendChild(d)}t.style.display='block';const w=t.offsetWidth,h=t.offsetHeight;
+t.style.left=Math.min(x+14,innerWidth-w-8)+'px';t.style.top=Math.max(8,y-h-10)+'px'};
+document.querySelectorAll('[data-tip]').forEach(el=>{el.setAttribute('tabindex','0');
+el.addEventListener('pointermove',e=>show(el,e.clientX,e.clientY));el.addEventListener('pointerleave',()=>t.style.display='none');
+el.addEventListener('focus',()=>{const r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top)});el.addEventListener('blur',()=>t.style.display='none')})})();</script></body></html>

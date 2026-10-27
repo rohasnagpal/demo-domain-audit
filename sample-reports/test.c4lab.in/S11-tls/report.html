@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber360 TLS Report — test.c4lab.in:443</title><style>/* Cyber360 report theme: design tokens.
+   Change the look of every report here. Component styles live in report.css.
+   Severity and status colours carry meaning: keep them distinct from each other
+   and always paired with a text label or icon in the markup. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0c2538;          /* top bar, footer, dark nodes */
+  --accent:#28c76f;        /* top-bar rule */
+  --teal:#087f8c;          /* section headings, eyebrow text */
+  --green:#31b64b;         /* score bars */
+  --blue:#1787c9;
+  --amber:#eea72e;
+  --red:#d84a4a;
+  --page:#edf1f2;          /* outside the report column */
+  --paper:#ffffff;         /* report column and cards */
+  --wash:#f3f7f8;          /* subtle fills */
+
+  /* Text */
+  --ink:#14202b;
+  --muted:#667784;
+  --muted-2:#5d707b;
+
+  /* Lines */
+  --line:#d9e4e8;
+  --line-soft:#d7e3e6;
+  --border-strong:#a9c9d0;
+
+  /* Code blocks */
+  --code-bg:#0d2230;
+  --code-ink:#d7edf1;
+
+  /* Type */
+  --font-sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* Effects */
+  --shadow:0 12px 32px rgba(12,37,56,.08);
+
+  /* Severity scale (findings, bars, card borders). Ordered critical → informational. */
+  --sev-critical:#d03b3b;
+  --sev-high:#ec835a;
+  --sev-medium:#fab219;
+  --sev-low:#2a78d6;
+  --sev-informational:#8a8985;
+
+  /* Control status */
+  --st-good:#0ca30c;
+  --st-unknown:#b9c1c6;
+  --st-na:#e3e7e9;
+
+  /* Charts */
+  --series-1:#2a78d6;
+  --series-3:#1baf7a;
+  --chart-line:#c9d6da;    /* connectors and spokes */
+  --chart-arrow:#9fb1b8;   /* flow arrows and node outlines */
+  --chart-box:#f3f7f8;     /* flow-diagram boxes */
+  --chart-box-line:#c9d6da;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#52606b;
+  --viz-ink-3:#7d8a93;
+  --viz-grid:#e3e9eb;
+
+  /* Protocol matrix cells */
+  --cell-ok-bg:#dcf3dc;   --cell-ok-ink:#0a5c0a;
+  --cell-weak-bg:#fde7c4; --cell-weak-ink:#7a4c00;
+  --cell-bad-bg:#f8d4d4;  --cell-bad-ink:#8f1f1f;
+  --cell-off-bg:#f1f3f4;  --cell-off-ink:#7d8a93;
+}
+
+/* Cyber360 report theme: components.
+   Uses only variables from tokens.css for colour and type where practical.
+   Class names are a contract with the renderers - see the report-design skill in .claude/skills/report-design. */
+
+/* ==== Page shell: top bar, main column, report header, panels, footer ==== */
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:14px/1.55 var(--font-sans)}.topbar{height:74px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 max(28px,calc((100vw - 1180px)/2));position:sticky;top:0;z-index:4;box-shadow:0 3px 16px rgba(0,0,0,.16)}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#13a5ae,#36c65a);display:grid;place-items:center;font-weight:900;letter-spacing:-1px}.brand strong{display:block;font-size:18px}.brand small{color:#b8d3dd}.topbar button{border:1px solid #547080;background:#17384e;color:#fff;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}main{max-width:1180px;margin:auto;padding:38px 24px 72px}.report-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:24px}.eyebrow{color:var(--teal);font-weight:800;letter-spacing:.16em;font-size:12px}.report-head h1{font-size:34px;letter-spacing:-.03em;margin:3px 0}.report-head p{color:var(--muted);margin:0}.report-id{text-align:right}.report-id span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em}.report-id code{font-size:12px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:18px 0;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:18px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#f9fbfc)}.panel-head h2{font-size:18px;margin:0}.section-subtitle{color:var(--muted);font-size:12px;margin:2px 0 0}.score-layout{padding:28px;display:grid;grid-template-columns:190px 1fr;gap:34px;align-items:center}.grade{height:166px;border-radius:18px;background:linear-gradient(145deg,#1f9639,#43cc5b);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24),0 14px 30px rgba(49,182,75,.22)}.grade span{text-transform:uppercase;letter-spacing:.12em;font-size:11px}.grade strong{font-size:70px;line-height:1;font-weight:900}.grade small{opacity:.88}.grade-n-a{background:linear-gradient(145deg,#60717c,#8a9aa3);box-shadow:none}.score-row{margin:0 0 15px}.score-row>div:first-child{display:flex;justify-content:space-between;margin-bottom:6px}.track{height:10px;background:#e6eef0;border-radius:30px;overflow:hidden}.track i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:30px}.grade-basis,.empty{color:var(--muted);font-size:12px}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:12px}.metric-grid div{background:var(--wash);padding:16px;border-radius:10px}.metric-grid strong{display:block;font-size:28px}.metric-grid span{color:var(--muted);font-size:12px}.compact{margin-bottom:0}.assessment{margin:0 28px 24px;padding:20px 22px;background:#eff8fa;border-left:4px solid var(--teal);border-radius:8px}.assessment h3{margin:0 0 6px}.assessment p{margin:0}.notice{margin:0 28px 10px;border-radius:7px;padding:11px 14px;display:flex;gap:12px}.notice:last-child{margin-bottom:28px}.notice b{min-width:78px}.notice.warning{background:#fff5d8;border:1px solid #f0d675}.notice.info{background:#e8f5fb;border:1px solid #a9d8eb}.good-state{margin:24px;display:flex;gap:14px;align-items:center;background:#ecf9ef;border:1px solid #b9e5c2;padding:18px;border-radius:10px}.good-state>span{width:34px;height:34px;background:var(--green);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:900}.good-state p{margin:2px 0 0;color:#45624a}.good-state.small{padding:12px}.finding,.unknown,.subpanel{margin:18px 22px;border:1px solid var(--line);border-radius:10px;padding:18px}.finding{border-left-width:5px}.severity-critical{border-left-color:#961f1f}.severity-high{border-left-color:var(--red)}.severity-medium{border-left-color:var(--amber)}.severity-low{border-left-color:var(--blue)}.severity-informational{border-left-color:#8798a3}.finding-title>div,.subpanel-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.finding-title h3,.subpanel-title h3{margin:8px 0}.finding-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;background:var(--wash);padding:14px;border-radius:8px}.finding-grid h4,.finding-grid p{margin:0}.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;background:#e8eff2;color:#38505d;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.badge.pass,.badge.passed,.badge.supported,.badge.success,.badge.verified-fixed{background:#dff5e4;color:#177130}.badge.fail,.badge.failed,.badge.critical,.badge.high{background:#fbe1e1;color:#a12525}.badge.medium,.badge.warning,.badge.unknown{background:#fff1cd;color:#8b5b00}.badge.low,.badge.informational,.badge.observed{background:#e4f3fb;color:#176994}.data-list{margin:0}.data-row{display:grid;grid-template-columns:210px 1fr;border-top:1px solid #edf2f3;padding:9px 0}.data-row:first-child{border-top:0}.data-row dt{font-weight:700;color:#425763}.data-row dd{margin:0;overflow-wrap:anywhere}.subpanel-title{border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:8px}.table-wrap{overflow:auto;padding:8px 22px 22px}table{width:100%;border-collapse:collapse;min-width:700px}th{text-align:left;color:#526773;font-size:11px;text-transform:uppercase;letter-spacing:.06em;background:#f1f6f7}th,td{padding:10px 12px;border-bottom:1px solid #e6edef}.control-list,.tool-list{list-style:none;margin:0;padding:14px 22px 22px}.control-list li,.tool-list li{display:grid;grid-template-columns:150px 1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid #e6edef}.tool-list li{grid-template-columns:130px 1fr}.control-list small,.tool-list span{color:var(--muted)}.unknown>div{display:flex;justify-content:space-between}.unknown p:last-child{margin-bottom:0}.two-col{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.two-col .panel{margin:0}.two-col .data-list{padding:14px 22px 22px}.two-col .data-row{grid-template-columns:130px 1fr}.empty{padding:20px 22px;margin:0}.evidence-list{font-size:12px}footer{background:var(--navy);color:#bdd0d9;padding:26px max(28px,calc((100vw - 1180px)/2));display:flex;gap:20px;justify-content:space-between}footer strong{color:#fff}@media(max-width:760px){.topbar{padding:0 16px}.brand small{display:none}main{padding:24px 12px}.report-head,.score-layout,.two-col{display:block}.report-id{text-align:left;margin-top:16px}.score-details{margin-top:22px}.grade{max-width:180px}.data-row{grid-template-columns:1fr}.data-row dt{margin-bottom:3px}.finding-grid{grid-template-columns:1fr}.control-list li,.tool-list li{grid-template-columns:1fr}.report-head h1{font-size:27px}}@media print{body{background:#fff}.topbar{position:static}.topbar button{display:none}main{max-width:none;padding:20px}.panel{box-shadow:none;break-inside:avoid}.report-head h1{font-size:28px}footer{background:#fff;color:#555;border-top:1px solid #bbb}.grade{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* ==== TLS report (S11): grades, provider visuals and the compact report layout shared by all agents ==== */
+.grade-b,.grade-c{background:linear-gradient(145deg,#bd7800,#eea72e)}
+.grade-d,.grade-e,.grade-f,.grade-t,.grade-m{background:linear-gradient(145deg,#a52b2b,#d84a4a)}
+.padded{padding:14px 22px 22px}.api-messages{margin:0 22px 22px;padding:13px 16px;background:#eef8fb;border:1px solid #b8dce7;border-radius:9px}.api-messages h3{margin:0 0 7px;font-size:13px}.api-messages ul{margin:0;padding-left:20px}.api-value{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}.json-block{margin:10px 0 0;padding:14px;background:var(--code-bg);color:var(--code-ink);border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.5 var(--font-mono);max-height:none}.raw-response{margin:20px 22px}.raw-response summary{cursor:pointer;font-weight:800}
+.provider-visuals{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:22px}.endpoint-grades{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.endpoint-grade{background:linear-gradient(145deg,#1f9639,#43cc5b);color:#fff;border-radius:12px;padding:16px;text-align:center}.endpoint-grade span,.endpoint-grade small{display:block;overflow-wrap:anywhere}.endpoint-grade strong{display:block;font-size:38px;line-height:1.2}.cipher-chart{background:var(--wash);border-radius:12px;padding:15px}.cipher-chart h3{margin:0 0 10px}.chart-row{display:grid;grid-template-columns:80px 1fr 25px;gap:8px;align-items:center;margin:7px 0}.chart-row i{height:10px;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:10px}.chart-row b{text-align:right}
+.evidence-row{display:grid;grid-template-columns:150px 1fr 82px;gap:12px;align-items:center;margin:10px 0}.evidence-row strong{text-align:right;font-size:12px}.evidence-row .track{height:14px;border-radius:2px}.evidence-row .available{background:var(--green)}.evidence-row .absent{background:#aebbc2}.bar-note{margin:12px 0 0;color:var(--muted);font-size:11px}.disclosure{padding:0}.disclosure summary{cursor:pointer;font-weight:800;padding:13px 15px;background:#f5fafb;border-bottom:1px solid var(--line)}.disclosure .json-block{margin:0;border-radius:0;background:#f9fbfc;color:#213744}.report-block{padding:16px 20px;border-top:1px solid var(--line)}.report-block:first-child{border-top:0}.report-block>h3{margin:0;color:var(--teal);font-size:15px}.report-block>p{margin:2px 0 10px;color:var(--muted);font-size:11px}
+.notice.success{background:#ddf5e2;border:1px solid #8bd39b}.notice.caution{background:#ffe5b8;border:1px solid #e7b65b}
+.chain-card{margin:10px 14px;padding:10px 12px;border:1px solid var(--line);background:#fff}.chain-card h4{margin:0 0 7px;color:var(--teal)}.chain-card .table-wrap{padding:8px 0 0}
+/* Compact Cyber360 audit-report layout: similar density, independently designed. */
+body{background:var(--page);font-size:13px}.topbar{height:58px;border-top:5px solid var(--accent);background:var(--navy);padding:0 max(20px,calc((100vw - 1040px)/2));position:static}.brand-mark{width:34px;height:34px;border-radius:5px;font-size:11px}.brand strong{font-size:16px}.topbar button{padding:7px 11px;border-radius:3px}main{max-width:1040px;background:#fff;padding:24px 26px 56px}.report-head{align-items:start;margin-bottom:12px}.report-head h1{font-size:25px}.panel{border:1px solid var(--border-strong);border-radius:2px;margin:12px 0;box-shadow:none}.panel-head{padding:10px 14px;border-bottom:1px solid var(--border-strong);background:#f7fafb}.panel-head h2{font-size:15px}.score-layout{padding:18px;grid-template-columns:170px 1fr;gap:28px}.grade{height:145px;border-radius:6px}.grade strong{font-size:62px}.assessment{margin:0 18px 14px;padding:12px 14px;border-radius:2px}.notice{margin:0 18px 5px;border-radius:1px;padding:7px 10px;font-size:11px}.notice:last-child{margin-bottom:16px}.finding,.unknown,.subpanel{margin:10px 14px;border-radius:2px;padding:12px}.data-row{padding:6px 0}.table-wrap{padding:4px 14px 14px}th,td{padding:7px 9px}.provider-visuals{padding:8px 0 14px}.endpoint-grade{border-radius:4px;padding:10px}.endpoint-grade strong{font-size:32px}.cipher-chart{border-radius:2px;padding:10px}.good-state{margin:14px;border-radius:2px;padding:12px}.json-block{border-radius:2px}.api-messages{border-radius:2px}.raw-response{margin:14px}.two-col{gap:12px}footer{padding:18px max(20px,calc((100vw - 1040px)/2))}
+@media print{@page{size:A4;margin:12mm}body{font-size:10px}.panel,.subpanel,.chain-card{break-inside:auto!important}.panel-head,.finding,.data-row,tr{break-inside:avoid}.panel-head{break-after:avoid}.table-wrap{overflow:visible;padding:4px 8px 12px}table{min-width:0;font-size:8px}th,td{padding:5px}.json-block{font-size:7px}}
+
+/* ==== Agent reports (H1, S18): layout adjustments ==== */
+body{background:var(--page);font-size:13px}.topbar{height:58px;border-top:5px solid var(--accent);background:var(--navy);padding:0 max(20px,calc((100vw - 1100px)/2));position:static}
+main{max-width:1100px;background:#fff;padding:24px 26px 56px}.panel{border:1px solid var(--border-strong);border-radius:2px;margin:14px 0;box-shadow:none}
+.panel-head{padding:10px 14px;border-bottom:1px solid var(--border-strong);background:#f7fafb}.panel-head h2{font-size:16px}
+.padded{padding:10px 18px 16px}.data-row{grid-template-columns:200px 1fr}.data-row .about{color:var(--muted-2);font-size:11px;margin-top:4px}
+.unknown{margin:10px 14px;border-radius:2px;padding:12px}.related{padding:6px 18px 14px}
+
+/* ==== Findings, evidence, controls, methodology, glossary ==== */
+.finding-detail{margin:16px 14px;border:1px solid var(--line-soft);border-left:6px solid #8798a3;border-radius:4px;background:#fff}
+.finding-detail.severity-critical{border-left-color:var(--sev-critical)}.finding-detail.severity-high{border-left-color:var(--sev-high)}
+.finding-detail.severity-medium{border-left-color:var(--sev-medium)}.finding-detail.severity-low{border-left-color:var(--sev-low)}
+.finding-detail>header{padding:14px 18px;border-bottom:1px solid #e3ecee;background:#fafcfc}
+.finding-detail>header .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.finding-detail>header h3{margin:8px 0 4px;font-size:18px}.finding-meta{color:var(--muted-2);font-size:12px}
+.finding-body{padding:6px 18px 16px}.finding-body h4{margin:16px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+.finding-body p{margin:0 0 8px}.observed{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--wash);border:1px solid #dbe6e9;border-radius:3px;padding:10px 12px;font:12px/1.55 var(--font-mono)}
+.callout{background:#fff6e6;border-left:4px solid #eea72e;padding:10px 12px;border-radius:2px}
+.fix-steps{margin:0;padding-left:22px}.fix-steps li{margin:0 0 10px}
+pre.code{margin:6px 0 0;padding:10px 12px;background:var(--code-bg);color:var(--code-ink);border-radius:3px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 var(--font-mono)}
+.verify-grid{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;align-items:start}.verify-grid dt{font-weight:700;color:#425763}.verify-grid dd{margin:0}
+.ref-list{margin:0;padding-left:20px}.evidence-items{list-style:none;margin:0;padding:0}
+.evidence-items li{border:1px solid #e1eaec;border-radius:3px;padding:8px 10px;margin:0 0 8px}
+.evidence-items .meta{color:var(--muted-2);font-size:11px;margin:2px 0 6px}
+a.evidence-link{font-weight:700;text-decoration:none;color:#0b6f7a}a.evidence-link:hover{text-decoration:underline}
+.excerpt{margin:0;max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#f7fafb;padding:6px 8px;font:11px/1.45 var(--font-mono)}
+.summary-tiles{display:grid;grid-template-columns:repeat(8,minmax(80px,1fr));gap:8px;padding:16px}
+.summary-tiles div{background:var(--wash);border-radius:4px;padding:10px;text-align:center}.summary-tiles strong{display:block;font-size:26px;line-height:1.1}
+.summary-tiles span{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.05em}
+.tile-critical strong{color:var(--sev-critical)}.tile-high strong{color:#c4561f}.tile-medium strong{color:#a86b00}.tile-low strong{color:var(--sev-low)}.tile-pass strong{color:#177130}
+.narrative{padding:0 18px 8px}.narrative p{margin:0 0 10px}
+.control-table td:nth-child(4){min-width:280px}.control-table .about{color:var(--muted-2);font-size:11px;margin-top:3px}
+.toc{columns:2;padding:10px 22px 16px;margin:0}.toc li{margin:2px 0}
+.glossary dt{font-weight:700;margin-top:8px}.glossary dd{margin:2px 0 0 0;color:#38505d}.glossary{padding:4px 22px 18px}
+.badge.finding,.badge.confirmed{background:#fbe1e1;color:#a12525}.badge.not-applicable{background:#eef1f2;color:#5b6b74}
+@media(max-width:760px){.summary-tiles{grid-template-columns:repeat(4,1fr)}.toc{columns:1}.verify-grid{grid-template-columns:1fr}}
+@media print{.finding-detail{break-inside:auto}.excerpt{max-height:none}}
+
+/* ==== Charts (inline SVG and HTML) ==== */
+.viz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:14px}
+.viz-grid .wide{grid-column:1/-1}
+.viz-card{border:1px solid var(--line-soft);border-radius:4px;padding:12px 14px;background:var(--viz-surface);min-width:0}
+.viz-card h3{margin:0 0 2px;font-size:14px}.viz-card .viz-sub{margin:0 0 8px;color:var(--viz-ink-2);font-size:11.5px}
+.viz-card svg{display:block;width:100%;height:auto;overflow:visible}
+.viz-card svg text{font-family:inherit;fill:var(--viz-ink)}.viz-card svg .muted{fill:var(--viz-ink-2)}.viz-card svg .faint{fill:var(--viz-ink-3)}
+.viz-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;padding:0;list-style:none;font-size:11.5px;color:var(--viz-ink-2)}
+.viz-legend li{display:flex;align-items:center;gap:6px}.viz-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.viz-table{margin-top:8px;font-size:11.5px}.viz-table summary{cursor:pointer;color:var(--viz-ink-2)}
+.viz-table table{min-width:0;margin-top:6px}.viz-table td,.viz-table th{padding:4px 8px}
+[data-tip]{cursor:default}[data-tip]:hover,[data-tip]:focus{opacity:.82;outline:none}
+.viz-tip{position:fixed;z-index:20;pointer-events:none;background:var(--code-bg);color:#fff;padding:6px 9px;border-radius:4px;font-size:12px;line-height:1.35;max-width:320px;box-shadow:0 6px 18px rgba(0,0,0,.18);display:none}
+.viz-tip strong{display:block;font-size:13px}
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.check-tile{border:1px solid #dbe4e7;border-top:4px solid var(--st-unknown);border-radius:4px;padding:8px 10px;background:#fbfcfc}
+.check-tile .icon{font-weight:900;font-size:15px;margin-right:4px}.check-tile strong{font-size:13px}
+.check-tile .state{display:block;font-size:11px;color:var(--viz-ink-2);margin-top:3px}
+.check-tile.good{border-top-color:var(--st-good)}.check-tile.good .icon{color:#087a08}
+.check-tile.critical{border-top-color:var(--sev-critical)}.check-tile.critical .icon{color:var(--sev-critical)}
+.check-tile.high{border-top-color:var(--sev-high)}.check-tile.high .icon{color:#c4561f}
+.check-tile.medium{border-top-color:var(--sev-medium)}.check-tile.medium .icon{color:#a86b00}
+.check-tile.low{border-top-color:var(--sev-low)}.check-tile.low .icon{color:var(--sev-low)}
+.check-tile.informational{border-top-color:var(--sev-informational)}.check-tile.na{opacity:.7}
+.matrix td.cell{text-align:center;font-size:11.5px;font-weight:700;border:2px solid #fff}
+.matrix td.ok{background:var(--cell-ok-bg);color:var(--cell-ok-ink)}.matrix td.weak{background:var(--cell-weak-bg);color:var(--cell-weak-ink)}.matrix td.bad{background:var(--cell-bad-bg);color:var(--cell-bad-ink)}
+.matrix td.off{background:var(--cell-off-bg);color:var(--cell-off-ink);font-weight:400}
+.client-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.client-chips span{font-size:11px;border:1px solid var(--line-soft);border-radius:12px;padding:2px 8px;background:#f7fafb}
+.client-chips span b{font-weight:700}.client-chips .fail{border-color:#f0b4b4;background:#fdf0f0}
+.scroll-x{overflow-x:auto}
+@media(max-width:760px){.viz-grid{grid-template-columns:1fr}}
+@media print{.viz-tip{display:none!important}.viz-card{break-inside:avoid}}
+
+.viz-card svg text.on-dark{fill:#fff}
+.viz-table .table-wrap{padding:0;margin-top:6px}
+
+/* Cyber360 "assurance" theme: design tokens.
+   A calm, document-like audit theme: deep ink brand, one teal accent, and a
+   severity scale that does all the alarming. Component styles live in report.css.
+
+   Every colour variable from the default theme is redefined here with the same
+   name, so the charts (which read --sev-*, --st-*, --series-*, --chart-*, --cell-*)
+   restyle automatically. Type, spacing and radius variables are additions used
+   only by this theme's report.css.
+
+   Contrast against --paper (#fff), measured with WCAG 2 relative luminance:
+     text  --ink 17.5  --muted 5.9  --muted-2 8.3  --viz-ink-3 5.0  --teal 6.1
+     marks --sev-critical 6.9  --sev-high 4.3  --sev-medium 3.8  --sev-low 5.6
+           --sev-informational 5.0  --st-good 5.0  --st-unknown 5.7  --st-na 3.1
+           --series-1 5.8  --chart-arrow 3.8
+   Severity and status colours are never the only signal: every use in the markup
+   is paired with a text label or an icon, and report.css adds shape cues. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0b1a2a;          /* top bar, footer, dark chart nodes, step numbers */
+  --accent:#2bb5a5;        /* thin rule under the top bar (decorative, on navy) */
+  --teal:#0f6e6a;          /* links, eyebrow, "how to fix" emphasis */
+  --green:#16803c;         /* positive grades and evidence bars */
+  --blue:#1f63cf;
+  --amber:#b07800;
+  --red:#b3102e;
+  --page:#eef1f4;          /* behind the report */
+  --paper:#ffffff;         /* panels and cards */
+  --wash:#f6f7f9;          /* table heads, quiet fills */
+
+  /* Text */
+  --ink:#111a24;
+  --muted:#5b6573;         /* secondary text, 5.9:1 on paper, 5.5:1 on wash */
+  --muted-2:#454f5c;       /* labels (dt, meta), 8.3:1 */
+
+  /* Lines */
+  --line:#e1e5ea;          /* hairlines between rows */
+  --line-soft:#eaedf1;     /* inner dividers */
+  --border-strong:#c9d0d8; /* card and panel outlines */
+
+  /* Code blocks */
+  --code-bg:#0f1b28;
+  --code-ink:#dde6ef;      /* 14.6:1 on --code-bg */
+
+  /* Type: system fonts only, no downloads */
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono","DejaVu Sans Mono",monospace;
+  --fs-2xs:10.5px;         /* table heads, overlines */
+  --fs-xs:11.5px;          /* badges, meta, captions */
+  --fs-sm:12.5px;          /* code, secondary text */
+  --fs-base:14px;          /* body */
+  --fs-md:16px;            /* lede, card titles */
+  --fs-lg:19px;            /* section (panel) titles, finding titles */
+  --fs-xl:24px;            /* summary numbers */
+  --fs-2xl:30px;           /* report title */
+  --fs-display:64px;       /* evidence grade */
+  --lh-tight:1.25;
+  --lh-base:1.6;
+  --fw-medium:500;
+  --fw-semibold:600;
+  --fw-bold:700;
+
+  /* Spacing (4px base) */
+  --sp-1:4px;
+  --sp-2:8px;
+  --sp-3:12px;
+  --sp-4:16px;
+  --sp-5:24px;
+  --sp-6:32px;
+  --sp-7:48px;
+
+  /* Corner radii */
+  --radius-sm:4px;         /* badges, code, cells */
+  --radius:8px;            /* cards, notices */
+  --radius-lg:12px;        /* panels */
+  --radius-pill:999px;
+
+  /* Effects */
+  --shadow:0 1px 2px rgba(11,26,42,.06),0 4px 16px rgba(11,26,42,.05);
+
+  /* Severity scale (findings, bars, card bands). Ordered critical → informational:
+     hue runs from crimson to grey, and only critical and high get solid badges. */
+  --sev-critical:#b3102e;
+  --sev-high:#d9480f;
+  --sev-medium:#b07800;
+  --sev-low:#1f63cf;
+  --sev-informational:#667080;
+
+  /* Control status */
+  --st-good:#16803c;
+  --st-unknown:#7353b8;    /* violet: unverified, never confused with a pass or a severity */
+  --st-na:#8c949c;
+
+  /* Charts */
+  --series-1:#0e6f86;      /* neutral data series: petrol blue, distinct from --sev-low */
+  --series-3:#3d4f7c;
+  --chart-line:#c3cad3;    /* connectors and spokes */
+  --chart-arrow:#7b8591;   /* flow arrows and node outlines, 3.8:1 */
+  --chart-box:#f6f7f9;     /* flow-diagram boxes */
+  --chart-box-line:#c9d0d8;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#4c5663;     /* chart labels, 7.5:1 */
+  --viz-ink-3:#65707d;     /* faint chart text, still 5.0:1 */
+  --viz-grid:#e6e9ed;
+
+  /* Protocol matrix cells (every cell also carries a text label) */
+  --cell-ok-bg:#e2f1e7;   --cell-ok-ink:#145c2e;
+  --cell-weak-bg:#fbefd6; --cell-weak-ink:#6b4900;
+  --cell-bad-bg:#f9dfe4;  --cell-bad-ink:#8b0c24;
+  --cell-off-bg:#f1f3f5;  --cell-off-ink:#5b6573;
+}
+
+/* Cyber360 "assurance" theme: components.
+   Loads after the default theme, so every rule here restates the properties it
+   changes (backgrounds, borders, shadows) rather than relying on defaults.
+   Colours come from tokens.css. Toned components (badges, tiles, cards, notices)
+   set a local --tone and derive their tint and ink from it with color-mix(), so a
+   recoloured token restyles them; each such rule has a plain fallback first.
+   Class names are a contract with the renderers - see .claude/skills/report-design. */
+
+/* ==== Base ==== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:var(--fs-base)/var(--lh-base) var(--font-sans);font-feature-settings:"tnum" 1;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{line-height:var(--lh-tight);color:var(--ink)}
+a{color:var(--teal);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,summary:focus-visible,[data-tip]:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:2px}
+code{font:.92em/1.45 var(--font-mono);color:var(--ink);overflow-wrap:anywhere}
+::selection{background:#cfe8e5}
+
+/* ==== Page shell: top bar, main column, report heading, panels, footer ==== */
+.topbar{height:60px;position:static;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:0 max(20px,calc((100vw - 1080px)/2));background:var(--navy);color:#fff;border:0;border-bottom:3px solid var(--accent);box-shadow:none}
+.brand{display:flex;align-items:center;gap:var(--sp-3);min-width:0}
+.brand-mark{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:var(--radius);background:transparent;border:1.5px solid var(--accent);color:#fff;font:var(--fw-bold) 11px/1 var(--font-sans);letter-spacing:.02em}
+.brand strong{display:block;font-size:15px;font-weight:var(--fw-semibold);letter-spacing:.01em;line-height:1.2}
+.brand small{display:block;color:#b9c6d3;font-size:var(--fs-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar button{flex:none;padding:7px 14px;border:1px solid #4a5d70;border-radius:var(--radius-sm);background:transparent;color:#fff;font:var(--fw-semibold) var(--fs-sm)/1 var(--font-sans);cursor:pointer}
+.topbar button:hover{background:#1a2d42;border-color:#6e8296}
+
+main{max-width:1080px;margin:0 auto;padding:var(--sp-6) 20px var(--sp-7);background:transparent}
+
+.report-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--sp-5);margin:0 0 var(--sp-5);padding:0 0 var(--sp-5);border-bottom:1px solid var(--border-strong)}
+.report-head>div:first-child{min-width:0}
+.eyebrow{margin:0 0 var(--sp-2);color:var(--teal);font-size:var(--fs-xs);font-weight:var(--fw-bold);letter-spacing:.14em;text-transform:uppercase}
+.report-head h1{margin:0 0 var(--sp-2);font-size:var(--fs-2xl);font-weight:var(--fw-bold);letter-spacing:-.02em;overflow-wrap:anywhere}
+.report-head p{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.report-id{flex:none;max-width:100%;text-align:left;padding:var(--sp-2) var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.report-id span{display:block;margin:0 0 2px;color:var(--muted);font-size:var(--fs-2xs);font-weight:var(--fw-semibold);letter-spacing:.1em;text-transform:uppercase}
+.report-id code{display:block;font-size:var(--fs-sm);overflow-wrap:anywhere}
+
+.panel{margin:0 0 var(--sp-4);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:var(--sp-4) var(--sp-5);background:var(--paper);border-bottom:1px solid var(--line)}
+.panel-head h2{margin:0;font-size:var(--fs-lg);font-weight:var(--fw-semibold);letter-spacing:-.01em}
+.section-subtitle{margin:var(--sp-1) 0 0;color:var(--muted);font-size:var(--fs-sm);overflow-wrap:anywhere}
+.padded{padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.compact{margin-bottom:0}
+.related{margin:0;padding:var(--sp-3) var(--sp-5) 0;color:var(--muted);font-size:var(--fs-xs);font-weight:var(--fw-semibold);letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--line-soft)}
+.empty{margin:0;padding:var(--sp-4) var(--sp-5);color:var(--muted);font-size:var(--fs-sm)}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.two-col{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:var(--sp-4);margin:0 0 var(--sp-4)}
+.two-col .panel{margin:0}
+.two-col .data-list{padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.two-col .data-row{grid-template-columns:130px minmax(0,1fr)}
+
+footer{display:flex;justify-content:space-between;gap:var(--sp-5);padding:var(--sp-5) max(20px,calc((100vw - 1080px)/2));background:var(--navy);color:#b9c6d3;font-size:var(--fs-sm);border-top:3px solid var(--accent)}
+footer strong{color:#fff;font-weight:var(--fw-semibold)}
+
+/* ==== Contents list (also the findings index) ==== */
+.toc{columns:2;column-gap:var(--sp-6);margin:0;padding:var(--sp-3) var(--sp-5) var(--sp-4);list-style:none}
+.toc li{break-inside:avoid;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:0;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:var(--fs-base)}
+.toc a{font-weight:var(--fw-medium);text-decoration:none;color:var(--ink)}
+.toc a::before{content:"→";display:inline-block;margin-right:8px;color:var(--teal);font-weight:var(--fw-bold)}
+.toc a:hover{color:var(--teal);text-decoration:underline}
+#findings>.toc a,.toc:has(.badge) a{font-family:var(--font-mono);font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+#findings>.toc a::before,.toc:has(.badge) a::before{content:none}
+.toc .badge{flex:none}
+#findings>.toc,.toc:has(.badge){columns:1;padding-bottom:var(--sp-3)}
+#findings>.toc li,.toc:has(.badge) li{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;column-gap:var(--sp-3)}
+
+/* ==== Notices ==== */
+.notice{--tone:var(--sev-informational);display:flex;gap:var(--sp-3);align-items:baseline;margin:0 var(--sp-5) var(--sp-2);padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--tone);border-radius:var(--radius-sm);background:var(--wash);background:color-mix(in srgb,var(--tone) 7%,#fff);font-size:var(--fs-sm);color:var(--ink)}
+.notice:first-child{margin-top:var(--sp-4)}
+.notice:last-child{margin-bottom:var(--sp-5)}
+.notice b{flex:none;min-width:88px;color:var(--ink);color:color-mix(in srgb,var(--tone) 70%,#000);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase}
+.notice b::before{margin-right:6px;font-size:var(--fs-xs)}
+.notice span{min-width:0;overflow-wrap:anywhere}
+.notice.warning{--tone:var(--sev-medium);border:1px solid var(--line);border-left:3px solid var(--sev-medium);background:color-mix(in srgb,var(--sev-medium) 8%,#fff)}
+.notice.warning b::before{content:"▲"}
+.notice.info{--tone:var(--series-1);border:1px solid var(--line);border-left:3px solid var(--series-1);background:color-mix(in srgb,var(--series-1) 6%,#fff)}
+.notice.info b::before{content:"●";font-size:.7em;vertical-align:1px}
+.notice.success{--tone:var(--st-good);border:1px solid var(--line);border-left:3px solid var(--st-good);background:color-mix(in srgb,var(--st-good) 7%,#fff)}
+.notice.success b::before{content:"✓"}
+.notice.caution{--tone:var(--sev-high);border:1px solid var(--line);border-left:3px solid var(--sev-high);background:color-mix(in srgb,var(--sev-high) 7%,#fff)}
+.notice.caution b::before{content:"!"}
+
+/* ==== Badges: status and severity ====
+   Every badge already carries its word; a leading glyph adds a shape cue.
+   Only critical and high are solid, so the eye lands on them first. */
+.badge{--tone:var(--sev-informational);display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:2px 8px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--wash);color:var(--muted-2);font:var(--fw-bold) var(--fs-2xs)/1.5 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
+.badge::before{content:"";font-size:.95em;line-height:1}
+.badge.pass,.badge.passed,.badge.success,.badge.verified-fixed{--tone:var(--st-good)}
+.badge.fail,.badge.failed,.badge.finding,.badge.confirmed{--tone:var(--sev-critical)}
+.badge.unknown{--tone:var(--st-unknown)}
+/* "finding" and "unknown" are also card classes in the default theme: undo that box model on badges. */
+.badge.finding,.badge.unknown{margin:0;padding:2px 8px;border-width:1px;border-style:solid;border-radius:var(--radius-sm)}
+.badge.warning{--tone:var(--sev-medium)}
+.badge.critical{--tone:var(--sev-critical)}
+.badge.high{--tone:var(--sev-high)}
+.badge.medium{--tone:var(--sev-medium)}
+.badge.low{--tone:var(--sev-low)}
+.badge.informational{--tone:var(--sev-informational)}
+/* Tinted badges: tone at 10% behind tone-darkened ink (all at least 6:1). */
+.badge.pass,.badge.passed,.badge.success,.badge.verified-fixed,.badge.fail,.badge.failed,.badge.finding,.badge.confirmed,.badge.unknown,.badge.warning,.badge.medium,.badge.low,.badge.informational{border-color:var(--line);border-color:color-mix(in srgb,var(--tone) 30%,#fff);background:var(--wash);background:color-mix(in srgb,var(--tone) 10%,#fff);color:var(--ink);color:color-mix(in srgb,var(--tone) 70%,#000)}
+/* Solid badges: the two most urgent severities. */
+.badge.critical{border-color:var(--sev-critical);background:var(--sev-critical);color:#fff}
+.badge.high{border-color:#b83d0d;border-color:color-mix(in srgb,var(--sev-high) 85%,#000);background:#b83d0d;background:color-mix(in srgb,var(--sev-high) 85%,#000);color:#fff}
+.badge.critical::before{content:"◆"}
+.badge.high::before{content:"▲"}
+.badge.medium::before{content:"■";font-size:.8em}
+.badge.low::before{content:"●";font-size:.8em}
+.badge.informational::before{content:"○";font-size:.85em}
+.badge.pass::before,.badge.passed::before,.badge.success::before,.badge.verified-fixed::before{content:"✓"}
+.badge.fail::before,.badge.failed::before{content:"✕"}
+.badge.finding::before,.badge.confirmed::before{content:"!";font-weight:900}
+.badge.unknown::before{content:"?"}
+.badge.warning::before{content:"!"}
+/* Neutral facts: no judgement implied (a supported protocol is not necessarily good). */
+.badge.supported,.badge.not-supported,.badge.accepted,.badge.observed{border-color:var(--border-strong);background:var(--paper);color:var(--muted-2)}
+.badge.supported::before,.badge.accepted::before{content:"●";font-size:.7em}
+.badge.not-supported::before{content:"–"}
+.badge.observed::before{content:"◉";font-size:.8em}
+.badge.not-applicable{border:1px dashed var(--st-na);background:var(--paper);color:var(--muted)}
+.badge.not-applicable::before{content:"–"}
+.badge.not-started{border:1px dashed var(--border-strong);background:var(--paper);color:var(--muted-2)}
+.badge.not-started::before{content:"○"}
+
+/* ==== Executive summary ==== */
+.summary-tiles{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--sp-2);padding:var(--sp-5) var(--sp-5) var(--sp-4)}
+.summary-tiles div{--tone:var(--st-na);position:relative;min-width:0;padding:var(--sp-3) 10px 10px;background:var(--wash);border:1px solid var(--line);border-top:4px solid var(--line);border-radius:var(--radius);text-align:left}
+.summary-tiles strong{display:block;color:var(--ink);font-size:var(--fs-xl);font-weight:var(--fw-bold);line-height:1.1;letter-spacing:-.02em}
+.summary-tiles span{display:block;margin-top:var(--sp-1);color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-semibold);letter-spacing:.04em;text-transform:uppercase;overflow-wrap:normal;hyphens:auto}
+/* Severity tiles: white, a top band in the severity colour, number in that colour (large text, 3:1+). */
+.summary-tiles .tile-critical,.summary-tiles .tile-high,.summary-tiles .tile-medium,.summary-tiles .tile-low,.summary-tiles .tile-informational{background:var(--paper);border:1px solid var(--border-strong);border-top:4px solid var(--tone)}
+.summary-tiles .tile-critical{--tone:var(--sev-critical)}
+.summary-tiles .tile-high{--tone:var(--sev-high)}
+.summary-tiles .tile-medium{--tone:var(--sev-medium)}
+.summary-tiles .tile-low{--tone:var(--sev-low)}
+.summary-tiles .tile-informational{--tone:var(--sev-informational)}
+.tile-critical strong{color:var(--sev-critical)}.tile-high strong{color:var(--sev-high)}.tile-medium strong{color:var(--sev-medium)}
+.tile-low strong{color:var(--sev-low)}.tile-informational strong{color:var(--sev-informational)}
+.summary-tiles .tile-critical{background:color-mix(in srgb,var(--sev-critical) 5%,#fff)}
+.summary-tiles .tile-critical span::before{content:"◆ ";color:var(--sev-critical)}
+.summary-tiles .tile-high span::before{content:"▲ ";color:var(--sev-high)}
+/* Status tiles: quiet wash, no band; the pass tile has a green number and tick. */
+.summary-tiles .tile-pass{--tone:var(--st-good)}
+.tile-pass strong{color:var(--st-good)}
+.summary-tiles .tile-pass span::before{content:"✓ ";color:var(--st-good)}
+
+.narrative{max-width:78ch;padding:var(--sp-2) var(--sp-5) var(--sp-3)}
+.narrative p{margin:0 0 var(--sp-3);color:var(--ink)}
+.narrative p:first-child{font-size:var(--fs-md);line-height:1.55;font-weight:var(--fw-medium)}
+.narrative+.data-list{margin:0 var(--sp-5) var(--sp-5);padding:var(--sp-1) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+
+/* ==== Key facts and technical-detail rows ==== */
+.data-list{margin:0}
+.data-row{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--sp-4);padding:10px 0;border-top:1px solid var(--line-soft)}
+.data-row:first-child{border-top:0}
+.data-row dt{color:var(--muted-2);font-size:var(--fs-sm);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.data-row dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.data-row dd .observed{margin:var(--sp-1) 0 0}
+.data-row dd .observed:first-child{margin-top:0}
+.data-row .about{margin-top:var(--sp-1);color:var(--muted);font-size:var(--fs-xs)}
+.data-row .finding-meta{margin-top:var(--sp-1)}
+
+/* ==== Finding card ====
+   Header: severity band, badge, ID and title. Body: a label gutter on the left
+   (h4) and content on the right, one ruled row per sub-section. */
+.finding-detail{--tone:var(--sev-informational);margin:var(--sp-4) var(--sp-5) var(--sp-5);background:var(--paper);border:1px solid var(--border-strong);border-left:5px solid var(--tone);border-radius:var(--radius);overflow:hidden}
+.finding-detail.severity-critical{--tone:var(--sev-critical);border-left-color:var(--sev-critical)}
+.finding-detail.severity-high{--tone:var(--sev-high);border-left-color:var(--sev-high)}
+.finding-detail.severity-medium{--tone:var(--sev-medium);border-left-color:var(--sev-medium)}
+.finding-detail.severity-low{--tone:var(--sev-low);border-left-color:var(--sev-low)}
+.finding-detail.severity-informational{--tone:var(--sev-informational);border-left-color:var(--sev-informational)}
+.finding-detail>header{padding:var(--sp-4) var(--sp-5);background:var(--wash);background:color-mix(in srgb,var(--tone) 6%,#fff);border-bottom:1px solid var(--line)}
+.finding-detail>header .row{display:flex;justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:var(--sp-2) var(--sp-3)}
+.finding-detail>header .row code{color:var(--muted-2);font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+.finding-detail>header h3{margin:var(--sp-2) 0 var(--sp-1);font-size:var(--fs-lg);font-weight:var(--fw-semibold);letter-spacing:-.01em;overflow-wrap:anywhere}
+.finding-meta{color:var(--muted-2);font-size:var(--fs-xs);overflow-wrap:anywhere}
+
+.finding-body{display:grid;grid-template-columns:168px minmax(0,1fr);column-gap:var(--sp-5);padding:var(--sp-1) var(--sp-5) var(--sp-5);overflow:hidden}
+.finding-body>*{grid-column:2;margin:var(--sp-2) 0 0;min-width:0}
+.finding-body>h4{grid-column:1;position:relative;margin:0;padding:19px 0 0;color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.09em;line-height:1.4;text-transform:uppercase}
+.finding-body>h4::before{content:"";position:absolute;left:0;top:0;width:4000px;border-top:1px solid var(--line-soft)}
+.finding-body>h4:first-child::before{display:none}
+.finding-body>h4+*{margin-top:var(--sp-4)}
+.finding-body>h4:first-child,.finding-body>h4:first-child+*{padding-top:0;margin-top:var(--sp-3)}
+.finding-body>h4:first-child{padding-top:3px}
+.finding-body p{margin:var(--sp-2) 0 0}
+.finding-body>h4+p{margin-top:var(--sp-4)}
+.finding-body>h4:first-child+p{margin-top:var(--sp-3)}
+/* "How to fix it" is the section IT staff came for. */
+.finding-body>h4:has(+ .fix-steps){color:var(--teal)}
+.finding-body>h4:has(+ .fix-steps)::after{content:"Action";display:block;width:max-content;margin-top:6px;padding:1px 6px;border-radius:var(--radius-sm);background:var(--teal);color:#fff;font-size:9.5px;letter-spacing:.1em}
+
+/* What we found: evidence text, monospace, never truncated. */
+.observed{margin:0;padding:var(--sp-3) 14px;background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--border-strong);border-radius:var(--radius-sm);color:var(--ink);font:var(--fs-sm)/1.6 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.finding-body>.observed{border-left-color:var(--tone)}
+/* How an attacker would use it. */
+.callout{padding:var(--sp-3) 14px;background:var(--wash);border:0;border-left:3px solid var(--navy);border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:var(--ink)}
+/* How to fix it: numbered steps with code. */
+.fix-steps{counter-reset:fix;margin:0;padding:0;list-style:none}
+.fix-steps li{counter-increment:fix;position:relative;margin:0;padding:var(--sp-3) 0 var(--sp-3) 38px;border-top:1px solid var(--line-soft)}
+.fix-steps li:first-child{border-top:0;padding-top:0}
+.fix-steps li::before{content:counter(fix);position:absolute;left:0;top:10px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:var(--navy);color:#fff;font:var(--fw-bold) var(--fs-xs)/1 var(--font-sans)}
+.fix-steps li:first-child::before{top:-2px}
+.fix-steps li:last-child{padding-bottom:0}
+pre.code{margin:var(--sp-2) 0 0;padding:var(--sp-3) 14px;background:var(--code-bg);color:var(--code-ink);border:0;border-radius:var(--radius-sm);font:var(--fs-sm)/1.6 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;tab-size:2}
+/* How to verify the fix. */
+.verify-grid{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--sp-2) var(--sp-3);align-items:baseline;margin:0;padding:var(--sp-3) 14px;background:var(--wash);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.verify-grid dt{color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase}
+.verify-grid dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.verify-grid dd pre.code{margin:0}
+/* References. */
+.ref-list{margin:0;padding:0 0 0 18px}
+.ref-list li{margin:0 0 var(--sp-1);padding-left:2px;overflow-wrap:anywhere}
+.ref-list li::marker{color:var(--muted)}
+.ref-list a::after{content:" ↗";font-size:.85em;text-decoration:none}
+/* Evidence links and excerpts. */
+.evidence-items{margin:0;padding:0;list-style:none}
+.evidence-items li{margin:0 0 var(--sp-2);padding:10px var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-sm);overflow-wrap:anywhere}
+.evidence-items li>code{margin-left:var(--sp-2);font-size:var(--fs-sm);color:var(--muted-2)}
+.evidence-items .meta{margin:var(--sp-1) 0 var(--sp-2);color:var(--muted);font:var(--fs-xs)/1.5 var(--font-mono)}
+a.evidence-link{color:var(--teal);font:var(--fw-bold) var(--fs-sm)/1.4 var(--font-mono);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;overflow-wrap:anywhere}
+a.evidence-link:hover{text-decoration:underline;text-decoration-thickness:2px}
+.excerpt,pre.excerpt{margin:0;max-height:none;overflow:visible;padding:var(--sp-2) 10px;background:var(--wash);border-left:2px solid var(--border-strong);border-radius:0;color:var(--ink);font:var(--fs-xs)/1.55 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.evidence-list{font-size:var(--fs-sm)}
+.finding-body>.empty{padding:0;color:var(--muted)}
+
+/* No findings / nothing unresolved. */
+.good-state{display:flex;gap:var(--sp-3);align-items:flex-start;margin:var(--sp-5);padding:var(--sp-4) var(--sp-5);background:var(--wash);background:color-mix(in srgb,var(--st-good) 6%,#fff);border:1px solid var(--line);border-color:color-mix(in srgb,var(--st-good) 28%,#fff);border-radius:var(--radius)}
+.good-state>span{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--st-good);color:#fff;font-weight:var(--fw-bold);font-size:15px;line-height:1}
+.good-state strong{display:block;margin-top:3px;font-size:var(--fs-base);font-weight:var(--fw-semibold)}
+.good-state p{margin:var(--sp-1) 0 0;color:var(--muted-2);font-size:var(--fs-sm);max-width:72ch}
+.good-state.small{margin:var(--sp-4) var(--sp-5);padding:var(--sp-3) var(--sp-4);align-items:center}
+.good-state.small>span{width:22px;height:22px;font-size:12px}
+.good-state.small strong{margin-top:0;font-size:var(--fs-sm)}
+
+/* Older compact finding layout (TLS renderer fallback). */
+.finding:not(.badge),.subpanel{margin:var(--sp-4) var(--sp-5);padding:var(--sp-4);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.finding:not(.badge){--tone:var(--sev-informational);border-left:5px solid var(--tone)}
+.finding.severity-critical{--tone:var(--sev-critical);border-left-color:var(--sev-critical)}
+.finding.severity-high{--tone:var(--sev-high);border-left-color:var(--sev-high)}
+.finding.severity-medium{--tone:var(--sev-medium);border-left-color:var(--sev-medium)}
+.finding.severity-low{--tone:var(--sev-low);border-left-color:var(--sev-low)}
+.finding.severity-informational{border-left-color:var(--sev-informational)}
+.finding-title>div,.subpanel-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-2)}
+.finding-title>div{justify-content:flex-start}
+.finding-title h3,.subpanel-title h3{margin:var(--sp-2) 0;font-size:var(--fs-md);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.subpanel-title{margin-bottom:var(--sp-2);padding-bottom:var(--sp-2);border-bottom:1px solid var(--line)}
+.subpanel-title h3{margin:0}
+.finding-grid{display:grid;grid-template-columns:2fr 1fr;gap:var(--sp-4);margin-top:var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--wash);border-radius:var(--radius-sm)}
+.finding-grid h4{margin:0 0 var(--sp-1);color:var(--muted-2);font-size:var(--fs-2xs);letter-spacing:.09em;text-transform:uppercase}
+.finding-grid p{margin:0}
+
+/* ==== Tables: controls, methodology, technical tables ==== */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:var(--sp-2) var(--sp-5) var(--sp-5)}
+table{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;font-size:var(--fs-sm)}
+th{position:static;padding:9px 12px;background:var(--wash);color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.08em;text-transform:uppercase;text-align:left;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--border-strong)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:break-word}
+th:first-child{border-top-left-radius:var(--radius-sm)}th:last-child{border-top-right-radius:var(--radius-sm)}
+tbody tr:hover td{background:#fafbfc}
+td code{font-size:var(--fs-xs)}
+td .badge+.badge{margin-left:4px}
+.control-table td:first-child{white-space:nowrap}
+.control-table td:first-child code{font-weight:var(--fw-semibold)}
+.control-table td:nth-child(4){min-width:300px}
+.control-table .about{margin-top:var(--sp-1);color:var(--muted);font-size:var(--fs-xs)}
+.control-table td:nth-child(3) .badge{margin:0 4px 4px 0}
+.control-table td:nth-child(3) .badge+.badge{margin-left:0}
+td a.evidence-link{white-space:nowrap;margin-right:6px}
+#methodology td:nth-last-child(-n+2){white-space:nowrap}
+
+/* Lists of controls and tools. */
+.control-list,.tool-list{margin:0;padding:var(--sp-2) var(--sp-5) var(--sp-4);list-style:none}
+.control-list li,.tool-list li{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:var(--sp-3);align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.control-list li:last-child,.tool-list li:last-child{border-bottom:0}
+.control-list code{font-weight:var(--fw-semibold)}
+.control-list small{color:var(--muted);font:var(--fs-xs)/1.4 var(--font-mono)}
+.tool-list li{grid-template-columns:110px minmax(0,1fr)}
+.tool-list strong{font:var(--fw-semibold) var(--fs-sm)/1.4 var(--font-mono)}
+.tool-list span{color:var(--muted-2);font:var(--fs-xs)/1.5 var(--font-mono);overflow-wrap:anywhere}
+
+/* Unknowns: dashed violet edge = "not verified". Scoped to article: badges and
+   checklist tiles also carry the class "unknown". */
+article.unknown{margin:var(--sp-4) var(--sp-5);padding:var(--sp-3) var(--sp-4) var(--sp-4);background:var(--paper);border:1px dashed var(--border-strong);border-left:4px solid var(--st-unknown);border-radius:var(--radius)}
+article.unknown>div{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-2)}
+article.unknown>div code{font-weight:var(--fw-semibold);font-size:var(--fs-sm)}
+article.unknown p{margin:var(--sp-2) 0 0;overflow-wrap:anywhere}
+article.unknown p strong{color:var(--muted-2);font-weight:var(--fw-semibold)}
+article.unknown p:last-child{margin-bottom:0}
+
+/* Glossary. */
+.glossary{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr);margin:0;padding:var(--sp-2) var(--sp-5) var(--sp-4)}
+.glossary dt{margin:0;padding:10px var(--sp-4) 10px 0;font-weight:var(--fw-semibold);border-top:1px solid var(--line-soft);overflow-wrap:anywhere}
+.glossary dd{margin:0;padding:10px 0;color:var(--muted-2);border-top:1px solid var(--line-soft);overflow-wrap:anywhere}
+.glossary dt:first-of-type,.glossary dd:first-of-type{border-top:0}
+
+/* ==== S11: evidence grade, score bars, assessment, provider data ==== */
+.score-layout{display:grid;grid-template-columns:184px minmax(0,1fr);gap:var(--sp-6);align-items:center;padding:var(--sp-5)}
+.grade{--tone:var(--st-good);height:auto;min-height:168px;padding:var(--sp-4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:var(--radius-lg);background:var(--st-good);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -40px 60px rgba(0,0,0,.08)}
+.grade span{font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.14em;text-transform:uppercase;opacity:1}
+.grade strong{font-size:var(--fs-display);font-weight:var(--fw-bold);line-height:1;letter-spacing:-.03em}
+.grade small{font-size:var(--fs-sm);font-weight:var(--fw-semibold);opacity:1}
+.grade.grade-b,.grade.grade-c{background:#7b5400;background:color-mix(in srgb,var(--sev-medium) 78%,#000)}
+.grade.grade-d,.grade.grade-e{background:#a33a0b;background:color-mix(in srgb,var(--sev-high) 80%,#000)}
+.grade.grade-f,.grade.grade-t,.grade.grade-m{background:var(--sev-critical)}
+.grade.grade-n-a{background:var(--muted);box-shadow:none}
+.score-details{min-width:0}
+.score-row{margin:0 0 var(--sp-4)}
+.score-row>div:first-child{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3);margin-bottom:6px;font-size:var(--fs-sm)}
+.score-row>div:first-child span{color:var(--muted-2)}
+.score-row>div:first-child strong{font-size:var(--fs-md);font-weight:var(--fw-bold)}
+.track{height:8px;background:var(--viz-grid);border-radius:var(--radius-pill);overflow:hidden}
+.track i{display:block;height:100%;background:var(--teal);border-radius:var(--radius-pill)}
+.grade-basis{margin:var(--sp-2) 0 0;color:var(--muted);font-size:var(--fs-xs)}
+.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3)}
+.metric-grid div{padding:var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+.metric-grid strong{display:block;font-size:var(--fs-xl);font-weight:var(--fw-bold)}
+.metric-grid span{color:var(--muted-2);font-size:var(--fs-xs)}
+.assessment{margin:0 var(--sp-5) var(--sp-4);padding:var(--sp-4) var(--sp-5);background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--navy);border-radius:var(--radius-sm)}
+.assessment h3{margin:0 0 var(--sp-1);font-size:var(--fs-2xs);color:var(--muted-2);letter-spacing:.09em;text-transform:uppercase}
+.assessment p{margin:0;font-size:var(--fs-md)}
+.api-messages{margin:0 var(--sp-5) var(--sp-5);padding:var(--sp-3) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--series-1);border-radius:var(--radius-sm)}
+.api-messages h3{margin:0 0 var(--sp-2);font-size:var(--fs-sm)}
+.api-messages ul{margin:0;padding-left:20px}
+.api-value{font:var(--fs-xs)/1.5 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.json-block{margin:var(--sp-2) 0 0;padding:var(--sp-3) 14px;max-height:none;background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius-sm);font:var(--fs-xs)/1.55 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.raw-response{margin:var(--sp-4) var(--sp-5)}
+.raw-response summary,.disclosure summary{cursor:pointer;font-weight:var(--fw-semibold)}
+.provider-visuals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);padding:var(--sp-4) var(--sp-5)}
+.endpoint-grades{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--sp-2)}
+.endpoint-grade{padding:var(--sp-3);background:var(--st-good);color:#fff;border-radius:var(--radius);text-align:center}
+.endpoint-grade span,.endpoint-grade small{display:block;font-size:var(--fs-xs);overflow-wrap:anywhere}
+.endpoint-grade strong{display:block;font-size:32px;line-height:1.2;font-weight:var(--fw-bold)}
+.cipher-chart{padding:var(--sp-3) var(--sp-4);background:var(--wash);border:1px solid var(--line);border-radius:var(--radius)}
+.cipher-chart h3{margin:0 0 var(--sp-2);font-size:var(--fs-base)}
+.chart-row{display:grid;grid-template-columns:80px minmax(0,1fr) 28px;gap:var(--sp-2);align-items:center;margin:6px 0;font-size:var(--fs-xs)}
+.chart-row i{height:8px;background:var(--series-1);border-radius:var(--radius-pill)}
+.chart-row b{text-align:right}
+.evidence-row{display:grid;grid-template-columns:150px minmax(0,1fr) 82px;gap:var(--sp-3);align-items:center;margin:var(--sp-2) 0;font-size:var(--fs-sm)}
+.evidence-row strong{text-align:right;font-size:var(--fs-xs)}
+.evidence-row .track{height:12px;border-radius:var(--radius-sm)}
+.evidence-row .available{background:var(--st-good)}
+.evidence-row .absent{background:var(--st-na)}
+.bar-note{margin:var(--sp-3) 0 0;color:var(--muted);font-size:var(--fs-xs)}
+.disclosure{padding:0}
+.disclosure summary{padding:var(--sp-3) var(--sp-4);background:var(--wash);border-bottom:1px solid var(--line)}
+.disclosure .json-block{margin:0;border-radius:0;background:var(--wash);color:var(--ink)}
+.report-block{padding:var(--sp-4) var(--sp-5);border-top:1px solid var(--line)}
+.report-block:first-child{border-top:0}
+.report-block>h3{margin:0;color:var(--ink);font-size:var(--fs-md);font-weight:var(--fw-semibold)}
+.report-block>p{margin:2px 0 var(--sp-3);color:var(--muted);font-size:var(--fs-xs)}
+.chain-card{margin:var(--sp-3) var(--sp-4);padding:var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.chain-card h4{margin:0 0 var(--sp-2);color:var(--ink);font-size:var(--fs-sm)}
+.chain-card .table-wrap{padding:var(--sp-2) 0 0}
+
+/* ==== Charts ==== */
+.viz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);padding:var(--sp-5)}
+.viz-grid .wide{grid-column:1/-1}
+.viz-card{min-width:0;margin:0;padding:var(--sp-4) var(--sp-4) var(--sp-3);background:var(--viz-surface);border:1px solid var(--border-strong);border-radius:var(--radius)}
+.viz-card h3{margin:0;font-size:var(--fs-base);font-weight:var(--fw-semibold)}
+.viz-card .viz-sub{margin:2px 0 var(--sp-3);color:var(--viz-ink-2);font-size:var(--fs-xs)}
+.viz-card svg{display:block;width:100%;height:auto;overflow:visible}
+.viz-card svg text{font-family:var(--font-sans);fill:var(--viz-ink)}
+.viz-card svg .muted{fill:var(--viz-ink-2)}
+.viz-card svg .faint{fill:var(--viz-ink-3)}
+.viz-card svg text.on-dark{fill:#fff}
+.viz-card .scroll-x{margin:0 calc(-1 * var(--sp-2));padding:0 var(--sp-2)}
+/* No data for a chart: a dashed placeholder the same height as a small chart. */
+.viz-card>.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:120px;margin:0;padding:var(--sp-4);background:var(--wash);border:1px dashed var(--border-strong);border-radius:var(--radius-sm);color:var(--muted);font-size:var(--fs-sm);text-align:center}
+.viz-card>.empty::before{content:"No data";display:block;color:var(--muted-2);font-size:var(--fs-2xs);font-weight:var(--fw-bold);letter-spacing:.1em;text-transform:uppercase}
+.viz-legend{display:flex;flex-wrap:wrap;gap:6px var(--sp-4);margin:var(--sp-3) 0 0;padding:0;list-style:none;color:var(--viz-ink-2);font-size:var(--fs-xs)}
+.viz-legend li{display:flex;align-items:center;gap:6px}
+.viz-legend i{width:12px;height:12px;flex:none;display:inline-block;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(11,26,42,.28)}
+.viz-table{margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--line-soft);font-size:var(--fs-xs)}
+.viz-table summary{cursor:pointer;color:var(--teal);font-weight:var(--fw-semibold);width:max-content;max-width:100%}
+.viz-table table{min-width:0;margin-top:var(--sp-2);font-size:var(--fs-xs)}
+.viz-table td,.viz-table th{padding:5px 8px}
+[data-tip]{cursor:default}
+[data-tip]:hover,[data-tip]:focus{opacity:.85;outline:none}
+.viz-tip{position:fixed;z-index:20;display:none;max-width:320px;padding:7px 10px;pointer-events:none;background:var(--navy);color:#fff;border-radius:var(--radius-sm);font-size:var(--fs-xs);line-height:1.4;box-shadow:0 6px 20px rgba(11,26,42,.25)}
+.viz-tip strong{display:block;font-size:var(--fs-sm);font-weight:var(--fw-semibold)}
+
+/* Protection checklist tiles: coloured edge + icon disc + state text. */
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--sp-2)}
+.check-tile{--tone:var(--st-unknown);display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--sp-2);align-items:center;align-content:center;padding:10px var(--sp-3);background:var(--paper);border:1px solid var(--border-strong);border-left:4px solid var(--tone);border-radius:var(--radius-sm);opacity:1}
+.check-tile.good{--tone:var(--st-good)}
+.check-tile.critical{--tone:var(--sev-critical)}
+.check-tile.high{--tone:var(--sev-high)}
+.check-tile.medium{--tone:var(--sev-medium)}
+.check-tile.low{--tone:var(--sev-low)}
+.check-tile.informational{--tone:var(--sev-informational)}
+.check-tile.unknown{--tone:var(--st-unknown)}
+.check-tile.na{--tone:var(--st-na)}
+.check-tile.good,.check-tile.critical,.check-tile.high,.check-tile.medium,.check-tile.low,.check-tile.informational,.check-tile.unknown,.check-tile.na{border-top-color:var(--border-strong);border-left-color:var(--tone)}
+.check-tile.unknown{margin:0;padding:10px var(--sp-3);border-radius:var(--radius-sm)}
+.check-tile.unknown,.check-tile.na{border-style:dashed;border-left-style:solid;opacity:1}
+.check-tile.critical{background:color-mix(in srgb,var(--sev-critical) 5%,#fff)}
+.check-tile .icon,.check-tile.good .icon,.check-tile.critical .icon,.check-tile.high .icon,.check-tile.medium .icon,.check-tile.low .icon,.check-tile.informational .icon,.check-tile.unknown .icon,.check-tile.na .icon{grid-row:span 2;width:22px;height:22px;margin:0;display:grid;place-items:center;border-radius:50%;background:var(--tone);color:#fff;font-size:12px;font-weight:var(--fw-bold);line-height:1}
+.check-tile strong{font-size:var(--fs-sm);font-weight:var(--fw-semibold);overflow-wrap:anywhere}
+.check-tile .state{display:block;margin:0;color:var(--viz-ink-2);font-size:var(--fs-xs);line-height:1.35}
+
+/* Protocol x cipher matrix. */
+.matrix{border-collapse:separate;border-spacing:3px}
+.matrix th{border:0;border-radius:var(--radius-sm);white-space:normal;vertical-align:bottom}
+.matrix td{border-bottom:0}
+.matrix td.cell{padding:7px 8px;border:0;border-radius:var(--radius-sm);text-align:center;font-size:var(--fs-xs);font-weight:var(--fw-semibold);white-space:nowrap}
+.matrix td.ok{background:var(--cell-ok-bg);color:var(--cell-ok-ink)}
+.matrix td.weak{background:var(--cell-weak-bg);color:var(--cell-weak-ink)}
+.matrix td.bad{background:var(--cell-bad-bg);color:var(--cell-bad-ink);box-shadow:inset 0 0 0 1.5px var(--cell-bad-ink)}
+.matrix td.off{background:var(--cell-off-bg);color:var(--cell-off-ink);font-weight:400}
+tbody tr:hover .matrix td.cell{background:inherit}
+
+/* Client compatibility chips: the markup marks failures with a cross; passes get a tick here. */
+.client-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-3)}
+.client-chips span{padding:2px 8px;background:var(--paper);border:1px solid var(--border-strong);border-radius:var(--radius-sm);color:var(--ink);font-size:var(--fs-xs)}
+.client-chips span::before{content:"✓ ";color:var(--st-good);font-weight:var(--fw-bold)}
+.client-chips span b{font-weight:var(--fw-semibold)}
+.client-chips .fail{border-color:var(--sev-critical);background:color-mix(in srgb,var(--sev-critical) 7%,#fff);color:#7d0b20;color:color-mix(in srgb,var(--sev-critical) 70%,#000)}
+.client-chips .fail::before{content:none}
+
+/* ==== Narrow screens and A4: eight summary tiles become two rows of four ==== */
+@media (max-width:1000px){.summary-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media print{.summary-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* ==== Phone width ==== */
+@media screen and (max-width:760px){
+  .topbar{height:auto;min-height:54px;padding:8px 16px}
+  .brand small{display:none}
+  .topbar button{padding:6px 10px;font-size:var(--fs-xs)}
+  main{padding:var(--sp-4) 12px var(--sp-6)}
+  .report-head{display:block;padding-bottom:var(--sp-4);margin-bottom:var(--sp-4)}
+  .report-head h1{font-size:23px}
+  .report-id{margin-top:var(--sp-3)}
+  .panel{border-radius:var(--radius);margin-bottom:var(--sp-3)}
+  .panel-head{padding:var(--sp-3) var(--sp-4)}
+  .panel-head h2{font-size:17px}
+  .toc{columns:1;padding:var(--sp-2) var(--sp-4) var(--sp-3)}
+  #findings>.toc li,.toc:has(.badge) li{grid-template-columns:auto minmax(0,1fr)}
+  #findings>.toc li .badge,.toc:has(.badge) li .badge{grid-column:2;grid-row:1;justify-self:start}
+  .related,.empty{padding-left:var(--sp-4);padding-right:var(--sp-4)}
+  .notice{flex-direction:column;gap:2px;margin-left:var(--sp-4);margin-right:var(--sp-4)}
+  .summary-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:var(--sp-4)}
+  .summary-tiles div{display:flex;align-items:baseline;gap:var(--sp-2);padding:var(--sp-2) 10px}
+  .summary-tiles strong{font-size:20px;min-width:1.4em}
+  .summary-tiles span{margin:0;font-size:var(--fs-2xs);white-space:nowrap}
+  .narrative{padding:var(--sp-1) var(--sp-4) var(--sp-2)}
+  .narrative p:first-child{font-size:15px}
+  .narrative+.data-list{margin:0 var(--sp-4) var(--sp-4);padding:var(--sp-1) var(--sp-3)}
+  .padded,.two-col .data-list{padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .data-row,.two-col .data-row{grid-template-columns:1fr;gap:2px}
+  .finding-detail{margin:var(--sp-3) var(--sp-3) var(--sp-4);border-left-width:4px}
+  .finding-detail>header{padding:var(--sp-3) var(--sp-4)}
+  .finding-detail>header h3{font-size:17px}
+  .finding-body{display:block;padding:0 var(--sp-4) var(--sp-4)}
+  .finding-body>h4{padding:var(--sp-4) 0 0;margin:var(--sp-4) 0 0;border-top:1px solid var(--line-soft)}
+  .finding-body>h4::before{display:none}
+  .finding-body>h4:first-child{margin-top:0;border-top:0;padding-top:var(--sp-3)}
+  .finding-body>h4+*,.finding-body>h4+p,.finding-body>h4:first-child+*,.finding-body>h4:first-child+p{margin-top:var(--sp-2)}
+  .finding-body>h4:has(+ .fix-steps)::after{display:inline-block;margin:0 0 0 8px;vertical-align:1px}
+  .fix-steps li{padding-left:34px}
+  .verify-grid{grid-template-columns:1fr;gap:2px}
+  .verify-grid dd+dt{margin-top:var(--sp-2)}
+  .table-wrap{padding:var(--sp-1) var(--sp-4) var(--sp-4)}
+  .control-list,.tool-list{padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .control-list li,.tool-list li{grid-template-columns:1fr;gap:2px}
+  article.unknown{margin:var(--sp-3)}
+  .glossary{grid-template-columns:1fr;padding:var(--sp-1) var(--sp-4) var(--sp-3)}
+  .glossary dt{padding:10px 0 0}
+  .glossary dd{padding:2px 0 10px;border-top:0}
+  .two-col{display:block}
+  .two-col .panel{margin-bottom:var(--sp-3)}
+  .score-layout{display:block;padding:var(--sp-4)}
+  .grade{max-width:none;min-height:0;flex-direction:row;justify-content:flex-start;gap:var(--sp-4);padding:var(--sp-3) var(--sp-4)}
+  .grade strong{font-size:44px;order:-1}
+  .score-details{margin-top:var(--sp-4)}
+  .assessment,.api-messages{margin-left:var(--sp-4);margin-right:var(--sp-4)}
+  .finding:not(.badge),.subpanel{margin:var(--sp-3);padding:var(--sp-3)}
+  .finding-grid,.provider-visuals{grid-template-columns:1fr}
+  .evidence-row{grid-template-columns:1fr 60px}
+  .evidence-row .track{grid-column:1/-1;grid-row:2}
+  .viz-grid{grid-template-columns:1fr;gap:var(--sp-3);padding:var(--sp-4)}
+  .viz-card{padding:var(--sp-3)}
+  .checklist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  footer{flex-direction:column;gap:var(--sp-1);padding:var(--sp-4) 16px}
+}
+
+/* ==== Print (A4) ==== */
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  html,body{background:#fff}
+  body{font-size:9.5pt;line-height:1.5}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .topbar{position:static;height:auto;padding:0 0 6pt;background:#fff;color:var(--ink);border-bottom:1.5pt solid var(--navy)}
+  .topbar button{display:none}
+  .brand-mark{border-color:var(--navy);background:var(--navy);color:#fff}
+  .brand strong{color:var(--ink)}
+  .brand small{display:block;color:var(--muted)}
+  main{max-width:none;margin:0;padding:12pt 0 0}
+  .report-head{padding-bottom:10pt;margin-bottom:12pt;break-after:avoid}
+  .report-head h1{font-size:20pt}
+  .panel{margin:0 0 10pt;box-shadow:none;border-radius:6px;overflow:visible;break-inside:auto}
+  .panel-head{padding:7pt 10pt;break-after:avoid;break-inside:avoid}
+  .panel-head h2{font-size:13pt}
+  .toc li,.data-row,tr,.unknown,.evidence-items li,.fix-steps li,.notice,.check-tile,.summary-tiles div,.glossary dt{break-inside:avoid}
+  .summary-tiles{padding:10pt}
+  .finding-detail{margin:10pt;break-inside:auto;overflow:visible}
+  .finding-detail>header{break-inside:avoid;break-after:avoid}
+  /* Grid rows cannot split across pages, so the finding body stacks in print:
+     label above content, each sub-section free to break between paragraphs and steps. */
+  .finding-body{display:block;padding:0 12pt 12pt;overflow:visible}
+  .finding-body>h4{margin:10pt 0 0;padding:8pt 0 0;border-top:1px solid var(--line-soft);font-size:7pt;break-after:avoid}
+  .finding-body>h4::before{display:none}
+  .finding-body>h4:first-child{margin-top:0;border-top:0;padding-top:8pt}
+  .finding-body>h4+*,.finding-body>h4+p,.finding-body>h4:first-child+*,.finding-body>h4:first-child+p{margin-top:4pt}
+  .finding-body>h4:has(+ .fix-steps)::after{display:inline-block;margin:0 0 0 6pt;vertical-align:1px}
+  .finding-body p,.finding-body li{orphans:3;widows:3}
+  .observed,pre.code,.excerpt,pre.excerpt,.json-block{font-size:8pt;max-height:none;overflow:visible}
+  /* Code prints dark-on-light to save toner and stay legible when photocopied. */
+  pre.code,.json-block{background:var(--wash);color:var(--ink);border:1px solid var(--border-strong)}
+  .ref-list a::after{content:" — " attr(href);color:var(--muted);font-size:7.5pt;overflow-wrap:anywhere}
+  .evidence-items a.evidence-link::after{content:" (" attr(href) ")";color:var(--muted);font-weight:400}
+  .table-wrap{overflow:visible;padding:4pt 10pt 10pt}
+  table{min-width:0;font-size:8pt}
+  th{font-size:6.5pt;padding:4pt 5pt}
+  td{padding:4pt 5pt}
+  .matrix td.cell{font-size:7pt;padding:3pt}
+  thead{display:table-header-group}
+  tbody tr:hover td{background:transparent}
+  .control-table td:nth-child(4){min-width:0}
+  .control-table td:first-child,td a.evidence-link,#methodology td:nth-last-child(-n+2){white-space:normal}
+  .viz-grid{gap:8pt;padding:10pt}
+  .viz-card{break-inside:avoid;padding:8pt}
+  .viz-tip{display:none!important}
+  .viz-table{display:none}
+  .two-col{gap:8pt}
+  .grade{min-height:120pt}
+  footer{background:#fff;color:var(--muted);border-top:1pt solid var(--border-strong);padding:8pt 0}
+  footer strong{color:var(--ink)}
+  a{color:var(--ink)}
+  a.evidence-link{color:var(--teal)}
+}
+</style></head>
+<body><header class="topbar"><div class="brand"><span class="brand-mark">360</span><div><strong>Cyber360</strong><small>TLS &amp; Cryptography Security</small></div></div><button data-print>Print / Save PDF</button></header>
+<main>
+  <section class="report-head"><div><p class="eyebrow">S11 SECURITY ASSESSMENT</p><h1>TLS report: test.c4lab.in:443</h1><p>Point-in-time, evidence-based assessment generated 2026-10-27T11:38:09Z</p></div><div class="report-id"><span>Report ID</span><code>S11-test.c4lab.in-443-20261027T113759Z</code></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Other reports from this run</h2></div></header><ul class="toc"><li><a href="../H1-reconnaissance/report.html" target="_blank" rel="noopener">H1 Reconnaissance report</a></li><li><a href="../S18-email-domain/report.html" target="_blank" rel="noopener">S18 Email &amp; Domain Security report</a></li></ul></section>
+  <section class="panel"><header class="panel-head"><div><h2>Executive summary</h2><p class="section-subtitle">Observed posture and evidence coverage</p></div></header><div class="score-layout">
+        <div class="grade grade-n-a"><span>Evidence grade</span><strong>N/A</strong><small>Not scored</small></div>
+        <div class="score-details"><div class="score-row">
+                <div><span>Certificate (0% coverage)</span><strong>0</strong></div>
+                <div class="track"><i style="width:0%"></i></div>
+            </div><div class="score-row">
+                <div><span>Protocols (0% coverage)</span><strong>0</strong></div>
+                <div class="track"><i style="width:0%"></i></div>
+            </div><div class="score-row">
+                <div><span>Key Exchange (0% coverage)</span><strong>0</strong></div>
+                <div class="track"><i style="width:0%"></i></div>
+            </div><div class="score-row">
+                <div><span>Cipher Strength (0% coverage)</span><strong>0</strong></div>
+                <div class="track"><i style="width:0%"></i></div>
+            </div><p class="grade-basis">cyber360-tls-score-v1 applied to 0/16 applicable controls (0% evidence coverage); coverage 0% below 80% grading threshold</p></div>
+    </div><div class="assessment"><h3>Assessment</h3><p>Cyber360 evidence grade N/A (not scored) with 0% control coverage. 0 confirmed finding(s) and 16 unknown control(s).</p></div><div class="notice warning"><b>Limitation</b><span>Point-in-time observation from one client and network path.</span></div><div class="notice warning"><b>Limitation</b><span>Client simulations describe modeled handshakes, not tests from physical client devices.</span></div><div class="notice warning"><b>Limitation</b><span>HTTP header and dedicated TLS vulnerability checks were outside the standard profile.</span></div><div class="notice info"><b>Assumption</b><span>The observed endpoint is the intended TLS termination point.</span></div><div class="notice info"><b>Assumption</b><span>The local trust store represents the intended client trust context unless the authority statement says otherwise.</span></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>At a glance</h2><p class="section-subtitle">Hover or focus any mark for detail; each chart has a data table</p></div></header><div class="viz-root viz-grid"><figure class="viz-card" role="group" aria-label="Findings by severity"><h3>Findings by severity</h3><p class="viz-sub">0 confirmed findings</p><svg viewBox="0 0 460 158" role="img" aria-label="Findings by severity"><g data-tip="0 critical findings|Severity: Critical"><rect x="0" y="2" width="460" height="28" fill="transparent"/><text x="82" y="19" text-anchor="end" font-size="12" class="muted">Critical</text><line x1="92" x2="94" y1="15" y2="15" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="19" font-size="12" font-weight="700">0</text></g><g data-tip="0 high findings|Severity: High"><rect x="0" y="32" width="460" height="28" fill="transparent"/><text x="82" y="49" text-anchor="end" font-size="12" class="muted">High</text><line x1="92" x2="94" y1="45" y2="45" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="49" font-size="12" font-weight="700">0</text></g><g data-tip="0 medium findings|Severity: Medium"><rect x="0" y="62" width="460" height="28" fill="transparent"/><text x="82" y="79" text-anchor="end" font-size="12" class="muted">Medium</text><line x1="92" x2="94" y1="75" y2="75" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="79" font-size="12" font-weight="700">0</text></g><g data-tip="0 low findings|Severity: Low"><rect x="0" y="92" width="460" height="28" fill="transparent"/><text x="82" y="109" text-anchor="end" font-size="12" class="muted">Low</text><line x1="92" x2="94" y1="105" y2="105" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="109" font-size="12" font-weight="700">0</text></g><g data-tip="0 info findings|Severity: Info"><rect x="0" y="122" width="460" height="28" fill="transparent"/><text x="82" y="139" text-anchor="end" font-size="12" class="muted">Info</text><line x1="92" x2="94" y1="135" y2="135" stroke="var(--viz-grid)" stroke-width="14"/><text x="100.0" y="139" font-size="12" font-weight="700">0</text></g></svg><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Severity</th><th>Findings</th></tr></thead><tbody><tr><td>Critical</td><td>0</td></tr><tr><td>High</td><td>0</td></tr><tr><td>Medium</td><td>0</td></tr><tr><td>Low</td><td>0</td></tr><tr><td>Info</td><td>0</td></tr></tbody></table></div></details></figure><figure class="viz-card" role="group" aria-label="Control results"><h3>Control results</h3><p class="viz-sub">Unknown controls are never counted as passes</p><svg viewBox="0 0 340 160" role="img" aria-label="Control results"><circle cx="80" cy="80" r="54" fill="none" stroke="var(--st-unknown)" stroke-width="20" stroke-dasharray="339.29 339.29" stroke-dashoffset="-0.00" transform="rotate(-90 80 80)" data-tip="16 unknown|100% of 16 controls"/><text x="80" y="78" text-anchor="middle" font-size="26" font-weight="800">16</text><text x="80" y="96" text-anchor="middle" font-size="11" class="muted">controls</text><text x="190" y="40" font-size="12"><tspan font-weight="700">0</tspan><tspan class="muted"> Passed</tspan></text><rect x="174" y="30" width="10" height="10" rx="2" fill="var(--st-good)"/><text x="190" y="64" font-size="12"><tspan font-weight="700">0</tspan><tspan class="muted"> Findings</tspan></text><rect x="174" y="54" width="10" height="10" rx="2" fill="var(--sev-high)"/><text x="190" y="88" font-size="12"><tspan font-weight="700">16</tspan><tspan class="muted"> Unknown</tspan></text><rect x="174" y="78" width="10" height="10" rx="2" fill="var(--st-unknown)"/><text x="190" y="112" font-size="12"><tspan font-weight="700">0</tspan><tspan class="muted"> Not applicable</tspan></text><rect x="174" y="102" width="10" height="10" rx="2" fill="var(--st-na)"/></svg><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Result</th><th>Controls</th></tr></thead><tbody><tr><td>Passed</td><td>0</td></tr><tr><td>Findings</td><td>0</td></tr><tr><td>Unknown</td><td>16</td></tr><tr><td>Not applicable</td><td>0</td></tr></tbody></table></div></details></figure><figure class="viz-card wide" role="group" aria-label="Protocols and cipher families"><h3>Protocols and cipher families</h3><p class="viz-sub">Which cipher families each protocol version accepts; hover a cell for the suite names</p><div class="table-wrap" style="padding:0"><table class="matrix"><thead><tr><th>Protocol</th><th>Status</th><th>AEAD (GCM, ChaCha20)</th><th>CBC</th><th>Static RSA key exchange</th><th>64-bit block (3DES, IDEA)</th><th>NULL / EXPORT / RC4 / anon</th></tr></thead><tbody><tr><th>SSL 2.0</th><td class="cell off" data-tip="SSL 2.0|not supported">not supported</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr><tr><th>SSL 3.0</th><td class="cell off" data-tip="SSL 3.0|unknown">unknown</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr><tr><th>TLS 1.0</th><td class="cell off" data-tip="TLS 1.0|unknown">unknown</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr><tr><th>TLS 1.1</th><td class="cell off" data-tip="TLS 1.1|unknown">unknown</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr><tr><th>TLS 1.2</th><td class="cell off" data-tip="TLS 1.2|unknown">unknown</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr><tr><th>TLS 1.3</th><td class="cell off" data-tip="TLS 1.3|unknown">unknown</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td><td class="cell off">—</td></tr></tbody></table></div><ul class="viz-legend"><li><i style="background:var(--cell-ok-bg)"></i>Recommended / not accepted</li><li><i style="background:var(--cell-weak-bg)"></i>Legacy, weaker</li><li><i style="background:var(--cell-bad-bg)"></i>Insecure</li><li><i style="background:var(--cell-off-bg)"></i>Not offered</li></ul><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Protocol</th><th>Status</th><th>AEAD (GCM, ChaCha20)</th><th>CBC</th><th>Static RSA key exchange</th><th>64-bit block (3DES, IDEA)</th><th>NULL / EXPORT / RC4 / anon</th></tr></thead><tbody><tr><td>SSL 2.0</td><td>not_supported</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>SSL 3.0</td><td>unknown</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>TLS 1.0</td><td>unknown</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>TLS 1.1</td><td>unknown</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>TLS 1.2</td><td>unknown</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>TLS 1.3</td><td>unknown</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div></details></figure><figure class="viz-card" role="group" aria-label="Client compatibility"><h3>Client compatibility</h3><p class="viz-sub">No client simulation data was captured</p><p class="empty">Not tested.</p></figure><figure class="viz-card wide" role="group" aria-label="Expiry timeline"><h3>Expiry timeline</h3><p class="viz-sub">Certificate and registration validity against today</p><svg viewBox="0 -8 900 94" role="img" aria-label="Expiry timeline"><line x1="329.3" x2="329.3" y1="8" y2="68" stroke="var(--viz-ink)" stroke-width="2" stroke-dasharray="3 3"/><text x="329.3" y="4" text-anchor="middle" font-size="11" font-weight="800">Today 2026-10-27</text><text x="170" y="82" font-size="10.5" class="faint">2026-08-06</text><text x="880" y="82" font-size="10.5" class="faint" text-anchor="end">2027-08-06</text><g data-tip="Domain registration: 283 days left|2026-08-06 → 2027-08-06"><text x="160" y="34" text-anchor="end" font-size="12">Domain registration</text><rect x="170.0" y="22" width="710.0" height="16" rx="4" fill="var(--series-1)" opacity=".85"/><rect x="821.6" y="22" width="58.4" height="16" rx="4" fill="var(--sev-medium)"/><text x="880.0" y="52" font-size="11" text-anchor="end" class="muted">2027-08-06 · 283 days left</text></g></svg><ul class="viz-legend"><li><i style="background:var(--series-1)"></i>Valid period</li><li><i style="background:var(--sev-medium)"></i>Final 30 days (renew before this)</li></ul><details class="viz-table"><summary>Show data table</summary><div class="table-wrap"><table><thead><tr><th>Item</th><th>From</th><th>Until</th><th>Days left</th></tr></thead><tbody><tr><td>Domain registration</td><td>2026-08-06</td><td>2027-08-06</td><td>283</td></tr></tbody></table></div></details></figure></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Confirmed findings</h2><p class="section-subtitle">Risks meeting the Cyber360 evidence threshold</p></div></header><div class="good-state"><span>✓</span><div><strong>No confirmed findings</strong><p>No finding met the selected baseline evidence threshold. Review unknowns and limitations before drawing assurance conclusions.</p></div></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Certificate chain</h2><p class="section-subtitle">Identity, validity, trust and cryptographic properties</p></div></header><p class="empty">Certificate evidence was not supplied as structured report data.</p></section>
+  
+  <section class="panel"><header class="panel-head"><div><h2>Protocol configuration</h2><p class="section-subtitle">Observed handshake results for explicitly tested protocol versions</p></div></header><div class="table-wrap"><table><thead><tr><th>Protocol</th><th>Status</th><th>Negotiated cipher</th><th>Evidence</th></tr></thead><tbody><tr><td>SSL 2.0</td><td><span class="badge not-supported">not supported</span></td><td></td><td>E08-testssl-structured</td></tr><tr><td>scanProblem</td><td><span class="badge unknown">unknown</span></td><td></td><td>E08-testssl-structured</td></tr></tbody></table></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Cipher suites</h2><p class="section-subtitle">Observed or enumerated cipher configuration</p></div></header><p class="empty">No structured results recorded.</p></section>
+  <section class="panel"><header class="panel-head"><div><h2>Client simulations</h2><p class="section-subtitle">Compatibility observations; absent results are not inferred</p></div></header><p class="empty">No structured results recorded.</p></section>
+  <section class="panel"><header class="panel-head"><div><h2>Server features</h2><p class="section-subtitle">TLS-related capabilities and defensive configuration</p></div></header><p class="empty">No structured results recorded.</p></section>
+  <section class="panel"><header class="panel-head"><div><h2>Passed controls</h2><p class="section-subtitle">Only controls actually tested and satisfied</p></div></header><ul class="control-list"><li class="empty">No passed controls were supplied as structured data.</li></ul></section>
+  <section class="panel"><header class="panel-head"><div><h2>Every control checked</h2><p class="section-subtitle">Passes, findings and unknowns, each with what the control checks and its evidence</p></div></header><div class="table-wrap"><table class="control-table"><thead><tr><th>Control</th><th>Category</th><th>Result</th><th>Outcome and what the control checks</th><th>Evidence</th></tr></thead><tbody><tr><td><code>TLS-PROTO-001</code></td><td>Protocols</td><td><span class="badge unknown">unknown</span></td><td>Deprecated protocol result incomplete<div class="about">Checks that TLS 1.0 and TLS 1.1 are not offered. Both were formally deprecated by RFC 8996 in 2021 and are disabled in all major browsers.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-PROTO-002</code></td><td>Protocols</td><td><span class="badge unknown">unknown</span></td><td>Modern protocol result incomplete<div class="about">Checks that at least one current protocol (TLS 1.2 or TLS 1.3) is offered.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-PROTO-003</code></td><td>Protocols</td><td><span class="badge unknown">unknown</span></td><td>SSL protocol result incomplete<div class="about">Checks that SSL 2.0 and SSL 3.0 are not offered. Both are fundamentally broken (DROWN, POODLE).</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-001</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the certificate has not expired.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-002</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the certificate&#x27;s validity has started (notBefore is in the past).</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-006</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the certificate does not expire within 30 days.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-003</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the certificate&#x27;s Subject Alternative Names include the requested hostname.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-004</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the presented chain validates to a trusted root, including any required intermediate certificates.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CERT-005</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks whether the chain ends at a trust anchor that public clients do not recognise, such as a private CA.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-KEY-001</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that an RSA certificate key is at least 2048 bits.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-SIG-001</code></td><td>Certificate</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that the certificate is not signed with MD5 or SHA-1.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CIPHER-001</code></td><td>Cipher suites</td><td><span class="badge unknown">unknown</span></td><td>; ; ; <div class="about">Checks that no prohibited cipher suites (NULL, anonymous, EXPORT, RC4 and similar) are accepted.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CIPHER-002</code></td><td>Cipher suites</td><td><span class="badge unknown">unknown</span></td><td>Cipher enumeration unavailable<div class="about">Checks that static RSA key-exchange suites (TLS_RSA_WITH_*) are not accepted, because they provide no forward secrecy.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CIPHER-003</code></td><td>Cipher suites</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that 64-bit block ciphers (3DES, IDEA) are not accepted; they are vulnerable to Sweet32 birthday attacks.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-CIPHER-004</code></td><td>Cipher suites</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks whether cipher suites using CBC mode are accepted. CBC suites are not broken when the server is patched, but they rely on a separate MAC and have a long history of padding-oracle and timing attacks (Lucky13, POODLE-TLS, GOLDENDOODLE). Modern guidance prefers AEAD suites (AES-GCM, ChaCha20-Poly1305) only.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr><tr><td><code>TLS-FS-001</code></td><td>Key exchange</td><td><span class="badge unknown">unknown</span></td><td><div class="about">Checks that forward-secret key exchange (ECDHE or DHE) is supported.</div></td><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td></tr></tbody></table></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Unknowns and evidence gaps</h2><p class="section-subtitle">Items that remain unresolved are not treated as passes</p></div></header><article class="unknown"><div><code>TLS-PROTO-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> Deprecated protocol result incomplete</p>
+        <p><strong>How to resolve it:</strong> Checks that TLS 1.0 and TLS 1.1 are not offered. Both were formally deprecated by RFC 8996 in 2021 and are disabled in all major browsers.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-PROTO-002</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> Modern protocol result incomplete</p>
+        <p><strong>How to resolve it:</strong> Checks that at least one current protocol (TLS 1.2 or TLS 1.3) is offered.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-PROTO-003</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> SSL protocol result incomplete</p>
+        <p><strong>How to resolve it:</strong> Checks that SSL 2.0 and SSL 3.0 are not offered. Both are fundamentally broken (DROWN, POODLE).</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the certificate has not expired.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-002</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the certificate&#x27;s validity has started (notBefore is in the past).</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-006</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the certificate does not expire within 30 days.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-003</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the certificate&#x27;s Subject Alternative Names include the requested hostname.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-004</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the presented chain validates to a trusted root, including any required intermediate certificates.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CERT-005</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks whether the chain ends at a trust anchor that public clients do not recognise, such as a private CA.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-KEY-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that an RSA certificate key is at least 2048 bits.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-SIG-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that the certificate is not signed with MD5 or SHA-1.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CIPHER-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> ; ; ; </p>
+        <p><strong>How to resolve it:</strong> Checks that no prohibited cipher suites (NULL, anonymous, EXPORT, RC4 and similar) are accepted.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CIPHER-002</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> Cipher enumeration unavailable</p>
+        <p><strong>How to resolve it:</strong> Checks that static RSA key-exchange suites (TLS_RSA_WITH_*) are not accepted, because they provide no forward secrecy.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CIPHER-003</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that 64-bit block ciphers (3DES, IDEA) are not accepted; they are vulnerable to Sweet32 birthday attacks.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-CIPHER-004</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks whether cipher suites using CBC mode are accepted. CBC suites are not broken when the server is patched, but they rely on a separate MAC and have a long history of padding-oracle and timing attacks (Lucky13, POODLE-TLS, GOLDENDOODLE). Modern guidance prefers AEAD suites (AES-GCM, ChaCha20-Poly1305) only.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article><article class="unknown"><div><code>TLS-FS-001</code><span class="badge unknown">unknown</span></div>
+        <p><strong>Why it is unknown:</strong> The structured evidence did not establish pass or failure.</p>
+        <p><strong>How to resolve it:</strong> Checks that forward-secret key exchange (ECDHE or DHE) is supported.</p>
+        <p class="finding-meta">Evidence: <a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></p></article></section>
+  <section class="panel"><header class="panel-head"><div><h2>Methodology and evidence</h2><p class="section-subtitle">Every command run, why it was run and its raw output (opens in a new tab)</p></div></header><div class="table-wrap"><table><thead><tr><th>Evidence</th><th>Command</th><th>Purpose</th><th>Exit</th><th>Captured (UTC)</th></tr></thead><tbody><tr><td><a class="evidence-link" href="evidence/E01-openssl-version.txt" target="_blank" rel="noopener">E01-openssl-version ↗</a></td><td><code>openssl version</code></td><td>Records the OpenSSL version used for the handshakes.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/E02-testssl-version.txt" target="_blank" rel="noopener">E02-testssl-version ↗</a></td><td><code>testssl.sh --version</code></td><td>Records the testssl.sh version used for enumeration.</td><td>0</td><td>2026-10-27T11:37:59Z</td></tr><tr><td><a class="evidence-link" href="evidence/E03-presented-chain.txt" target="_blank" rel="noopener">E03-presented-chain ↗</a></td><td><code>openssl s_client -connect test.c4lab.in:443 -servername test.c4lab.in -showcerts</code></td><td>Retrieves the certificate chain the server presents (openssl s_client -showcerts) without judging trust.</td><td>0</td><td>2026-10-27T11:38:00Z</td></tr><tr><td><a class="evidence-link" href="evidence/leaf.pem" target="_blank" rel="noopener">E04-leaf-certificate ↗</a></td><td><code>openssl s_client -connect test.c4lab.in:443 -servername test.c4lab.in -showcerts</code></td><td>Preserves the leaf certificate extracted from the presented chain.</td><td>0</td><td>2026-10-27T11:38:01Z</td></tr><tr><td><a class="evidence-link" href="evidence/E05-certificate-inspection.txt" target="_blank" rel="noopener">E05-certificate-inspection ↗</a></td><td><code>openssl x509 -in /Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/leaf.pem -noout -subject -issuer -serial -dates -fingerprint -sha256 -text</code></td><td>Decodes the leaf certificate: subject, issuer, validity dates, key, signature and extensions.</td><td>0</td><td>2026-10-27T11:38:01Z</td></tr><tr><td><a class="evidence-link" href="evidence/E06-identity-and-trust.txt" target="_blank" rel="noopener">E06-identity-and-trust ↗</a></td><td><code>openssl s_client -connect test.c4lab.in:443 -servername test.c4lab.in -verify_hostname test.c4lab.in -verify_return_error -brief</code></td><td>Performs a strict handshake that verifies the hostname (or IP) and the trust chain, and fails on any error.</td><td>0</td><td>2026-10-27T11:38:01Z</td></tr><tr><td><a class="evidence-link" href="evidence/E07-testssl-raw.txt" target="_blank" rel="noopener">E07-testssl-raw ↗</a></td><td><code>testssl.sh --quiet --warnings batch --color 0 --mapping iana --server-defaults --server-preference --protocols --categories --forward-secrecy --cipher-per-proto --client-simulation --jsonfile-pretty /Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json --overwrite test.c4lab.in:443</code></td><td>Runs testssl.sh to enumerate protocols, cipher suites per protocol, forward secrecy, server defaults and client simulations.</td><td>246</td><td>2026-10-27T11:38:02Z</td></tr><tr><td><a class="evidence-link" href="evidence/testssl-pretty.json" target="_blank" rel="noopener">E08-testssl-structured ↗</a></td><td><code>testssl.sh --quiet --warnings batch --color 0 --mapping iana --server-defaults --server-preference --protocols --categories --forward-secrecy --cipher-per-proto --client-simulation --jsonfile-pretty /Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json --overwrite test.c4lab.in:443</code></td><td>Preserves testssl.sh&#x27;s structured JSON, from which the tables and controls in this report are built.</td><td>246</td><td>2026-10-27T11:38:09Z</td></tr></tbody></table></div></section>
+  <section class="panel"><header class="panel-head"><div><h2>Glossary</h2><p class="section-subtitle">Terms used in this report</p></div></header><dl class="glossary"><dt>TLS</dt><dd>Transport Layer Security, the protocol that encrypts HTTPS. Versions 1.2 and 1.3 are current; 1.0 and 1.1 are deprecated (RFC 8996).</dd><dt>Cipher suite</dt><dd>The combination of key exchange, authentication, bulk encryption and integrity algorithms negotiated for a connection, for example TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256.</dd><dt>AEAD</dt><dd>Authenticated Encryption with Associated Data (AES-GCM, ChaCha20-Poly1305): modern modes that encrypt and authenticate in one step.</dd><dt>CBC</dt><dd>Cipher Block Chaining: an older mode that relies on a separate MAC and has a long history of padding-oracle and timing attacks.</dd><dt>Forward secrecy</dt><dd>Ephemeral (EC)DHE key exchange ensures that a stolen server private key cannot decrypt previously recorded traffic.</dd><dt>SAN</dt><dd>Subject Alternative Name: the list of hostnames and IP addresses a certificate is valid for.</dd><dt>Chain of trust</dt><dd>The path from the server&#x27;s certificate through intermediate certificates to a root certificate trusted by the client.</dd></dl></section>
+  <section class="two-col">
+    <section class="panel"><header class="panel-head"><div><h2>Scope and authority</h2></div></header><dl class="data-list"><div class="data-row"><dt>Target</dt><dd>test.c4lab.in</dd></div><div class="data-row"><dt>Port</dt><dd>443</dd></div><div class="data-row"><dt>Identifier type</dt><dd>hostname</dd></div><div class="data-row"><dt>Authority</dt><dd>yes</dd></div><div class="data-row"><dt>Started</dt><dd>2026-10-27T11:37:59Z</dd></div><div class="data-row"><dt>Completed</dt><dd>2026-10-27T11:38:09Z</dd></div><div class="data-row"><dt>Exclusions</dt><dd>All other hosts and ports, Credential testing, Exploitation, Configuration changes</dd></div></dl></section>
+    <section class="panel"><header class="panel-head"><div><h2>Tools</h2><p class="section-subtitle">Locally executed tooling recorded by the assessment</p></div></header><ul class="tool-list"><li><strong>OpenSSL</strong><span>OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)</span></li><li><strong>testssl.sh</strong><span>[1mtestssl.sh[m version [1m3.2.4[m from [1mhttps://testssl.sh/[m</span></li></ul></section>
+  </section>
+</main>
+<footer><strong>Cyber360</strong><span>Local-first evidence. Findings are limited to the stated scope, tests and assessment time.</span></footer>
+<script>document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>window.print()));(()=>{const t=document.createElement('div');t.className='viz-tip';t.setAttribute('role','tooltip');document.body.appendChild(t);
+const show=(el,x,y)=>{const [a,b]=(el.getAttribute('data-tip')||'').split('|');t.textContent='';const s=document.createElement('strong');s.textContent=a||'';t.appendChild(s);
+if(b){const d=document.createElement('span');d.textContent=b;t.appendChild(d)}t.style.display='block';const w=t.offsetWidth,h=t.offsetHeight;
+t.style.left=Math.min(x+14,innerWidth-w-8)+'px';t.style.top=Math.max(8,y-h-10)+'px'};
+document.querySelectorAll('[data-tip]').forEach(el=>{el.setAttribute('tabindex','0');
+el.addEventListener('pointermove',e=>show(el,e.clientX,e.clientY));el.addEventListener('pointerleave',()=>t.style.display='none');
+el.addEventListener('focus',()=>{const r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top)});el.addEventListener('blur',()=>t.style.display='none')})})();</script></body></html>

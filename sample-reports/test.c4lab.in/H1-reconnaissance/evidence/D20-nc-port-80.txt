@@ -1,0 +1,14 @@
+Cyber360 evidence D20-nc-port-80
+==============================================================================
+Command:      nc -zv -w 2 test.c4lab.in 80
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+(empty)
+
+--- stderr ---
+Connection to test.c4lab.in port 80 [tcp/http] succeeded!
+

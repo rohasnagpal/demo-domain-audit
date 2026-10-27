@@ -1,0 +1,12 @@
+{
+  "evidence_id": "E02-testssl-version",
+  "command": [
+    "testssl.sh",
+    "--version"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:38:00Z",
+  "exit_status": 0,
+  "stdout": "\n\u001b[1m\n#####################################################################\u001b[m\n  \u001b[1mtestssl.sh\u001b[m version \u001b[1m3.2.4\u001b[m from \u001b[1mhttps://testssl.sh/\u001b[m\n\u001b[1m\n  This program is free software. Distribution and modification under\n  GPLv2 permitted. USAGE w/o ANY WARRANTY. USE IT AT YOUR OWN RISK!\u001b[m\n\n  Please file bugs @ \u001b[1mhttps://testssl.sh/bugs/\u001b[m\n\u001b[1m#####################################################################\u001b[m\n\n  Using \u001b[3mOpenSSL 4.0.3 (Sep 29 2026)\u001b[m  [~96 ciphers]\n  on Samairahs-MacBook-Air:/opt/homebrew/opt/openssl@4/bin/openssl\n  built: \u001b[3mTue Sep 29 13:44:55 2026\u001b[m, platform: \u001b[3mdarwin64-arm64-cc\u001b[m\n  Using \u001b[3mbash 3.2.57\u001b[m\n\n",
+  "stderr": ""
+}

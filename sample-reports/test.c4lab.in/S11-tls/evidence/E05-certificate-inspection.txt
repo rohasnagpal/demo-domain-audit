@@ -1,0 +1,110 @@
+Cyber360 evidence E05-certificate-inspection
+==============================================================================
+Command:      openssl x509 -in /Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/leaf.pem -noout -subject -issuer -serial -dates -fingerprint -sha256 -text
+Started:      2026-10-27T11:38:01Z
+Completed:    2026-10-27T11:38:01Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+subject=CN=www.test.c4lab.in
+issuer=C=US, O=Let's Encrypt, CN=YR1
+serial=0665ACA70EE6D3485E818AD6358DCAD22180
+notBefore=Oct 27 08:25:27 2026 GMT
+notAfter=Jan 25 08:25:26 2027 GMT
+sha256 Fingerprint=BE:14:B4:2B:2D:A5:47:DC:58:6E:85:64:7C:C3:07:B1:A1:0D:CC:A4:0D:A6:AD:35:03:6E:CC:D0:CD:D0:BE:60
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            06:65:ac:a7:0e:e6:d3:48:5e:81:8a:d6:35:8d:ca:d2:21:80
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Let's Encrypt, CN=YR1
+        Validity
+            Not Before: Oct 27 08:25:27 2026 GMT
+            Not After : Jan 25 08:25:26 2027 GMT
+        Subject: CN=www.test.c4lab.in
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    91:4f:5b:95:6c:b3:40:da:91:b3:5c:0f:aa:09:50:1a:
+                    b9:96:80:11:6e:ee:1c:a0:4f:45:67:9b:22:95:32:16:
+                    9e:71:db:30:d5:b6:17:9f:a5:a7:f0:e7:9f:d1:a0:2f:
+                    49:f8:fa:71:a8:2e:45:81:29:a3:ca:d7:cf:b7:7b:8c:
+                    c8:e4:5a:b0:63:25:5c:73:25:0e:56:21:3e:bd:24:70:
+                    93:87:9f:3b:fb:b1:6e:92:48:76:bb:e0:3d:45:95:22:
+                    4e:d2:de:6c:6e:ca:87:a5:55:9d:5c:d7:b9:4f:a3:a5:
+                    89:68:cf:6e:cd:c6:8f:5a:3c:b0:88:05:6a:bd:ef:c6:
+                    c8:31:83:69:0e:11:1a:3e:4a:67:e7:2f:34:a2:71:27:
+                    69:25:7b:0e:f5:89:ad:05:53:4a:3d:27:dc:cc:ab:d9:
+                    2f:e4:be:f5:0c:f2:eb:2c:cb:c4:8d:53:4a:08:63:a5:
+                    a1:3e:65:6e:91:97:ce:44:d1:a4:8f:2e:17:80:5a:a4:
+                    ab:2f:f7:1f:7c:12:60:f8:15:3c:d2:ba:68:9b:88:32:
+                    9d:64:25:61:97:1c:e5:25:c7:bf:b7:ec:2a:9e:74:1e:
+                    90:3b:9b:4a:c0:12:c1:d1:89:48:dd:fa:71:c8:4a:ca:
+                    c2:07:54:b2:42:40:46:7f:0e:02:9b:b6:37:83:32:2f
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                CF:DB:30:87:D8:38:68:87:22:63:7E:63:13:A0:4B:D7:C1:21:31:40
+            X509v3 Authority Key Identifier: 
+                1F:2F:35:BE:46:14:82:CD:40:B1:AE:79:2C:55:78:FA:F7:D4:68:FB
+            Authority Information Access: 
+                CA Issuers - URI:http://yr1.i.lencr.org/
+            X509v3 Subject Alternative Name: 
+                DNS:test.c4lab.in, DNS:www.test.c4lab.in
+            X509v3 Certificate Policies: 
+                Policy: 2.23.140.1.2.1
+            X509v3 CRL Distribution Points: 
+                Full Name:
+                  URI:http://yr1.c.lencr.org/1.crl
+
+            CT Precertificate SCTs: 
+                Signed Certificate Timestamp:
+                    Version   : v1 (0x0)
+                    Log ID    : 46:A2:39:67:C6:0D:B6:46:87:C6:6F:3D:F9:99:94:76:
+                                93:A6:A6:11:20:84:57:D5:55:E7:E3:D0:A1:D9:B6:46
+                    Timestamp : Oct 27 09:23:57.701 2026 GMT
+                    Extensions: none
+                    Signature : ecdsa-with-SHA256
+                                30:45:02:21:00:9C:98:6D:89:51:C0:C9:4A:67:60:90:
+                                E8:5E:7F:CA:D6:B3:6D:51:5E:2F:53:1A:D0:9E:65:D6:
+                                29:4F:E1:D4:FB:02:20:60:35:BB:87:EE:E6:BD:9B:2D:
+                                2E:0F:7F:26:0D:72:8C:36:96:D5:66:41:3A:EE:A6:A1:
+                                4C:29:D2:0E:A4:AE:BB
+                Signed Certificate Timestamp:
+                    Version   : v1 (0x0)
+                    Log ID    : 1A:8B:9D:6B:8D:D7:91:D1:CD:05:49:ED:B6:03:55:D6:
+                                06:B6:4F:AD:30:DB:71:FE:78:8F:0F:C7:C8:FB:C4:B1
+                    Timestamp : Oct 27 09:23:59.740 2026 GMT
+                    Extensions: 00:00:05:00:0E:21:F0:B6
+                    Signature : ecdsa-with-SHA256
+                                30:44:02:20:06:3A:6A:FB:0D:5F:5D:D4:1C:FB:B5:6F:
+                                B5:EA:B7:61:6E:16:54:15:FD:01:2E:0A:11:AB:9E:84:
+                                D5:5B:4D:11:02:20:37:28:4B:07:BB:28:AF:52:67:09:
+                                0B:4D:30:24:DA:5F:91:84:A2:A7:1D:9A:04:71:88:13:
+                                42:5A:43:F2:C9:54
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        12:f9:b8:a1:ef:f0:0d:d8:88:4b:f3:6e:63:3b:58:41:21:25:97:26:a4:3e:d3:0c:
+        e3:9b:a9:73:57:14:37:a7:ee:65:52:b9:9d:62:12:ea:0a:a4:08:57:d5:92:5a:5a:
+        fa:74:5b:29:cc:71:3c:ab:15:db:38:65:37:d4:44:9d:de:e9:df:64:ca:a0:03:a2:
+        32:e3:f2:76:ef:7e:58:4a:eb:ae:57:85:3d:15:3b:98:25:38:b2:76:32:52:c8:e4:
+        d8:a6:eb:c8:ce:30:31:4b:10:2f:d8:06:97:a1:3c:57:f4:cc:01:44:d2:a8:4d:cd:
+        b8:27:1c:ea:7a:6d:2f:83:4c:69:5c:92:6d:3f:eb:24:e3:d8:ad:2c:df:6b:cf:3f:
+        6d:17:f3:bc:5e:e3:76:7d:fe:d2:44:a3:48:16:93:a1:e5:c3:5b:cd:32:ad:f4:84:
+        5b:ca:94:e7:e6:71:cd:af:c5:56:ea:cb:5f:ef:43:38:27:de:f2:f9:a1:3c:b7:82:
+        89:03:58:96:90:5d:f8:82:40:0b:1d:77:bd:57:46:e5:86:50:d1:d1:5a:f0:54:9e:
+        11:32:e3:f7:18:87:1d:73:ed:24:1a:5a:5f:d3:75:5c:22:28:e1:c1:e3:f7:65:9a:
+        0d:d7:2b:41:9f:24:bd:39:41:5a:37:51:6d:a2:63:8b
+
+
+--- stderr ---
+(empty)

@@ -1,0 +1,17 @@
+Cyber360 evidence D01-curl-version
+==============================================================================
+Command:      curl --version
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0
+Release-Date: 2024-03-27
+Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp
+Features: alt-svc AsynchDNS GSS-API HSTS HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz MultiSSL NTLM SPNEGO SSL threadsafe UnixSockets
+
+
+--- stderr ---
+(empty)

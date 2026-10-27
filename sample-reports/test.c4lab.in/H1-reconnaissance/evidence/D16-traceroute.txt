@@ -1,0 +1,13 @@
+Cyber360 evidence D16-traceroute
+==============================================================================
+Command:      traceroute -q 1 -w 2 -m 20 test.c4lab.in
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:37:59Z
+Exit status:  126
+==============================================================================
+
+--- stdout ---
+(empty)
+
+--- stderr ---
+Unable to execute command: [Errno 1] Operation not permitted: 'traceroute'

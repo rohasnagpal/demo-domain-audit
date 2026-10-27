@@ -1,0 +1,12 @@
+{
+  "evidence_id": "E01-openssl-version",
+  "command": [
+    "openssl",
+    "version"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 0,
+  "stdout": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)\n",
+  "stderr": ""
+}

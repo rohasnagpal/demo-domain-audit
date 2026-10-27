@@ -1,0 +1,16 @@
+Cyber360 evidence D18-curl-timing
+==============================================================================
+Command:      curl -sS -o /dev/null -w 'Status: %{http_code}\nTime: %{time_total}s\nRemote IP: %{remote_ip}\n' https://test.c4lab.in
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:38:00Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+Status: 200
+Time: 0.797314s
+Remote IP: 107.180.237.42
+
+
+--- stderr ---
+(empty)

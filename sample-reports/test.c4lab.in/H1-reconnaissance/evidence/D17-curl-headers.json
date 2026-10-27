@@ -1,0 +1,13 @@
+{
+  "evidence_id": "D17-curl-headers",
+  "command": [
+    "curl",
+    "-IL",
+    "https://test.c4lab.in"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:38:01Z",
+  "exit_status": 0,
+  "stdout": "HTTP/2 200 \r\nx-powered-by: PHP/5.6.40\r\nlast-modified: Tue, 27 Oct 2026 09:38:16 GMT\r\netag: \"cf-65ecf34c3f3d4\"\r\naccept-ranges: bytes\r\ncontent-length: 207\r\ncache-control: max-age=600\r\nexpires: Tue, 27 Oct 2026 11:48:01 GMT\r\nvary: Accept-Encoding,User-Agent\r\ncontent-type: text/html\r\ndate: Tue, 27 Oct 2026 11:38:01 GMT\r\nserver: Apache\r\n\r\n",
+  "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r  0   207    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\n"
+}

@@ -1,0 +1,944 @@
+{
+  "report_id": "S11-test.c4lab.in-443-20261027T113759Z",
+  "agent_id": "s11",
+  "generated_at": "2026-10-27T11:38:09Z",
+  "scope": {
+    "target": "test.c4lab.in",
+    "port": 443,
+    "identifier_type": "hostname",
+    "authority": "yes",
+    "started_at": "2026-10-27T11:37:59Z",
+    "completed_at": "2026-10-27T11:38:09Z",
+    "exclusions": [
+      "All other hosts and ports",
+      "Credential testing",
+      "Exploitation",
+      "Configuration changes"
+    ]
+  },
+  "tooling": [
+    {
+      "name": "OpenSSL",
+      "version": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)"
+    },
+    {
+      "name": "testssl.sh",
+      "version": "\u001b[1mtestssl.sh\u001b[m version \u001b[1m3.2.4\u001b[m from \u001b[1mhttps://testssl.sh/\u001b[m"
+    }
+  ],
+  "summary": {
+    "overall_assessment": "Cyber360 evidence grade N/A (not scored) with 0% control coverage. 0 confirmed finding(s) and 16 unknown control(s).",
+    "confirmed_findings": 0,
+    "unknown_controls": 16
+  },
+  "findings": [],
+  "unknowns": [
+    {
+      "rule_id": "TLS-PROTO-001",
+      "reason": "Deprecated protocol result incomplete",
+      "evidence_needed": "A conclusive test for deprecated tls protocol accepted against this exact endpoint.",
+      "detail": "Deprecated protocol result incomplete",
+      "explanation": "Checks that TLS 1.0 and TLS 1.1 are not offered. Both were formally deprecated by RFC 8996 in 2021 and are disabled in all major browsers.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-PROTO-002",
+      "reason": "Modern protocol result incomplete",
+      "evidence_needed": "A conclusive test for no currently acceptable tls protocol demonstrated against this exact endpoint.",
+      "detail": "Modern protocol result incomplete",
+      "explanation": "Checks that at least one current protocol (TLS 1.2 or TLS 1.3) is offered.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-PROTO-003",
+      "reason": "SSL protocol result incomplete",
+      "evidence_needed": "A conclusive test for ssl 2.0 or ssl 3.0 accepted against this exact endpoint.",
+      "detail": "SSL protocol result incomplete",
+      "explanation": "Checks that SSL 2.0 and SSL 3.0 are not offered. Both are fundamentally broken (DROWN, POODLE).",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-001",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate expired against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the certificate has not expired.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-002",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate not yet valid against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the certificate's validity has started (notBefore is in the past).",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-006",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate nearing expiry against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the certificate does not expire within 30 days.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-003",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate identity mismatch against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the certificate's Subject Alternative Names include the requested hostname.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-004",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate chain validation failed against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the presented chain validates to a trusted root, including any required intermediate certificates.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CERT-005",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate uses an unrecognised trust anchor against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks whether the chain ends at a trust anchor that public clients do not recognise, such as a private CA.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-KEY-001",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for rsa certificate key is below 2048 bits against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that an RSA certificate key is at least 2048 bits.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-SIG-001",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for certificate uses an md5 or sha-1 signature against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that the certificate is not signed with MD5 or SHA-1.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CIPHER-001",
+      "reason": "; ; ; ",
+      "evidence_needed": "A conclusive test for prohibited cipher suite accepted against this exact endpoint.",
+      "detail": "; ; ; ",
+      "explanation": "Checks that no prohibited cipher suites (NULL, anonymous, EXPORT, RC4 and similar) are accepted.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CIPHER-002",
+      "reason": "Cipher enumeration unavailable",
+      "evidence_needed": "A conclusive test for static rsa key transport accepted against this exact endpoint.",
+      "detail": "Cipher enumeration unavailable",
+      "explanation": "Checks that static RSA key-exchange suites (TLS_RSA_WITH_*) are not accepted, because they provide no forward secrecy.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CIPHER-003",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for 64-bit block cipher accepted against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that 64-bit block ciphers (3DES, IDEA) are not accepted; they are vulnerable to Sweet32 birthday attacks.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-CIPHER-004",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for obsolete cbc cipher accepted against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks whether cipher suites using CBC mode are accepted. CBC suites are not broken when the server is patched, but they rely on a separate MAC and have a long history of padding-oracle and timing attacks (Lucky13, POODLE-TLS, GOLDENDOODLE). Modern guidance prefers AEAD suites (AES-GCM, ChaCha20-Poly1305) only.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    },
+    {
+      "rule_id": "TLS-FS-001",
+      "reason": "The structured evidence did not establish pass or failure.",
+      "evidence_needed": "A conclusive test for forward secrecy not demonstrated against this exact endpoint.",
+      "detail": "The structured evidence did not establish pass or failure.",
+      "explanation": "Checks that forward-secret key exchange (ECDHE or DHE) is supported.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ]
+    }
+  ],
+  "assumptions": [
+    "The observed endpoint is the intended TLS termination point.",
+    "The local trust store represents the intended client trust context unless the authority statement says otherwise."
+  ],
+  "limitations": [
+    "Point-in-time observation from one client and network path.",
+    "Client simulations describe modeled handshakes, not tests from physical client devices.",
+    "HTTP header and dedicated TLS vulnerability checks were outside the standard profile."
+  ],
+  "technical": {
+    "certificates": [],
+    "protocols": [
+      {
+        "name": "SSL 2.0",
+        "status": "not_supported",
+        "evidence_id": "E08-testssl-structured"
+      },
+      {
+        "name": "scanProblem",
+        "status": "unknown",
+        "evidence_id": "E08-testssl-structured"
+      }
+    ],
+    "cipher_suites": [],
+    "client_simulations": [],
+    "server_features": [],
+    "passed_controls": [],
+    "grade": "N/A",
+    "grade_basis": "cyber360-tls-score-v1 applied to 0/16 applicable controls (0% evidence coverage); coverage 0% below 80% grading threshold",
+    "score_components": [
+      {
+        "name": "Certificate (0% coverage)",
+        "score": 0
+      },
+      {
+        "name": "Protocols (0% coverage)",
+        "score": 0
+      },
+      {
+        "name": "Key Exchange (0% coverage)",
+        "score": 0
+      },
+      {
+        "name": "Cipher Strength (0% coverage)",
+        "score": 0
+      }
+    ],
+    "coverage": 0,
+    "policy_id": "cyber360-tls-score-v1"
+  },
+  "raw_controls": [
+    {
+      "rule_id": "TLS-PROTO-001",
+      "title": "Deprecated TLS protocol accepted",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC8996",
+      "remediation": "Disable TLS 1.0 and TLS 1.1.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Deprecated protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-PROTO-002",
+      "title": "No currently acceptable TLS protocol demonstrated",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC8996",
+      "remediation": "Enable TLS 1.2 or TLS 1.3.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Modern protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-PROTO-003",
+      "title": "SSL 2.0 or SSL 3.0 accepted",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC8996",
+      "remediation": "Disable SSL 2.0 and SSL 3.0.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "SSL protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-CERT-001",
+      "title": "Certificate expired",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-BR",
+      "remediation": "Replace the expired certificate and verify renewal automation.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CERT-002",
+      "title": "Certificate not yet valid",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-BR",
+      "remediation": "Deploy a certificate valid at the time of use.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CERT-006",
+      "title": "Certificate nearing expiry",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "low",
+      "authority": "local-policy",
+      "remediation": "Renew and deploy the replacement certificate before expiry.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CERT-003",
+      "title": "Certificate identity mismatch",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-IP",
+      "remediation": "Deploy a certificate containing the requested DNS or IP SAN.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CERT-004",
+      "title": "Certificate chain validation failed",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Deploy a complete chain trusted by the intended clients.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CERT-005",
+      "title": "Certificate uses an unrecognised trust anchor",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Use an appropriate trust anchor or document and distribute the private CA.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-KEY-001",
+      "title": "RSA certificate key is below 2048 bits",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Replace the certificate and key with an approved key type and strength.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-SIG-001",
+      "title": "Certificate uses an MD5 or SHA-1 signature",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Reissue the certificate with an approved signature algorithm.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CIPHER-001",
+      "title": "Prohibited cipher suite accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC9325",
+      "remediation": "Remove NULL, anonymous, export, RC4 and other prohibited suites.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "; ; ; "
+    },
+    {
+      "rule_id": "TLS-CIPHER-002",
+      "title": "Static RSA key transport accepted",
+      "component": "key_exchange",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Remove static RSA key transport and prefer forward-secret suites.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Cipher enumeration unavailable"
+    },
+    {
+      "rule_id": "TLS-CIPHER-003",
+      "title": "64-bit block cipher accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Remove 3DES, IDEA and other 64-bit block ciphers.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-CIPHER-004",
+      "title": "Obsolete CBC cipher accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "low",
+      "authority": "RFC9325",
+      "remediation": "Prefer authenticated encryption and remove obsolete CBC suites after compatibility review.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    },
+    {
+      "rule_id": "TLS-FS-001",
+      "title": "Forward secrecy not demonstrated",
+      "component": "key_exchange",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Enable ECDHE or DHE suites and prefer TLS 1.3.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": ""
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E01-openssl-version",
+      "command": [
+        "openssl",
+        "version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/E01-openssl-version.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E01-openssl-version.json",
+      "sha256": "242923f529999664f7a0a2930b2efa467b47260a7a4876595cf1535303723104",
+      "excerpt": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)"
+    },
+    {
+      "evidence_id": "E02-testssl-version",
+      "command": [
+        "testssl.sh",
+        "--version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/E02-testssl-version.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E02-testssl-version.json",
+      "sha256": "09b2d1e50609297782c8414492a474e92af0349781f5e34f26343c0a3d846fa7",
+      "excerpt": "\u001b[1m\n#####################################################################\u001b[m\n  \u001b[1mtestssl.sh\u001b[m version \u001b[1m3.2.4\u001b[m from \u001b[1mhttps://testssl.sh/\u001b[m\n\u001b[1m\n  This program is free software. Distribution and modification under\n  GPLv2 permitted. USAGE w/o ANY WARRANTY. USE IT AT YOUR OWN RISK!\u001b[m\n\n  Please file bugs @ \u001b[1mhttps://testssl.sh/bugs/\u001b[m\n\u001b[1m#####################################################################\u001b[m\n\n  Using \u001b[3mOpenSSL 4.0.3 (Sep 29 2026)\u001b[m  [~96 ciphers]\n  on Samairahs-MacBook-Air:/opt/homebrew/opt/openssl@4/bin/openssl\n  built: \u001b[3mTue Sep 29 13:44:55 2026\u001b[m, platform: \u001b[3mdarwin64-arm64-cc\u001b[m\n  Using \u001b[3mbash 3.2.57\u001b[m"
+    },
+    {
+      "evidence_id": "E03-presented-chain",
+      "command": [
+        "openssl",
+        "s_client",
+        "-connect",
+        "test.c4lab.in:443",
+        "-servername",
+        "test.c4lab.in",
+        "-showcerts"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:01Z",
+      "exit_status": 0,
+      "path": "evidence/E03-presented-chain.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E03-presented-chain.json",
+      "sha256": "c0bb979730c4d6fb1e29d4e7a2d40dff8f403e06330213f67fae4594eb82cde0",
+      "excerpt": "CONNECTED(00000005)\n---\nCertificate chain\n 0 s:CN=www.test.c4lab.in\n   i:C=US, O=Let's Encrypt, CN=YR1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Oct 27 08:25:27 2026 GMT; NotAfter: Jan 25 08:25:26 2027 GMT\n-----BEGIN CERTIFICATE-----\nMIIFCTCCA/GgAwIBAgISBmWspw7m00hegYrWNY3K0iGAMA0GCSqGSIb3DQEBCwUA\nMDMxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQwwCgYDVQQD\nEwNZUjEwHhcNMjYxMDI3MDgyNTI3WhcNMjcwMTI1MDgyNTI2WjAcMRowGAYDVQQD\nExF3d3cudGVzdC5jNGxhYi5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\nggEBAJFPW5Vss0DakbNcD6oJUBq5loARbu4coE9FZ5silTIWnnHbMNW2F5+lp/Dn\nn9GgL0n4+nGoLkWBKaPK18+3e4zI5FqwYyVccyUOViE+vSRwk4efO/uxbpJIdrvg\nPUWVIk7S3mxuyoelVZ1c17lPo6WJaM9uzcaPWjywiAVqve/GyDGDaQ4RGj5KZ+cv\nNKJxJ2klew71ia0FU0o9J9zMq9kv5L71DPLrLMvEjVNKCGOloT5lbpGXzkTRpI8u\nF4BapKsv9x98EmD4FTzSumibiDKdZCVhlxzlJce/t+wqnnQekDubSsASwdGJSN36\ncchKysIHVLJCQEZ/DgKbtjeDMi8CAwEAAaOCAiwwggIoMA4GA1UdDwEB/wQEAwIF\noDATBgNVHSUEDDAKBggrBgEFBQcDATAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBTP\n2zCH2DhohyJjfmMToEvXwSExQDAfBgNVHSMEGDAWgBQfLzW+RhSCzUCxrnksVXj6\n99Ro+zAzBggrBgEFBQcBAQQnMCUwIwYIKwYBBQUHMAKGF2h0dHA6Ly95cjEuaS5s\nZW5jci5vcmcvMCsGA1UdEQQkMCKCDXRlc3QuYzRsYWIuaW6CEXd3dy50ZXN0LmM0\nbGFiLmluMBMGA1UdIAQMMA"
+    },
+    {
+      "evidence_id": "E04-leaf-certificate",
+      "command": [
+        "openssl",
+        "s_client",
+        "-connect",
+        "test.c4lab.in:443",
+        "-servername",
+        "test.c4lab.in",
+        "-showcerts"
+      ],
+      "captured_at": "2026-10-27T11:38:01Z",
+      "exit_status": 0,
+      "path": "evidence/leaf.pem",
+      "sha256": "ac9b7f51dcbc42fc537c6c43360922c545bc607e8298c48009872fcab9fc1759"
+    },
+    {
+      "evidence_id": "E05-certificate-inspection",
+      "command": [
+        "openssl",
+        "x509",
+        "-in",
+        "/Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/leaf.pem",
+        "-noout",
+        "-subject",
+        "-issuer",
+        "-serial",
+        "-dates",
+        "-fingerprint",
+        "-sha256",
+        "-text"
+      ],
+      "captured_at": "2026-10-27T11:38:01Z",
+      "completed_at": "2026-10-27T11:38:01Z",
+      "exit_status": 0,
+      "path": "evidence/E05-certificate-inspection.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E05-certificate-inspection.json",
+      "sha256": "92048927cb5c9d81f3f1acdce19a17a06e0fce4c9f6cd021a1b4d2c1930627d3",
+      "excerpt": "subject=CN=www.test.c4lab.in\nissuer=C=US, O=Let's Encrypt, CN=YR1\nserial=0665ACA70EE6D3485E818AD6358DCAD22180\nnotBefore=Oct 27 08:25:27 2026 GMT\nnotAfter=Jan 25 08:25:26 2027 GMT\nsha256 Fingerprint=BE:14:B4:2B:2D:A5:47:DC:58:6E:85:64:7C:C3:07:B1:A1:0D:CC:A4:0D:A6:AD:35:03:6E:CC:D0:CD:D0:BE:60\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number:\n            06:65:ac:a7:0e:e6:d3:48:5e:81:8a:d6:35:8d:ca:d2:21:80\n        Signature Algorithm: sha256WithRSAEncryption\n        Issuer: C=US, O=Let's Encrypt, CN=YR1\n        Validity\n            Not Before: Oct 27 08:25:27 2026 GMT\n            Not After : Jan 25 08:25:26 2027 GMT\n        Subject: CN=www.test.c4lab.in\n        Subject Public Key Info:\n            Public Key Algorithm: rsaEncryption\n                Public-Key: (2048 bit)\n                Modulus:\n                    91:4f:5b:95:6c:b3:40:da:91:b3:5c:0f:aa:09:50:1a:\n                    b9:96:80:11:6e:ee:1c:a0:4f:45:67:9b:22:95:32:16:\n                    9e:71:db:30:d5:b6:17:9f:a5:a7:f0:e7:9f:d1:a0:2f:\n                    49:f8:fa:71:a8:2e:45:81:29:a3:ca:d7:cf:b7:7b:8c:\n                    c8:e4:5a:b0:63:25:5c:73:25:0e:56:21:3e:bd:24:70:\n                    93:87:9"
+    },
+    {
+      "evidence_id": "E06-identity-and-trust",
+      "command": [
+        "openssl",
+        "s_client",
+        "-connect",
+        "test.c4lab.in:443",
+        "-servername",
+        "test.c4lab.in",
+        "-verify_hostname",
+        "test.c4lab.in",
+        "-verify_return_error",
+        "-brief"
+      ],
+      "captured_at": "2026-10-27T11:38:01Z",
+      "completed_at": "2026-10-27T11:38:02Z",
+      "exit_status": 0,
+      "path": "evidence/E06-identity-and-trust.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E06-identity-and-trust.json",
+      "sha256": "7c81fba49a833a703c7ff3e997863f3f1a0c9b40364cecf8b94eda4866594dd7",
+      "excerpt": "Connecting to 107.180.237.42\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=www.test.c4lab.in\nHash used: SHA256\nSignature type: rsa_pss_rsae_sha256\nVerification: OK\nVerified peername: test.c4lab.in\nPeer Temp Key: X25519, 253 bits\nDONE"
+    },
+    {
+      "evidence_id": "E07-testssl-raw",
+      "command": [
+        "testssl.sh",
+        "--quiet",
+        "--warnings",
+        "batch",
+        "--color",
+        "0",
+        "--mapping",
+        "iana",
+        "--server-defaults",
+        "--server-preference",
+        "--protocols",
+        "--categories",
+        "--forward-secrecy",
+        "--cipher-per-proto",
+        "--client-simulation",
+        "--jsonfile-pretty",
+        "/Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json",
+        "--overwrite",
+        "test.c4lab.in:443"
+      ],
+      "captured_at": "2026-10-27T11:38:02Z",
+      "completed_at": "2026-10-27T11:38:09Z",
+      "exit_status": 246,
+      "path": "evidence/E07-testssl-raw.txt",
+      "json_path": "cyber360-reports/test.c4lab.in/S11-tls/evidence/E07-testssl-raw.json",
+      "sha256": "37e86a0ffd67f1fa2b7b2fe7a99881a3dbe9f3010b22eb48d7f5ec12262a74ae",
+      "excerpt": "Start 2026-10-27 17:08:05        -->> 107.180.237.42:443 (test.c4lab.in) <<--\n\n rDNS (107.180.237.42):  apache2-yohimbe.iad1-shared-d12-06.dreamhost.com.\n Oops: TCP connect problem\n\nUnable to open a socket to 107.180.237.42:443.  Service detected:       Couldn't determine what's running on port 443, assuming no HTTP service => skipping all HTTP checks\n\n Testing protocols via sockets except NPN+ALPN \n\n SSLv2      not offered (OK)\n SSLv3      \n\n\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: connect: Interrupted system call\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 12108: /dev/tcp/107.180.237.42/443: Interrupted system call\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/testssl/3.2.4/libexec/bin/testssl.sh: line 2196: /bin/ps: Operation not permitted\n/opt/homebrew/Cellar/"
+    },
+    {
+      "evidence_id": "E08-testssl-structured",
+      "command": [
+        "testssl.sh",
+        "--quiet",
+        "--warnings",
+        "batch",
+        "--color",
+        "0",
+        "--mapping",
+        "iana",
+        "--server-defaults",
+        "--server-preference",
+        "--protocols",
+        "--categories",
+        "--forward-secrecy",
+        "--cipher-per-proto",
+        "--client-simulation",
+        "--jsonfile-pretty",
+        "/Users/samairahnagpal/Documents/Codex/2026-10-27/set/outputs/cyber360-reports/test.c4lab.in/S11-tls/evidence/testssl-pretty.json",
+        "--overwrite",
+        "test.c4lab.in:443"
+      ],
+      "captured_at": "2026-10-27T11:38:09Z",
+      "exit_status": 246,
+      "path": "evidence/testssl-pretty.json",
+      "sha256": "c4d6d391e5e5dacc5c4e7a46e7af8a71d3f18a46959a237efd6d50efb698f4d1"
+    }
+  ],
+  "controls": [
+    {
+      "rule_id": "TLS-PROTO-001",
+      "title": "Deprecated TLS protocol accepted",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC8996",
+      "remediation": "Disable TLS 1.0 and TLS 1.1.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Deprecated protocol result incomplete",
+      "category": "Protocols",
+      "about": "Checks that TLS 1.0 and TLS 1.1 are not offered. Both were formally deprecated by RFC 8996 in 2021 and are disabled in all major browsers.",
+      "explanation": "Deprecated protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-PROTO-002",
+      "title": "No currently acceptable TLS protocol demonstrated",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC8996",
+      "remediation": "Enable TLS 1.2 or TLS 1.3.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Modern protocol result incomplete",
+      "category": "Protocols",
+      "about": "Checks that at least one current protocol (TLS 1.2 or TLS 1.3) is offered.",
+      "explanation": "Modern protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-PROTO-003",
+      "title": "SSL 2.0 or SSL 3.0 accepted",
+      "component": "protocols",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC8996",
+      "remediation": "Disable SSL 2.0 and SSL 3.0.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "SSL protocol result incomplete",
+      "category": "Protocols",
+      "about": "Checks that SSL 2.0 and SSL 3.0 are not offered. Both are fundamentally broken (DROWN, POODLE).",
+      "explanation": "SSL protocol result incomplete"
+    },
+    {
+      "rule_id": "TLS-CERT-001",
+      "title": "Certificate expired",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-BR",
+      "remediation": "Replace the expired certificate and verify renewal automation.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the certificate has not expired.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CERT-002",
+      "title": "Certificate not yet valid",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-BR",
+      "remediation": "Deploy a certificate valid at the time of use.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the certificate's validity has started (notBefore is in the past).",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CERT-006",
+      "title": "Certificate nearing expiry",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "low",
+      "authority": "local-policy",
+      "remediation": "Renew and deploy the replacement certificate before expiry.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the certificate does not expire within 30 days.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CERT-003",
+      "title": "Certificate identity mismatch",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "CABF-IP",
+      "remediation": "Deploy a certificate containing the requested DNS or IP SAN.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the certificate's Subject Alternative Names include the requested hostname.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CERT-004",
+      "title": "Certificate chain validation failed",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Deploy a complete chain trusted by the intended clients.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the presented chain validates to a trusted root, including any required intermediate certificates.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CERT-005",
+      "title": "Certificate uses an unrecognised trust anchor",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Use an appropriate trust anchor or document and distribute the private CA.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks whether the chain ends at a trust anchor that public clients do not recognise, such as a private CA.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-KEY-001",
+      "title": "RSA certificate key is below 2048 bits",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Replace the certificate and key with an approved key type and strength.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that an RSA certificate key is at least 2048 bits.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-SIG-001",
+      "title": "Certificate uses an MD5 or SHA-1 signature",
+      "component": "certificate",
+      "status": "unknown",
+      "severity": "high",
+      "authority": "RFC9325",
+      "remediation": "Reissue the certificate with an approved signature algorithm.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Certificate",
+      "about": "Checks that the certificate is not signed with MD5 or SHA-1.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CIPHER-001",
+      "title": "Prohibited cipher suite accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "critical",
+      "authority": "RFC9325",
+      "remediation": "Remove NULL, anonymous, export, RC4 and other prohibited suites.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "; ; ; ",
+      "category": "Cipher suites",
+      "about": "Checks that no prohibited cipher suites (NULL, anonymous, EXPORT, RC4 and similar) are accepted.",
+      "explanation": "; ; ; "
+    },
+    {
+      "rule_id": "TLS-CIPHER-002",
+      "title": "Static RSA key transport accepted",
+      "component": "key_exchange",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Remove static RSA key transport and prefer forward-secret suites.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "Cipher enumeration unavailable",
+      "category": "Cipher suites",
+      "about": "Checks that static RSA key-exchange suites (TLS_RSA_WITH_*) are not accepted, because they provide no forward secrecy.",
+      "explanation": "Cipher enumeration unavailable"
+    },
+    {
+      "rule_id": "TLS-CIPHER-003",
+      "title": "64-bit block cipher accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Remove 3DES, IDEA and other 64-bit block ciphers.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Cipher suites",
+      "about": "Checks that 64-bit block ciphers (3DES, IDEA) are not accepted; they are vulnerable to Sweet32 birthday attacks.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-CIPHER-004",
+      "title": "Obsolete CBC cipher accepted",
+      "component": "cipher_strength",
+      "status": "unknown",
+      "severity": "low",
+      "authority": "RFC9325",
+      "remediation": "Prefer authenticated encryption and remove obsolete CBC suites after compatibility review.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Cipher suites",
+      "about": "Checks whether cipher suites using CBC mode are accepted. CBC suites are not broken when the server is patched, but they rely on a separate MAC and have a long history of padding-oracle and timing attacks (Lucky13, POODLE-TLS, GOLDENDOODLE). Modern guidance prefers AEAD suites (AES-GCM, ChaCha20-Poly1305) only.",
+      "explanation": ""
+    },
+    {
+      "rule_id": "TLS-FS-001",
+      "title": "Forward secrecy not demonstrated",
+      "component": "key_exchange",
+      "status": "unknown",
+      "severity": "medium",
+      "authority": "RFC9325",
+      "remediation": "Enable ECDHE or DHE suites and prefer TLS 1.3.",
+      "evidence_ids": [
+        "E08-testssl-structured"
+      ],
+      "detail": "",
+      "category": "Key exchange",
+      "about": "Checks that forward-secret key exchange (ECDHE or DHE) is supported.",
+      "explanation": ""
+    }
+  ],
+  "command_purposes": {
+    "E01": "Records the OpenSSL version used for the handshakes.",
+    "E02": "Records the testssl.sh version used for enumeration.",
+    "E03": "Retrieves the certificate chain the server presents (openssl s_client -showcerts) without judging trust.",
+    "E04": "Preserves the leaf certificate extracted from the presented chain.",
+    "E05": "Decodes the leaf certificate: subject, issuer, validity dates, key, signature and extensions.",
+    "E06": "Performs a strict handshake that verifies the hostname (or IP) and the trust chain, and fails on any error.",
+    "E07": "Runs testssl.sh to enumerate protocols, cipher suites per protocol, forward secrecy, server defaults and client simulations.",
+    "E08": "Preserves testssl.sh's structured JSON, from which the tables and controls in this report are built."
+  },
+  "glossary": [
+    [
+      "TLS",
+      "Transport Layer Security, the protocol that encrypts HTTPS. Versions 1.2 and 1.3 are current; 1.0 and 1.1 are deprecated (RFC 8996)."
+    ],
+    [
+      "Cipher suite",
+      "The combination of key exchange, authentication, bulk encryption and integrity algorithms negotiated for a connection, for example TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256."
+    ],
+    [
+      "AEAD",
+      "Authenticated Encryption with Associated Data (AES-GCM, ChaCha20-Poly1305): modern modes that encrypt and authenticate in one step."
+    ],
+    [
+      "CBC",
+      "Cipher Block Chaining: an older mode that relies on a separate MAC and has a long history of padding-oracle and timing attacks."
+    ],
+    [
+      "Forward secrecy",
+      "Ephemeral (EC)DHE key exchange ensures that a stolen server private key cannot decrypt previously recorded traffic."
+    ],
+    [
+      "SAN",
+      "Subject Alternative Name: the list of hostnames and IP addresses a certificate is valid for."
+    ],
+    [
+      "Chain of trust",
+      "The path from the server's certificate through intermediate certificates to a root certificate trusted by the client."
+    ]
+  ],
+  "chart_data": {
+    "timeline": [
+      [
+        "Domain registration",
+        "2026-08-06T14:42:25.765Z",
+        "2027-08-06T14:42:25.765Z"
+      ]
+    ]
+  },
+  "related_reports": [
+    {
+      "label": "H1 Reconnaissance report",
+      "href": "../H1-reconnaissance/report.html"
+    },
+    {
+      "label": "S18 Email & Domain Security report",
+      "href": "../S18-email-domain/report.html"
+    }
+  ]
+}

@@ -1,0 +1,1452 @@
+{
+  "report_id": "S18-test.c4lab.in-20261027T113759Z",
+  "agent_id": "s18",
+  "agent_name": "Email & Domain Security report",
+  "category": "security",
+  "generated_at": "2026-10-27T11:38:09Z",
+  "scope": {
+    "target": "test.c4lab.in",
+    "authority": "yes",
+    "started_at": "2026-10-27T11:37:59Z",
+    "completed_at": "2026-10-27T11:38:09Z",
+    "dkim_selectors": [],
+    "in_scope": [
+      "Public DNS records of test.c4lab.in and its _dmarc, _mta-sts, _smtp._tls and DKIM selector names",
+      "WHOIS registration data",
+      "HTTPS fetch of https://mta-sts.test.c4lab.in/.well-known/mta-sts.txt",
+      "One STARTTLS handshake per published MX host on TCP 25"
+    ],
+    "exclusions": [
+      "Sending email or testing relaying",
+      "Mailbox enumeration",
+      "DKIM selectors not supplied by the user",
+      "Configuration changes"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "D01-curl-version",
+      "command": [
+        "curl",
+        "--version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D01-curl-version.txt",
+      "json_path": "evidence/D01-curl-version.json",
+      "sha256": "7b3ddaa50ecdcdc30d4a531c9c18919deaf4e703868a8aec01f88e7931b09e83",
+      "excerpt": "curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0\nRelease-Date: 2024-03-27\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp\nFeatures: alt-svc AsynchDNS GSS-API HSTS HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz MultiSSL NTLM SPNEGO SSL threadsafe UnixSockets",
+      "used_by": {
+        "tooling": "curl_version"
+      },
+      "invocation": "curl_version"
+    },
+    {
+      "evidence_id": "D02-dig-version",
+      "command": [
+        "dig",
+        "-v"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D02-dig-version.txt",
+      "json_path": "evidence/D02-dig-version.json",
+      "sha256": "d9763473a8b0c490a9bddb12408879a838e5ed1094d97a8e98cedebc3d74fa73",
+      "excerpt": "DiG 9.10.6",
+      "used_by": {
+        "tooling": "dig_version"
+      },
+      "invocation": "dig_version"
+    },
+    {
+      "evidence_id": "D03-openssl-version",
+      "command": [
+        "openssl",
+        "version"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D03-openssl-version.txt",
+      "json_path": "evidence/D03-openssl-version.json",
+      "sha256": "b2b63b69977f29de5a4a64813df63eaa9002b9dd6d25b3b0e62113a12259e674",
+      "excerpt": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)",
+      "used_by": {
+        "tooling": "openssl_version"
+      },
+      "invocation": "openssl_version"
+    },
+    {
+      "evidence_id": "D07-dig-mx",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "MX",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D07-dig-mx.txt",
+      "json_path": "evidence/D07-dig-mx.json",
+      "sha256": "b2d14890a73ad8853e5714b1c7e8eaaec422ea9d48c7e93698ca6b01e91089c3",
+      "excerpt": "10 mx1.dreamhost.com.",
+      "used_by": {
+        "h1": "dig_mx",
+        "s18": "dig_mx"
+      },
+      "invocation": "dig_mx"
+    },
+    {
+      "evidence_id": "D08-dig-txt",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "TXT",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D08-dig-txt.txt",
+      "json_path": "evidence/D08-dig-txt.json",
+      "sha256": "f67428e9d4a8f84eae8ab86a043c78d27d307be5364c4e8d04b4d7eb241599e7",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_txt",
+        "s18": "dig_txt"
+      },
+      "invocation": "dig_txt"
+    },
+    {
+      "evidence_id": "D09-dig-ns",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "NS",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D09-dig-ns.txt",
+      "json_path": "evidence/D09-dig-ns.json",
+      "sha256": "ac2bf410119b3c419a978c7eeea37af3fad4501a9505ebee39a21c2ff7cfb873",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_ns",
+        "s18": "dig_ns"
+      },
+      "invocation": "dig_ns"
+    },
+    {
+      "evidence_id": "D11-dig-caa",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "CAA",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D11-dig-caa.txt",
+      "json_path": "evidence/D11-dig-caa.json",
+      "sha256": "e6587f90b252f719e15a9aa894bf57fc7f4d90659d9730d9db9f45f0ee9ad880",
+      "excerpt": "",
+      "used_by": {
+        "h1": "dig_caa",
+        "s18": "dig_caa"
+      },
+      "invocation": "dig_caa"
+    },
+    {
+      "evidence_id": "D12-dig-trace",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "+trace"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:37:59Z",
+      "exit_status": 0,
+      "path": "evidence/D12-dig-trace.txt",
+      "json_path": "evidence/D12-dig-trace.json",
+      "sha256": "7fd7d2005d9d535106bcc4447996c4992d162b7be469a056d7679b77e3aa3c75",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in +trace\n;; global options: +cmd\n;; Received 28 bytes from 103.239.84.254#53(103.239.84.254) in 5 ms",
+      "used_by": {
+        "h1": "dig_trace",
+        "s18": "dig_trace"
+      },
+      "invocation": "dig_trace"
+    },
+    {
+      "evidence_id": "D14-whois",
+      "command": [
+        "whois",
+        "test.c4lab.in"
+      ],
+      "captured_at": "2026-10-27T11:37:59Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D14-whois.txt",
+      "json_path": "evidence/D14-whois.json",
+      "sha256": "d581e99cbadd6631dc6cc29834b9212b4375e062b9083fc50cd7c84d3158f72c",
+      "excerpt": "% IANA WHOIS server\n% for more information on IANA, visit http://www.iana.org\n% This query returned 1 object\n\nrefer:        whois.nixiregistry.in\n\ndomain:       IN\n\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\n\ncontact:      administrative\nname:         CEO-NIXI\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\nphone:        +91 11 48202015\nfax-no:       +91 11 48202015\ne-mail:       registry@nixi.in\n\ncontact:      technical\nname:         Rohit Kumar\norganisation: National Internet Exchange of India\naddress:      B-901 9th Floor, Tower B World Trade Center, Nauroji Nagar\naddress:      New Delhi 110 029\naddress:      India\nphone:        +91 11 48202053\nfax-no:       +91 11 48202015\ne-mail:       rajiv@nixi.in\n\nnserver:      NS1.REGISTRY.IN 2620:57:4001:0:0:0:0:1 64.96.1.1\nnserver:      NS2.REGISTRY.IN 2620:57:4002:0:0:0:0:1 64.96.2.1\nnserver:      NS3.REGISTRY.IN 2620:171:812:1534:8:0:0:1 64.78.204.1\nnserver:      NS4.REGISTRY.IN 26",
+      "used_by": {
+        "h1": "whois",
+        "s18": "whois"
+      },
+      "invocation": "whois"
+    },
+    {
+      "evidence_id": "D22-dig-dmarc",
+      "command": [
+        "dig",
+        "_dmarc.test.c4lab.in",
+        "TXT",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D22-dig-dmarc.txt",
+      "json_path": "evidence/D22-dig-dmarc.json",
+      "sha256": "5d417838552bd20e5d2365e43ded9793b68b54c7eedd9054b926bf00ff0baa6b",
+      "excerpt": "",
+      "used_by": {
+        "s18": "dig_dmarc"
+      },
+      "invocation": "dig_dmarc"
+    },
+    {
+      "evidence_id": "D23-dig-tlsrpt",
+      "command": [
+        "dig",
+        "_smtp._tls.test.c4lab.in",
+        "TXT",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D23-dig-tlsrpt.txt",
+      "json_path": "evidence/D23-dig-tlsrpt.json",
+      "sha256": "c0297087909b078d6b14c853e07aac7c4dfddab5d8c5dfcee3e6dadcd48d8842",
+      "excerpt": "",
+      "used_by": {
+        "s18": "dig_tlsrpt"
+      },
+      "invocation": "dig_tlsrpt"
+    },
+    {
+      "evidence_id": "D24-dig-ds",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "DS",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D24-dig-ds.txt",
+      "json_path": "evidence/D24-dig-ds.json",
+      "sha256": "bb1e2dde3f7c2ab92f00ba65d7b7537158c7d5adcd0df58fbc2c5343f4885c63",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in DS +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 27497\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tDS\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 8 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106",
+      "used_by": {
+        "s18": "dig_ds"
+      },
+      "invocation": "dig_ds"
+    },
+    {
+      "evidence_id": "D25-dig-dnskey",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "DNSKEY",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D25-dig-dnskey.txt",
+      "json_path": "evidence/D25-dig-dnskey.json",
+      "sha256": "3421ecabaca0d73f49c9ebecc7368b556106462494f7a07263d33ed05f2ca0f8",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in DNSKEY +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2487\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tDNSKEY\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106",
+      "used_by": {
+        "s18": "dig_dnskey"
+      },
+      "invocation": "dig_dnskey"
+    },
+    {
+      "evidence_id": "D26-dig-a-dnssec",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "A",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D26-dig-a-dnssec.txt",
+      "json_path": "evidence/D26-dig-a-dnssec.json",
+      "sha256": "bbfb8f936f57c134b46a3688377f2157853ff2158bb8ba8ec6d8b83001df6242",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in A +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 55577\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tA\n\n;; ANSWER SECTION:\ntest.c4lab.in.\t\t16\tIN\tA\t107.180.237.42\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 58",
+      "used_by": {
+        "s18": "dig_a_dnssec"
+      },
+      "invocation": "dig_a_dnssec"
+    },
+    {
+      "evidence_id": "D27-dig-aaaa-dnssec",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "AAAA",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D27-dig-aaaa-dnssec.txt",
+      "json_path": "evidence/D27-dig-aaaa-dnssec.json",
+      "sha256": "800437708627e14f1eef55ddd37fc1285806a6988891c870e8c6b1c5058d7665",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in AAAA +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 15148\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tAAAA\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 10 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106",
+      "used_by": {
+        "s18": "dig_aaaa_dnssec"
+      },
+      "invocation": "dig_aaaa_dnssec"
+    },
+    {
+      "evidence_id": "D28-dig-mx-dnssec",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "MX",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D28-dig-mx-dnssec.txt",
+      "json_path": "evidence/D28-dig-mx-dnssec.json",
+      "sha256": "ee42f434c355b2d2e85087f742c5ac3fc01b5d1b6fabdfc01c3146268b18e26a",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in MX +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38412\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tMX\n\n;; ANSWER SECTION:\ntest.c4lab.in.\t\t16\tIN\tMX\t10 mx1.dreamhost.com.\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 75",
+      "used_by": {
+        "s18": "dig_mx_dnssec"
+      },
+      "invocation": "dig_mx_dnssec"
+    },
+    {
+      "evidence_id": "D29-dig-txt-dnssec",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "TXT",
+        "+dnssec"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D29-dig-txt-dnssec.txt",
+      "json_path": "evidence/D29-dig-txt-dnssec.json",
+      "sha256": "a3f444c28ab472741560105c6ec3541f153256e7cb84786a93135a324bbd4b96",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in TXT +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47406\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tTXT\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t60\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106",
+      "used_by": {
+        "s18": "dig_txt_dnssec"
+      },
+      "invocation": "dig_txt_dnssec"
+    },
+    {
+      "evidence_id": "D30-dig-soa-full",
+      "command": [
+        "dig",
+        "test.c4lab.in",
+        "SOA"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D30-dig-soa-full.txt",
+      "json_path": "evidence/D30-dig-soa-full.json",
+      "sha256": "65dcd490d63722c8a887f9fa01a8ef8d76d9ecf09bf28694913119b9d0694ee2",
+      "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in SOA\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2512\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tSOA\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t60\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 8 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106",
+      "used_by": {
+        "s18": "dig_soa_full"
+      },
+      "invocation": "dig_soa_full"
+    },
+    {
+      "evidence_id": "D31-dig-mta-sts",
+      "command": [
+        "dig",
+        "_mta-sts.test.c4lab.in",
+        "TXT",
+        "+short"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 0,
+      "path": "evidence/D31-dig-mta-sts.txt",
+      "json_path": "evidence/D31-dig-mta-sts.json",
+      "sha256": "40e348e7c0c02afe9008ac3857bf2b61588dba43ed9cc65f4e91e63dd2fdaa01",
+      "excerpt": "",
+      "used_by": {
+        "s18": "dig_mta_sts"
+      },
+      "invocation": "dig_mta_sts"
+    },
+    {
+      "evidence_id": "D32-curl-mta-sts-policy",
+      "command": [
+        "curl",
+        "-fsSL",
+        "https://mta-sts.test.c4lab.in/.well-known/mta-sts.txt"
+      ],
+      "captured_at": "2026-10-27T11:38:00Z",
+      "completed_at": "2026-10-27T11:38:00Z",
+      "exit_status": 6,
+      "path": "evidence/D32-curl-mta-sts-policy.txt",
+      "json_path": "evidence/D32-curl-mta-sts-policy.json",
+      "sha256": "f4eda3bab5148ee408a8269e7449e75cd8ad849fd0423842657688104636434b",
+      "excerpt": "curl: (6) Could not resolve host: mta-sts.test.c4lab.in",
+      "used_by": {
+        "s18": "curl_mta_sts_policy"
+      },
+      "invocation": "curl_mta_sts_policy"
+    },
+    {
+      "evidence_id": "D33-smtp-starttls",
+      "command": [
+        "openssl",
+        "s_client",
+        "-starttls",
+        "smtp",
+        "-connect",
+        "mx1.dreamhost.com:25",
+        "-servername",
+        "mx1.dreamhost.com"
+      ],
+      "captured_at": "2026-10-27T11:38:02Z",
+      "completed_at": "2026-10-27T11:38:05Z",
+      "exit_status": 0,
+      "path": "evidence/D33-smtp-starttls.txt",
+      "json_path": "evidence/D33-smtp-starttls.json",
+      "sha256": "a905ff756c0900134d0479cdf1f5870841f535336d1762fc1d58173e4fed4caa",
+      "excerpt": "CONNECTED(00000005)\n---\nCertificate chain\n 0 s:CN=*.dreamhost.com\n   i:C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV R36\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Dec  4 00:00:00 2025 GMT; NotAfter: Dec 21 23:59:59 2026 GMT\n 1 s:C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV R36\n   i:C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46\n   a:PKEY: RSA, 3072 (bit); sigalg: sha384WithRSAEncryption\n   v:NotBefore: Mar 22 00:00:00 2021 GMT; NotAfter: Mar 21 23:59:59 2036 GMT\n 2 s:C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46\n   i:C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority\n   a:PKEY: RSA, 4096 (bit); sigalg: sha384WithRSAEncryption\n   v:NotBefore: Mar 22 00:00:00 2021 GMT; NotAfter: Jan 18 23:59:59 2038 GMT\n 3 s:C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority\n   i:C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority\n   a:PKEY: RSA, 4096 (bit); sigalg: sha384WithRSAEncryption\n   v:NotBefore: Feb  1 0",
+      "used_by": {
+        "s18": "smtp_starttls"
+      },
+      "invocation": "smtp_starttls"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "curl",
+      "version": "curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0",
+      "evidence_id": "D01-curl-version"
+    },
+    {
+      "name": "dig",
+      "version": "DiG 9.10.6",
+      "evidence_id": "D02-dig-version"
+    },
+    {
+      "name": "host",
+      "version": "/usr/bin/host"
+    },
+    {
+      "name": "nc",
+      "version": "/usr/bin/nc"
+    },
+    {
+      "name": "openssl",
+      "version": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)",
+      "evidence_id": "D03-openssl-version"
+    },
+    {
+      "name": "ping",
+      "version": "/sbin/ping"
+    },
+    {
+      "name": "traceroute",
+      "version": "/usr/sbin/traceroute"
+    },
+    {
+      "name": "whois",
+      "version": "/usr/bin/whois"
+    }
+  ],
+  "command_purposes": {
+    "dig_mx": "Lists the mail exchangers (MX) that receive mail for the domain; drives the SMTP STARTTLS and MTA-STS checks.",
+    "dig_txt": "Reads apex TXT records to find the SPF record (v=spf1) and other published policies.",
+    "dig_dmarc": "Reads the DMARC policy at _dmarc.<domain>.",
+    "dig_tlsrpt": "Reads the SMTP TLS reporting record at _smtp._tls.<domain>.",
+    "dig_caa": "Reads CAA records restricting which certificate authorities may issue certificates.",
+    "dig_ds": "Asks the parent zone for the DS record that anchors DNSSEC for the domain.",
+    "dig_dnskey": "Asks the domain's zone for its DNSSEC public keys.",
+    "dig_a_dnssec": "Requests the apex A record with DNSSEC signatures (RRSIG) and records whether the resolver validated it (AD flag).",
+    "dig_aaaa_dnssec": "Requests the apex AAAA record with DNSSEC signatures.",
+    "dig_mx_dnssec": "Requests the MX records with DNSSEC signatures.",
+    "dig_txt_dnssec": "Requests the TXT records with DNSSEC signatures.",
+    "dig_ns": "Lists the authoritative nameservers delegated for the domain.",
+    "dig_soa_full": "Reads the full SOA record and response header, including the primary nameserver and resolver flags.",
+    "dig_trace": "Follows delegation from the root servers to the domain's nameservers to confirm the delegation chain resolves.",
+    "dig_mta_sts": "Reads the MTA-STS announcement record at _mta-sts.<domain>.",
+    "curl_mta_sts_policy": "Fetches the MTA-STS policy file from https://mta-sts.<domain>/.well-known/mta-sts.txt.",
+    "whois": "Reads registration data: registrar, creation and expiry dates and EPP status codes.",
+    "dig_dkim": "Reads the DKIM public key for a selector the user supplied.",
+    "smtp_starttls": "Connects to one MX host on TCP 25, issues EHLO and STARTTLS, and verifies the certificate it presents. No mail is sent.",
+    "dig_version": "Records the dig version used.",
+    "curl_version": "Records the curl version used.",
+    "openssl_version": "Records the OpenSSL version used."
+  },
+  "glossary": [
+    [
+      "SPF",
+      "Sender Policy Framework. A TXT record listing the servers allowed to send mail for a domain. Receivers check it against the envelope sender (Return-Path), not the From: address people see."
+    ],
+    [
+      "DKIM",
+      "DomainKeys Identified Mail. The sending service signs each message with a private key; receivers fetch the public key from <selector>._domainkey.<domain> to verify the message was not altered and came from a key the domain owner published."
+    ],
+    [
+      "DMARC",
+      "Domain-based Message Authentication, Reporting and Conformance. A TXT record at _dmarc.<domain> telling receivers what to do when a message's visible From: domain is not authenticated by an aligned SPF or DKIM pass, and where to send reports."
+    ],
+    [
+      "Alignment",
+      "DMARC passes only when the domain authenticated by SPF or DKIM matches (aligns with) the From: domain the recipient sees."
+    ],
+    [
+      "MTA-STS",
+      "SMTP MTA Strict Transport Security. Lets a domain require that other mail servers deliver to it only over TLS with a valid certificate, defeating downgrade and interception attacks."
+    ],
+    [
+      "TLS-RPT",
+      "SMTP TLS Reporting. A TXT record asking other mail servers to send daily reports about TLS failures when delivering to the domain."
+    ],
+    [
+      "STARTTLS",
+      "The SMTP command that upgrades a plaintext mail connection on port 25 to an encrypted TLS connection."
+    ],
+    [
+      "CAA",
+      "Certification Authority Authorization. DNS records naming the certificate authorities allowed to issue certificates for the domain."
+    ],
+    [
+      "DNSSEC",
+      "DNS Security Extensions. Cryptographic signatures on DNS records, anchored by a DS record at the parent zone, so resolvers can detect forged answers."
+    ],
+    [
+      "DS record",
+      "Delegation Signer. Published at the registrar (in the parent zone, such as .org) to link the parent's chain of trust to the domain's DNSSEC keys."
+    ],
+    [
+      "EPP status",
+      "Registry status codes such as clientTransferProhibited that control whether a domain can be transferred, updated or deleted."
+    ]
+  ],
+  "related_reports": [
+    {
+      "label": "H1 Reconnaissance report",
+      "href": "../H1-reconnaissance/report.html"
+    },
+    {
+      "label": "S11 TLS & Cryptography Security report",
+      "href": "../S11-tls/report.html"
+    }
+  ],
+  "summary": {
+    "severity_counts": {
+      "critical": 0,
+      "high": 2,
+      "medium": 2,
+      "low": 2,
+      "informational": 1
+    },
+    "passed": 4,
+    "unknown": 1,
+    "not_applicable": 0,
+    "narrative": [
+      "S18 evaluated 12 controls for test.c4lab.in: 4 passed, 7 produced findings (2 high, 2 medium, 2 low, 1 informational) and 1 could not be determined.",
+      "The most significant issue is S18-001 \u201cSPF record missing\u201d (high). No SPF record (TXT beginning v=spf1) is published.",
+      "Other findings: S18-002 \u201cDMARC record missing or invalid\u201d (high); S18-003 \u201cDNSSEC not deployed\u201d (medium); S18-004 \u201cInsufficient nameserver redundancy\u201d (medium); S18-005 \u201cMTA-STS not enforced\u201d (low); S18-006 \u201cCAA record missing\u201d (low); S18-007 \u201cSMTP TLS reporting not configured\u201d (informational).",
+      "Controls in good shape: The domain publishes MX records (mx1.dreamhost.com), so mail is routed to DreamHost Mail. mx1.dreamhost.com offers STARTTLS with a certificate that verifies against the local trust store. The registration with GoDaddy is valid until 2027-08-06T14:42:25.765Z (283 days). A transfer lock is set (EPP status: ACTIVE, clientDeleteProhibited, clientRenewProhibited, clientTransferProhibited, clientUpdateProhibited).",
+      "Unknown controls are listed with what is needed to resolve them; they are not treated as passes."
+    ],
+    "key_facts": [
+      [
+        "Email provider",
+        "DreamHost Mail"
+      ],
+      [
+        "DNS host",
+        "your DNS hosting provider"
+      ],
+      [
+        "Registrar",
+        "GoDaddy"
+      ],
+      [
+        "SPF",
+        "none"
+      ],
+      [
+        "DMARC",
+        "none"
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "S18-001",
+      "rule_id": "S18-SPF-001",
+      "status": "confirmed",
+      "severity": "high",
+      "title": "SPF record missing",
+      "category": "Email authentication",
+      "about": "Checks that the domain publishes an SPF record (a TXT record beginning v=spf1) listing the servers allowed to send its mail.",
+      "analysis": "No SPF record (TXT beginning v=spf1) is published.",
+      "what_we_found": "No TXT record beginning \"v=spf1\" is published at test.c4lab.in. Receivers checking SPF for mail from test.c4lab.in get the result \"none\".",
+      "why_it_matters": [
+        "SPF is how a receiving server asks \"is this server allowed to send mail for test.c4lab.in?\". With no record, every server on the internet is equally plausible, so receivers cannot use SPF to reject or flag mail sent by an impersonator.",
+        "Without SPF, DMARC can pass only through DKIM. Any of your legitimate services that do not sign with DKIM will fail DMARC once you enforce it.",
+        "Since February 2024 Google and Yahoo require SPF or DKIM on all mail they accept, and both for bulk senders. Mail from test.c4lab.in is more likely to be sent to spam or rejected."
+      ],
+      "attack_scenario": "An attacker sends mail with the envelope sender and From: address set to someone@test.c4lab.in from their own server. With no SPF (and no enforcing DMARC) the receiving server has no domain policy to apply, so the message is judged only by content filters.",
+      "severity_rationale": "High when the domain receives mail (it is clearly in active use and worth impersonating); medium when it publishes no MX records. It would be critical only if combined with a missing DMARC record on a domain known to send payment or account mail.",
+      "fix_steps": [
+        "List every service that sends mail as @test.c4lab.in: your mailbox provider (DreamHost Mail), the website and its contact forms, newsletters, CRM, helpdesk and invoicing systems.",
+        "Collect the SPF include for each from its documentation.",
+        {
+          "text": "Publish one TXT record at the domain apex. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there. A starting point based on the providers detected:",
+          "code": "test.c4lab.in.  3600  IN  TXT  \"v=spf1 include:netblocks.dreamhost.com ~all\""
+        },
+        "Keep the record to ten or fewer DNS-querying terms (include, a, mx, exists, redirect).",
+        "Send a test message to a Gmail address and check \"Show original\": SPF should show PASS."
+      ],
+      "rollback": "Delete the TXT record; receivers return to SPF \"none\" within the TTL.",
+      "verify": {
+        "command": "dig test.c4lab.in TXT +short | grep spf1",
+        "expected": "Exactly one line beginning \"v=spf1\" and ending with ~all or -all."
+      },
+      "references": [
+        {
+          "title": "RFC 7208 \u2014 Sender Policy Framework (SPF)",
+          "url": "https://www.rfc-editor.org/rfc/rfc7208.html"
+        },
+        {
+          "title": "Google \u2014 Email sender guidelines",
+          "url": "https://support.google.com/a/answer/81126"
+        }
+      ],
+      "authority": "RFC7208",
+      "remediation": "List every service that sends mail as @test.c4lab.in: your mailbox provider (DreamHost Mail), the website and its contact forms, newsletters, CRM, helpdesk and invoicing systems.",
+      "evidence": [
+        {
+          "evidence_id": "D08-dig-txt",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "TXT",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D08-dig-txt.txt",
+          "sha256": "f67428e9d4a8f84eae8ab86a043c78d27d307be5364c4e8d04b4d7eb241599e7",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-002",
+      "rule_id": "S18-DMARC-001",
+      "status": "confirmed",
+      "severity": "high",
+      "title": "DMARC record missing or invalid",
+      "category": "Email authentication",
+      "about": "Checks that exactly one DMARC record (v=DMARC1) is published at _dmarc.<domain>. DMARC tells receivers what to do with mail whose visible From: domain is not authenticated.",
+      "analysis": "No DMARC record is published at _dmarc.",
+      "what_we_found": "No TXT record beginning \"v=DMARC1\" is published at _dmarc.test.c4lab.in.",
+      "why_it_matters": [
+        "SPF and DKIM authenticate technical identities (the envelope sender and the signing domain), not the From: address the recipient reads. DMARC connects the two: it passes only when SPF or DKIM authenticates a domain that aligns with the visible From: domain.",
+        "With no DMARC record, receivers have no instruction from you about forged mail and send you no reports, so you cannot see who is sending mail as test.c4lab.in.",
+        "Google and Yahoo require a DMARC record for bulk senders (more than 5,000 messages a day to their users), and many receivers treat a missing record as a negative reputation signal."
+      ],
+      "attack_scenario": "An attacker sends mail with From: accounts@test.c4lab.in from their own server, using an envelope domain they control so SPF passes for their domain. The visible From: is yours, there is no DMARC policy to check alignment, and the message reaches the inbox.",
+      "severity_rationale": "High: exact-domain impersonation is unrestricted and invisible to you. It is not critical because content filtering still applies and no record actively authorises the attacker.",
+      "fix_steps": [
+        {
+          "text": "Publish a monitoring policy now so reports start arriving. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+          "code": "_dmarc.test.c4lab.in.  3600  IN  TXT  \"v=DMARC1; p=none; rua=mailto:dmarc-reports@test.c4lab.in; fo=1\""
+        },
+        "Create the mailbox dmarc-reports@test.c4lab.in (or use a DMARC reporting service) and review the aggregate reports for two to four weeks.",
+        "Fix SPF and DKIM for every legitimate sender that the reports show failing.",
+        {
+          "text": "Move to enforcement in stages:",
+          "code": "v=DMARC1; p=quarantine; pct=25; rua=mailto:dmarc-reports@test.c4lab.in\nv=DMARC1; p=quarantine; rua=mailto:dmarc-reports@test.c4lab.in\nv=DMARC1; p=reject; rua=mailto:dmarc-reports@test.c4lab.in"
+        }
+      ],
+      "rollback": "Set p=none or delete the record; it takes effect within the TTL.",
+      "verify": {
+        "command": "dig _dmarc.test.c4lab.in TXT +short",
+        "expected": "One record beginning \"v=DMARC1\"."
+      },
+      "references": [
+        {
+          "title": "RFC 7489 \u2014 DMARC",
+          "url": "https://www.rfc-editor.org/rfc/rfc7489.html"
+        },
+        {
+          "title": "Google \u2014 Set up DMARC",
+          "url": "https://support.google.com/a/answer/2466580"
+        },
+        {
+          "title": "Yahoo \u2014 Sender requirements",
+          "url": "https://senders.yahooinc.com/best-practices/"
+        }
+      ],
+      "authority": "RFC7489",
+      "remediation": "Publish a monitoring policy now so reports start arriving. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+      "evidence": [
+        {
+          "evidence_id": "D22-dig-dmarc",
+          "command": [
+            "dig",
+            "_dmarc.test.c4lab.in",
+            "TXT",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D22-dig-dmarc.txt",
+          "sha256": "5d417838552bd20e5d2365e43ded9793b68b54c7eedd9054b926bf00ff0baa6b",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-003",
+      "rule_id": "S18-DNSSEC-001",
+      "status": "confirmed",
+      "severity": "medium",
+      "title": "DNSSEC not deployed",
+      "category": "DNS integrity",
+      "about": "Checks that the zone is DNSSEC-signed (DNSKEY and RRSIG records) and anchored at the parent zone with a DS record, so resolvers can detect forged DNS answers.",
+      "analysis": "The zone is not DNSSEC-signed (no DS at the parent, no DNSKEY).",
+      "what_we_found": "test.c4lab.in is not DNSSEC-signed: the parent zone has no DS record for it and the zone serves no DNSKEY records.",
+      "why_it_matters": [
+        "Without DNSSEC, a resolver cannot tell a genuine answer for test.c4lab.in from a forged one. Cache-poisoning attacks (such as the Kaminsky attack class) or an attacker on the network path can return false A or MX records, sending visitors to a fake website and mail to an attacker's server.",
+        "DNSSEC is also the foundation for DANE, which lets mail servers pin your MX certificates in DNS."
+      ],
+      "attack_scenario": "A poisoned resolver at an ISP or on public Wi-Fi returns the attacker's IP address for test.c4lab.in. Visitors reach a cloned site (HTTPS warnings are the remaining defence), and other mail servers deliver mail for test.c4lab.in to the attacker's MX.",
+      "severity_rationale": "Medium: forged DNS requires a privileged position or a resolver weakness, and HTTPS still protects web users who heed warnings. Most domains remain unsigned, but DNSSEC removes a whole class of redirection attacks.",
+      "fix_steps": [
+        "Enable signing at the DNS host. your DNS hosting provider: Enable DNSSEC signing at the DNS hosting provider, then add the DS record it gives you at the registrar.",
+        "Copy the DS record values (key tag, algorithm, digest type and digest) that the DNS host gives you.",
+        "Add the DS record at the registrar. GoDaddy: In GoDaddy open Domain Portfolio \u2192 the domain \u2192 DNS \u2192 DNSSEC \u2192 Add DS record.",
+        "Wait for the parent zone to publish the DS record (usually under an hour; up to 48 hours for some TLDs), then verify.",
+        "Important: if you ever move DNS hosting, remove the DS record at the registrar first and wait for its TTL to expire before switching, or validating resolvers will treat the domain as broken."
+      ],
+      "rollback": "Remove the DS record at the registrar first, wait for the parent TTL, then turn off signing.",
+      "verify": {
+        "command": "dig test.c4lab.in DS +short && dig test.c4lab.in A +dnssec | grep -E 'flags|RRSIG'",
+        "expected": "A DS record, RRSIG records in the answer, and the \"ad\" flag from a validating resolver (for example dig @1.1.1.1)."
+      },
+      "references": [
+        {
+          "title": "RFC 4033 \u2014 DNS Security Introduction and Requirements",
+          "url": "https://www.rfc-editor.org/rfc/rfc4033.html"
+        },
+        {
+          "title": "ICANN \u2014 DNSSEC: what is it and why is it important?",
+          "url": "https://www.icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en"
+        },
+        {
+          "title": "RFC 7672 \u2014 DANE for SMTP (requires DNSSEC)",
+          "url": "https://www.rfc-editor.org/rfc/rfc7672.html"
+        }
+      ],
+      "authority": "RFC4033",
+      "remediation": "Enable signing at the DNS host. your DNS hosting provider: Enable DNSSEC signing at the DNS hosting provider, then add the DS record it gives you at the registrar.",
+      "evidence": [
+        {
+          "evidence_id": "D24-dig-ds",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "DS",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D24-dig-ds.txt",
+          "sha256": "bb1e2dde3f7c2ab92f00ba65d7b7537158c7d5adcd0df58fbc2c5343f4885c63",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in DS +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 27497\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tDS\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 8 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106"
+        },
+        {
+          "evidence_id": "D25-dig-dnskey",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "DNSKEY",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D25-dig-dnskey.txt",
+          "sha256": "3421ecabaca0d73f49c9ebecc7368b556106462494f7a07263d33ed05f2ca0f8",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in DNSKEY +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 2487\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tDNSKEY\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106"
+        },
+        {
+          "evidence_id": "D26-dig-a-dnssec",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "A",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D26-dig-a-dnssec.txt",
+          "sha256": "bbfb8f936f57c134b46a3688377f2157853ff2158bb8ba8ec6d8b83001df6242",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in A +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 55577\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tA\n\n;; ANSWER SECTION:\ntest.c4lab.in.\t\t16\tIN\tA\t107.180.237.42\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 58"
+        },
+        {
+          "evidence_id": "D27-dig-aaaa-dnssec",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "AAAA",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D27-dig-aaaa-dnssec.txt",
+          "sha256": "800437708627e14f1eef55ddd37fc1285806a6988891c870e8c6b1c5058d7665",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in AAAA +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 15148\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tAAAA\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t59\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 10 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106"
+        },
+        {
+          "evidence_id": "D28-dig-mx-dnssec",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "MX",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D28-dig-mx-dnssec.txt",
+          "sha256": "ee42f434c355b2d2e85087f742c5ac3fc01b5d1b6fabdfc01c3146268b18e26a",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in MX +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38412\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tMX\n\n;; ANSWER SECTION:\ntest.c4lab.in.\t\t16\tIN\tMX\t10 mx1.dreamhost.com.\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 75"
+        },
+        {
+          "evidence_id": "D29-dig-txt-dnssec",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "TXT",
+            "+dnssec"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D29-dig-txt-dnssec.txt",
+          "sha256": "a3f444c28ab472741560105c6ec3541f153256e7cb84786a93135a324bbd4b96",
+          "excerpt": "; <<>> DiG 9.10.6 <<>> test.c4lab.in TXT +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47406\n;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tTXT\n\n;; AUTHORITY SECTION:\nc4lab.in.\t\t60\tIN\tSOA\tns1.dreamhost.com. hostmaster.dreamhost.com. 2026102706 18215 600 1814400 60\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 106"
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-004",
+      "rule_id": "S18-NS-001",
+      "status": "confirmed",
+      "severity": "medium",
+      "title": "Insufficient nameserver redundancy",
+      "category": "DNS availability",
+      "about": "Checks that at least two authoritative nameservers are delegated, so DNS keeps working if one fails.",
+      "analysis": "Only 0 nameserver is delegated; DNS has a single point of failure.",
+      "what_we_found": "Only 0 nameserver is delegated for test.c4lab.in: {ns_list}.",
+      "why_it_matters": [
+        "If that server is unreachable, every service on the domain (website, email, APIs) stops resolving once caches expire."
+      ],
+      "attack_scenario": "A denial-of-service attack against one server takes the whole domain offline.",
+      "severity_rationale": "Medium: an availability risk with a single point of failure.",
+      "fix_steps": [
+        "Add at least one more nameserver, ideally on a different network, using your DNS host's secondary-DNS option, and list all of them at GoDaddy."
+      ],
+      "rollback": "Not applicable.",
+      "verify": {
+        "command": "dig test.c4lab.in NS +short",
+        "expected": "Two or more nameservers."
+      },
+      "references": [
+        {
+          "title": "RFC 1034 \u00a74.1 \u2014 Name servers (at least two required)",
+          "url": "https://www.rfc-editor.org/rfc/rfc1034.html#section-4.1"
+        },
+        {
+          "title": "RFC 2182 \u2014 Selection and operation of secondary DNS servers",
+          "url": "https://www.rfc-editor.org/rfc/rfc2182.html"
+        }
+      ],
+      "authority": "RFC1034",
+      "remediation": "Add at least one more nameserver, ideally on a different network, using your DNS host's secondary-DNS option, and list all of them at GoDaddy.",
+      "evidence": [
+        {
+          "evidence_id": "D09-dig-ns",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "NS",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D09-dig-ns.txt",
+          "sha256": "ac2bf410119b3c419a978c7eeea37af3fad4501a9505ebee39a21c2ff7cfb873",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-005",
+      "rule_id": "S18-MTASTS-001",
+      "status": "confirmed",
+      "severity": "low",
+      "title": "MTA-STS not enforced",
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes an MTA-STS policy in enforce mode, so other mail servers must deliver to it over TLS with a valid certificate.",
+      "analysis": "No MTA-STS record is published; inbound SMTP TLS can be downgraded.",
+      "what_we_found": "No MTA-STS record is published at _mta-sts.test.c4lab.in, so other mail servers have no instruction to require TLS when delivering to test.c4lab.in.",
+      "why_it_matters": [
+        "SMTP between mail servers uses opportunistic TLS. The sending server asks for STARTTLS, but if the request is stripped or the certificate is invalid it normally continues in plaintext rather than failing.",
+        "An attacker positioned on the network path (a compromised router, a malicious Wi-Fi network or a BGP/DNS hijack) can remove STARTTLS from the conversation and read or alter mail sent to test.c4lab.in. MTA-STS lets you publish \"only deliver to these MX hosts, only over valid TLS\", and compliant senders such as Gmail and Microsoft 365 then refuse to downgrade."
+      ],
+      "attack_scenario": "STARTTLS-stripping: an on-path attacker removes the STARTTLS capability from mx1.dreamhost.com's response, and the sender delivers password-reset emails, invoices or contracts to test.c4lab.in in plaintext, readable and modifiable in transit.",
+      "severity_rationale": "Low: exploitation requires a privileged network position, and major providers already use TLS by default. MTA-STS closes the downgrade gap.",
+      "fix_steps": [
+        {
+          "text": "Create the policy file. Start in testing mode, listing every MX host:",
+          "code": "version: STSv1\nmode: testing\nmx: mx1.dreamhost.com\nmax_age: 86400"
+        },
+        "Serve it at https://mta-sts.test.c4lab.in/.well-known/mta-sts.txt with a valid certificate for mta-sts.test.c4lab.in. Any static web host works: add the subdomain at your web host, or use a service such as Cloudflare Workers, GitHub Pages or your email provider's hosted MTA-STS.",
+        {
+          "text": "Announce it in DNS. Change the id whenever the policy changes. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+          "code": "_mta-sts.test.c4lab.in.  3600  IN  TXT  \"v=STSv1; id=20261027T113809\""
+        },
+        "Publish TLS-RPT (see S18-TLSRPT-001) so you receive failure reports.",
+        "After two to four weeks of clean TLS reports, change mode to enforce, raise max_age to 604800 (one week) or more, and update the id."
+      ],
+      "rollback": "Set mode: none in the policy file and update the id; remove the record after max_age has passed.",
+      "verify": {
+        "command": "dig _mta-sts.test.c4lab.in TXT +short && curl -fsSL https://mta-sts.test.c4lab.in/.well-known/mta-sts.txt",
+        "expected": "\"v=STSv1; id=...\" and a policy containing \"mode: enforce\" with every MX host listed."
+      },
+      "references": [
+        {
+          "title": "RFC 8461 \u2014 SMTP MTA Strict Transport Security (MTA-STS)",
+          "url": "https://www.rfc-editor.org/rfc/rfc8461.html"
+        },
+        {
+          "title": "Google \u2014 About MTA-STS and TLS reporting",
+          "url": "https://support.google.com/a/answer/9261504"
+        }
+      ],
+      "authority": "RFC8461",
+      "remediation": "Create the policy file. Start in testing mode, listing every MX host:",
+      "evidence": [
+        {
+          "evidence_id": "D31-dig-mta-sts",
+          "command": [
+            "dig",
+            "_mta-sts.test.c4lab.in",
+            "TXT",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D31-dig-mta-sts.txt",
+          "sha256": "40e348e7c0c02afe9008ac3857bf2b61588dba43ed9cc65f4e91e63dd2fdaa01",
+          "excerpt": ""
+        },
+        {
+          "evidence_id": "D32-curl-mta-sts-policy",
+          "command": [
+            "curl",
+            "-fsSL",
+            "https://mta-sts.test.c4lab.in/.well-known/mta-sts.txt"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 6,
+          "path": "evidence/D32-curl-mta-sts-policy.txt",
+          "sha256": "f4eda3bab5148ee408a8269e7449e75cd8ad849fd0423842657688104636434b",
+          "excerpt": "curl: (6) Could not resolve host: mta-sts.test.c4lab.in"
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-006",
+      "rule_id": "S18-CAA-001",
+      "status": "confirmed",
+      "severity": "low",
+      "title": "CAA record missing",
+      "category": "Certificate issuance",
+      "about": "Checks for CAA records naming the certificate authorities allowed to issue certificates for the domain. Since 2017 every public CA must check CAA before issuing.",
+      "analysis": "No CAA record; any public CA may issue certificates for the domain.",
+      "what_we_found": "No CAA records are published for test.c4lab.in, so any of the many publicly trusted certificate authorities may issue certificates for it.",
+      "why_it_matters": [
+        "Certificate authorities validate that a requester controls a domain, but that validation can be fooled: through a hijacked web host or DNS record, a BGP hijack of the validation traffic, or a mistake at one CA. CAA shrinks the attack surface from every public CA to the one or two you actually use.",
+        "The certificate currently served on https://test.c4lab.in was issued by your current certificate authority, so a CAA record can name that CA without affecting renewals."
+      ],
+      "attack_scenario": "An attacker who briefly controls a validation path obtains a valid certificate for test.c4lab.in from a CA you do not use, then impersonates the website or intercepts its traffic with no browser warning.",
+      "severity_rationale": "Low: exploitation requires another weakness to pass CA validation, and Certificate Transparency logs would record the rogue certificate. CAA is a cheap hardening step.",
+      "fix_steps": [
+        {
+          "text": "Publish CAA records naming your CA (<your CA's CAA domain, for example letsencrypt.org>) and an incident contact. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+          "code": "test.c4lab.in.  3600  IN  CAA  0 issue \"<your CA's CAA domain, for example letsencrypt.org>\"\ntest.c4lab.in.  3600  IN  CAA  0 issuewild \";\"\ntest.c4lab.in.  3600  IN  CAA  0 iodef \"mailto:security@test.c4lab.in\""
+        },
+        "Add an issue line for every other CA that issues for the domain or its subdomains (for example a CDN, mail provider or managed hosting platform). Check existing certificates at https://crt.sh/?q=test.c4lab.in before publishing.",
+        "issuewild \";\" forbids wildcard certificates; omit that line if you use wildcards."
+      ],
+      "rollback": "Delete the CAA records; issuance is unrestricted again immediately after the TTL.",
+      "verify": {
+        "command": "dig test.c4lab.in CAA +short",
+        "expected": "0 issue \"<your CA's CAA domain, for example letsencrypt.org>\" (plus any others you added)."
+      },
+      "references": [
+        {
+          "title": "RFC 8659 \u2014 DNS Certification Authority Authorization",
+          "url": "https://www.rfc-editor.org/rfc/rfc8659.html"
+        },
+        {
+          "title": "Let's Encrypt \u2014 Certificate Authority Authorization (CAA)",
+          "url": "https://letsencrypt.org/docs/caa/"
+        }
+      ],
+      "authority": "RFC8659",
+      "remediation": "Publish CAA records naming your CA (<your CA's CAA domain, for example letsencrypt.org>) and an incident contact. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+      "evidence": [
+        {
+          "evidence_id": "D11-dig-caa",
+          "command": [
+            "dig",
+            "test.c4lab.in",
+            "CAA",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:37:59Z",
+          "exit_status": 0,
+          "path": "evidence/D11-dig-caa.txt",
+          "sha256": "e6587f90b252f719e15a9aa894bf57fc7f4d90659d9730d9db9f45f0ee9ad880",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    },
+    {
+      "finding_id": "S18-007",
+      "rule_id": "S18-TLSRPT-001",
+      "status": "confirmed",
+      "severity": "informational",
+      "title": "SMTP TLS reporting not configured",
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes a TLS-RPT record (_smtp._tls) so other mail servers report TLS delivery failures to the owner.",
+      "analysis": "No TLS-RPT record; SMTP TLS delivery failures are not reported to the owner.",
+      "what_we_found": "No TXT record beginning \"v=TLSRPTv1\" is published at _smtp._tls.test.c4lab.in.",
+      "why_it_matters": [
+        "Without TLS-RPT you are not told when other servers fail to establish TLS with your MX hosts, whether from an expired certificate, a misconfiguration or an active downgrade attack. It is also the feedback loop needed before switching MTA-STS to enforce."
+      ],
+      "attack_scenario": "Interception attempts and certificate problems on inbound mail go unnoticed.",
+      "severity_rationale": "Informational: reporting only, with no direct protection.",
+      "fix_steps": [
+        {
+          "text": "Publish the record with a monitored address. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+          "code": "_smtp._tls.test.c4lab.in.  3600  IN  TXT  \"v=TLSRPTv1; rua=mailto:tls-reports@test.c4lab.in\""
+        }
+      ],
+      "rollback": "Delete the record.",
+      "verify": {
+        "command": "dig _smtp._tls.test.c4lab.in TXT +short",
+        "expected": "\"v=TLSRPTv1; rua=mailto:...\""
+      },
+      "references": [
+        {
+          "title": "RFC 8460 \u2014 SMTP TLS Reporting",
+          "url": "https://www.rfc-editor.org/rfc/rfc8460.html"
+        }
+      ],
+      "authority": "RFC8460",
+      "remediation": "Publish the record with a monitored address. In your DNS hosting provider: Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+      "evidence": [
+        {
+          "evidence_id": "D23-dig-tlsrpt",
+          "command": [
+            "dig",
+            "_smtp._tls.test.c4lab.in",
+            "TXT",
+            "+short"
+          ],
+          "captured_at": "2026-10-27T11:38:00Z",
+          "exit_status": 0,
+          "path": "evidence/D23-dig-tlsrpt.txt",
+          "sha256": "c0297087909b078d6b14c853e07aac7c4dfddab5d8c5dfcee3e6dadcd48d8842",
+          "excerpt": ""
+        }
+      ],
+      "verification": "not_started"
+    }
+  ],
+  "controls": [
+    {
+      "rule_id": "S18-MX-001",
+      "status": "pass",
+      "detail": "1 MX record(s) published.",
+      "evidence_ids": [
+        "D07-dig-mx"
+      ],
+      "variant": "default",
+      "facts": {},
+      "category": "Mail routing",
+      "about": "Checks that the domain publishes MX records so other servers know where to deliver its mail, or a null MX (\"0 .\") if the domain should never receive mail.",
+      "explanation": "The domain publishes MX records (mx1.dreamhost.com), so mail is routed to DreamHost Mail."
+    },
+    {
+      "rule_id": "S18-SPF-001",
+      "status": "confirmed",
+      "detail": "No SPF record (TXT beginning v=spf1) is published.",
+      "evidence_ids": [
+        "D08-dig-txt"
+      ],
+      "variant": "default",
+      "facts": {},
+      "severity": "high",
+      "category": "Email authentication",
+      "about": "Checks that the domain publishes an SPF record (a TXT record beginning v=spf1) listing the servers allowed to send its mail.",
+      "explanation": "No SPF record (TXT beginning v=spf1) is published."
+    },
+    {
+      "rule_id": "S18-DMARC-001",
+      "status": "confirmed",
+      "detail": "No DMARC record is published at _dmarc.",
+      "evidence_ids": [
+        "D22-dig-dmarc"
+      ],
+      "variant": "missing",
+      "facts": {},
+      "severity": "high",
+      "category": "Email authentication",
+      "about": "Checks that exactly one DMARC record (v=DMARC1) is published at _dmarc.<domain>. DMARC tells receivers what to do with mail whose visible From: domain is not authenticated.",
+      "explanation": "No DMARC record is published at _dmarc."
+    },
+    {
+      "rule_id": "S18-DKIM-001",
+      "status": "unknown",
+      "detail": "No DKIM selector was supplied; selectors cannot be enumerated from DNS and were not guessed.",
+      "evidence_ids": [],
+      "variant": "default",
+      "facts": {},
+      "category": "Email authentication",
+      "about": "Checks that a DKIM public key is published for each selector the user supplied. Selectors cannot be listed from DNS; find yours in the s= value of the DKIM-Signature header of a message you sent.",
+      "explanation": "No selector was supplied. Open an email you sent from test.c4lab.in, view the original message and find the DKIM-Signature header; its s= value is the selector (for DreamHost Mail it is usually \"dreamhost\"). Re-run with --dkim-selector <selector>."
+    },
+    {
+      "rule_id": "S18-MTASTS-001",
+      "status": "confirmed",
+      "detail": "No MTA-STS record is published; inbound SMTP TLS can be downgraded.",
+      "evidence_ids": [
+        "D31-dig-mta-sts",
+        "D32-curl-mta-sts-policy"
+      ],
+      "variant": "missing",
+      "facts": {},
+      "severity": "low",
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes an MTA-STS policy in enforce mode, so other mail servers must deliver to it over TLS with a valid certificate.",
+      "explanation": "No MTA-STS record is published; inbound SMTP TLS can be downgraded."
+    },
+    {
+      "rule_id": "S18-TLSRPT-001",
+      "status": "confirmed",
+      "detail": "No TLS-RPT record; SMTP TLS delivery failures are not reported to the owner.",
+      "evidence_ids": [
+        "D23-dig-tlsrpt"
+      ],
+      "variant": "default",
+      "facts": {},
+      "severity": "informational",
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes a TLS-RPT record (_smtp._tls) so other mail servers report TLS delivery failures to the owner.",
+      "explanation": "No TLS-RPT record; SMTP TLS delivery failures are not reported to the owner."
+    },
+    {
+      "rule_id": "S18-SMTP-001",
+      "status": "pass",
+      "detail": "mx1.dreamhost.com offers STARTTLS with a certificate that verifies.",
+      "evidence_ids": [
+        "D33-smtp-starttls"
+      ],
+      "variant": "default",
+      "facts": {
+        "mx_host": "mx1.dreamhost.com"
+      },
+      "category": "Mail transport security",
+      "about": "Connects to each MX host on port 25, issues STARTTLS and checks that the certificate verifies for the MX hostname.",
+      "explanation": "mx1.dreamhost.com offers STARTTLS with a certificate that verifies against the local trust store."
+    },
+    {
+      "rule_id": "S18-CAA-001",
+      "status": "confirmed",
+      "detail": "No CAA record; any public CA may issue certificates for the domain.",
+      "evidence_ids": [
+        "D11-dig-caa"
+      ],
+      "variant": "default",
+      "facts": {},
+      "severity": "low",
+      "category": "Certificate issuance",
+      "about": "Checks for CAA records naming the certificate authorities allowed to issue certificates for the domain. Since 2017 every public CA must check CAA before issuing.",
+      "explanation": "No CAA record; any public CA may issue certificates for the domain."
+    },
+    {
+      "rule_id": "S18-DNSSEC-001",
+      "status": "confirmed",
+      "detail": "The zone is not DNSSEC-signed (no DS at the parent, no DNSKEY).",
+      "evidence_ids": [
+        "D24-dig-ds",
+        "D25-dig-dnskey",
+        "D26-dig-a-dnssec",
+        "D27-dig-aaaa-dnssec",
+        "D28-dig-mx-dnssec",
+        "D29-dig-txt-dnssec"
+      ],
+      "variant": "unsigned",
+      "facts": {},
+      "severity": "medium",
+      "category": "DNS integrity",
+      "about": "Checks that the zone is DNSSEC-signed (DNSKEY and RRSIG records) and anchored at the parent zone with a DS record, so resolvers can detect forged DNS answers.",
+      "explanation": "The zone is not DNSSEC-signed (no DS at the parent, no DNSKEY)."
+    },
+    {
+      "rule_id": "S18-NS-001",
+      "status": "confirmed",
+      "detail": "Only 0 nameserver is delegated; DNS has a single point of failure.",
+      "evidence_ids": [
+        "D09-dig-ns"
+      ],
+      "variant": "default",
+      "facts": {
+        "ns_count": 0,
+        "ns_list": ""
+      },
+      "severity": "medium",
+      "category": "DNS availability",
+      "about": "Checks that at least two authoritative nameservers are delegated, so DNS keeps working if one fails.",
+      "explanation": "Only 0 nameserver is delegated; DNS has a single point of failure."
+    },
+    {
+      "rule_id": "S18-REG-001",
+      "status": "pass",
+      "detail": "The registration is valid for 283 more days (2027-08-06T14:42:25.765Z).",
+      "evidence_ids": [
+        "D14-whois"
+      ],
+      "variant": "default",
+      "facts": {
+        "expires": "2027-08-06T14:42:25.765Z",
+        "days_left": 283
+      },
+      "category": "Domain registration",
+      "about": "Checks that the domain registration is not expired and does not expire within 30 days.",
+      "explanation": "The registration with GoDaddy is valid until 2027-08-06T14:42:25.765Z (283 days)."
+    },
+    {
+      "rule_id": "S18-REG-002",
+      "status": "pass",
+      "detail": "A transfer lock (transferProhibited) is set.",
+      "evidence_ids": [
+        "D14-whois"
+      ],
+      "variant": "default",
+      "facts": {
+        "epp_statuses": "ACTIVE, clientDeleteProhibited, clientRenewProhibited, clientTransferProhibited, clientUpdateProhibited"
+      },
+      "category": "Domain registration",
+      "about": "Checks that the registrar transfer lock (clientTransferProhibited) is set, which blocks unauthorised transfers to another registrar.",
+      "explanation": "A transfer lock is set (EPP status: ACTIVE, clientDeleteProhibited, clientRenewProhibited, clientTransferProhibited, clientUpdateProhibited)."
+    }
+  ],
+  "unknowns": [
+    {
+      "rule_id": "S18-DKIM-001",
+      "status": "unknown",
+      "detail": "No DKIM selector was supplied; selectors cannot be enumerated from DNS and were not guessed.",
+      "evidence_ids": [],
+      "variant": "default",
+      "facts": {},
+      "category": "Email authentication",
+      "about": "Checks that a DKIM public key is published for each selector the user supplied. Selectors cannot be listed from DNS; find yours in the s= value of the DKIM-Signature header of a message you sent.",
+      "explanation": "No selector was supplied. Open an email you sent from test.c4lab.in, view the original message and find the DKIM-Signature header; its s= value is the selector (for DreamHost Mail it is usually \"dreamhost\"). Re-run with --dkim-selector <selector>."
+    }
+  ],
+  "technical_sections": [
+    {
+      "kind": "table",
+      "title": "Mail exchangers and transport encryption",
+      "subtitle": "Each MX host was tested with STARTTLS on port 25",
+      "columns": [
+        [
+          "preference",
+          "Preference"
+        ],
+        [
+          "host",
+          "MX host"
+        ],
+        [
+          "status",
+          "STARTTLS"
+        ],
+        [
+          "detail",
+          "Result"
+        ]
+      ],
+      "rows": [
+        {
+          "preference": 10,
+          "host": "mx1.dreamhost.com",
+          "status": "pass",
+          "detail": "mx1.dreamhost.com offers STARTTLS with a certificate that verifies."
+        }
+      ]
+    },
+    {
+      "kind": "table",
+      "title": "SPF record, term by term",
+      "subtitle": "No SPF record published",
+      "columns": [
+        [
+          "term",
+          "Term"
+        ],
+        [
+          "meaning",
+          "What it does"
+        ]
+      ],
+      "rows": []
+    },
+    {
+      "kind": "table",
+      "title": "DMARC record, tag by tag",
+      "subtitle": "No DMARC record published",
+      "columns": [
+        [
+          "tag",
+          "Tag"
+        ],
+        [
+          "value",
+          "Value"
+        ],
+        [
+          "meaning",
+          "Meaning"
+        ]
+      ],
+      "rows": []
+    },
+    {
+      "title": "Domain protection summary",
+      "subtitle": "Providers detected and the state of each protection",
+      "items": [
+        {
+          "label": "Email provider",
+          "value": "DreamHost Mail",
+          "explanation": "Detected from the MX hosts. Fix instructions in this report are tailored to it.",
+          "evidence_ids": [
+            "D07-dig-mx"
+          ]
+        },
+        {
+          "label": "DNS host",
+          "value": "your DNS hosting provider",
+          "explanation": "Detected from the NS records. DNS changes in this report are made here.",
+          "evidence_ids": [
+            "D09-dig-ns"
+          ]
+        },
+        {
+          "label": "Registrar",
+          "value": "GoDaddy",
+          "explanation": "From WHOIS. Locks, renewal and DS records are managed here.",
+          "evidence_ids": [
+            "D14-whois"
+          ]
+        },
+        {
+          "label": "DKIM selectors checked",
+          "value": "none supplied",
+          "explanation": "Selectors cannot be listed from DNS. For DreamHost Mail the usual selector is \"dreamhost\".",
+          "evidence_ids": []
+        },
+        {
+          "label": "DNSSEC",
+          "value": "The zone is not DNSSEC-signed (no DS at the parent, no DNSKEY).",
+          "explanation": "DS at the parent, DNSKEY and RRSIG in the zone, and the resolver's AD flag.",
+          "evidence_ids": [
+            "D24-dig-ds",
+            "D25-dig-dnskey",
+            "D26-dig-a-dnssec",
+            "D27-dig-aaaa-dnssec",
+            "D28-dig-mx-dnssec",
+            "D29-dig-txt-dnssec"
+          ]
+        },
+        {
+          "label": "CAA",
+          "value": "none",
+          "explanation": "Certificate authorities allowed to issue for the domain.",
+          "evidence_ids": [
+            "D11-dig-caa"
+          ]
+        }
+      ]
+    }
+  ],
+  "chart_data": {
+    "dmarc_policy": null,
+    "dmarc_pct": 100,
+    "mail_provider": "DreamHost Mail",
+    "mx_hosts": [
+      "mx1.dreamhost.com"
+    ],
+    "timeline": [
+      [
+        "Domain registration",
+        "2026-08-06T14:42:25.765Z",
+        "2027-08-06T14:42:25.765Z"
+      ]
+    ]
+  },
+  "limitations": [
+    "The previous run's reports were moved to cyber360-reports/test.c4lab.in/archive/20261027T113727Z/.",
+    "Point-in-time observation from one resolver and network path.",
+    "Nested SPF include: records were not expanded.",
+    "DKIM was checked only for selectors supplied by the user."
+  ],
+  "assumptions": [
+    "Outbound TCP 25 results reflect the network the assessment ran from; blocked connections are recorded as unknown."
+  ]
+}

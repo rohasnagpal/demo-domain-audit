@@ -1,0 +1,18 @@
+{
+  "evidence_id": "D16-traceroute",
+  "command": [
+    "traceroute",
+    "-q",
+    "1",
+    "-w",
+    "2",
+    "-m",
+    "20",
+    "test.c4lab.in"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 126,
+  "stdout": "",
+  "stderr": "Unable to execute command: [Errno 1] Operation not permitted: 'traceroute'"
+}

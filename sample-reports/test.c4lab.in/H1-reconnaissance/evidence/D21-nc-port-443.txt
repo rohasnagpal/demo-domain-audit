@@ -1,0 +1,14 @@
+Cyber360 evidence D21-nc-port-443
+==============================================================================
+Command:      nc -zv -w 2 test.c4lab.in 443
+Started:      2026-10-27T11:37:59Z
+Completed:    2026-10-27T11:38:00Z
+Exit status:  0
+==============================================================================
+
+--- stdout ---
+(empty)
+
+--- stderr ---
+Connection to test.c4lab.in port 443 [tcp/https] succeeded!
+

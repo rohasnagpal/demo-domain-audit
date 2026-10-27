@@ -1,0 +1,14 @@
+{
+  "evidence_id": "D28-dig-mx-dnssec",
+  "command": [
+    "dig",
+    "test.c4lab.in",
+    "MX",
+    "+dnssec"
+  ],
+  "started_at": "2026-10-27T11:38:00Z",
+  "completed_at": "2026-10-27T11:38:00Z",
+  "exit_status": 0,
+  "stdout": "\n; <<>> DiG 9.10.6 <<>> test.c4lab.in MX +dnssec\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38412\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n;; QUESTION SECTION:\n;test.c4lab.in.\t\t\tIN\tMX\n\n;; ANSWER SECTION:\ntest.c4lab.in.\t\t16\tIN\tMX\t10 mx1.dreamhost.com.\n\n;; Query time: 7 msec\n;; SERVER: 103.239.84.254#53(103.239.84.254)\n;; WHEN: Tue Oct 27 17:08:00 IST 2026\n;; MSG SIZE  rcvd: 75\n\n",
+  "stderr": ""
+}

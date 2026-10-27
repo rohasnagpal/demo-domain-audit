@@ -1,0 +1,12 @@
+{
+  "evidence_id": "D02-dig-version",
+  "command": [
+    "dig",
+    "-v"
+  ],
+  "started_at": "2026-10-27T11:37:59Z",
+  "completed_at": "2026-10-27T11:37:59Z",
+  "exit_status": 0,
+  "stdout": "",
+  "stderr": "DiG 9.10.6\n"
+}
