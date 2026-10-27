@@ -1,0 +1,66 @@
+schema_version: 1
+title: TLS security assessment
+formats:
+  - json
+  - self_contained_html
+
+storage:
+  root: cyber360-reports
+  assessment_directory: cyber360-reports/<report-id>
+  json: cyber360-reports/<report-id>/report.json
+  html: cyber360-reports/<report-id>/report.html
+  evidence: cyber360-reports/<report-id>/evidence/
+  allow_outputs_outside_root: false
+
+sections:
+  - id: scope_and_authority
+    heading: Scope and authority
+    fields:
+      - target
+      - port
+      - identifier_type
+      - authority
+      - assessment_window
+      - exclusions
+
+  - id: executive_assessment
+    heading: Executive assessment
+    instruction: State what the evidence establishes, the most important risk and the principal limitations. Do not describe untested controls as secure.
+
+  - id: visual_summary
+    heading: Evidence grade and component scores
+    instruction: Supply a grade only when a documented scoring basis is applied to sufficient evidence. Otherwise use N/A. Keep evidence coverage separate from observed security posture.
+
+  - id: technical_configuration
+    heading: Certificates, protocols, ciphers, clients and server features
+    instruction: Populate structured technical fields only from captured evidence. Use unknown or not_tested when a check was not conclusive.
+
+  - id: tooling_and_evidence
+    heading: Tooling and evidence
+    instruction: List each tool and version. For every evidence item, record its ID, UTC capture time, argument array, exit status, local path and SHA-256 hash.
+
+  - id: confirmed_findings
+    heading: Confirmed findings
+    fields:
+      - finding_id
+      - baseline_rule_id
+      - severity
+      - observed_fact
+      - analysis_and_impact
+      - evidence_ids
+      - applicable_authority
+      - remediation
+      - verification_state
+      - residual_risk
+
+  - id: passed_controls
+    heading: Passed controls
+    instruction: List only controls that were actually tested and satisfied. Identify the evidence supporting each pass.
+
+  - id: unknowns_and_limitations
+    heading: Unknowns and limitations
+    instruction: For every unknown, state why it could not be determined and the evidence required to resolve it.
+
+  - id: verification
+    heading: Verification
+    instruction: Record post-change evidence and one permitted verification outcome for each remediated finding.

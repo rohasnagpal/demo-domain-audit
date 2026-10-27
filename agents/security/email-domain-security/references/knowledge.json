@@ -1,0 +1,669 @@
+{
+  "schema_version": 1,
+  "agent": "s18",
+  "last_reviewed": "2026-10-27",
+  "placeholders": "Text in {braces} is replaced with values observed during the assessment. Unknown placeholders are left visible rather than guessed.",
+  "glossary": [
+    ["SPF", "Sender Policy Framework. A TXT record listing the servers allowed to send mail for a domain. Receivers check it against the envelope sender (Return-Path), not the From: address people see."],
+    ["DKIM", "DomainKeys Identified Mail. The sending service signs each message with a private key; receivers fetch the public key from <selector>._domainkey.<domain> to verify the message was not altered and came from a key the domain owner published."],
+    ["DMARC", "Domain-based Message Authentication, Reporting and Conformance. A TXT record at _dmarc.<domain> telling receivers what to do when a message's visible From: domain is not authenticated by an aligned SPF or DKIM pass, and where to send reports."],
+    ["Alignment", "DMARC passes only when the domain authenticated by SPF or DKIM matches (aligns with) the From: domain the recipient sees."],
+    ["MTA-STS", "SMTP MTA Strict Transport Security. Lets a domain require that other mail servers deliver to it only over TLS with a valid certificate, defeating downgrade and interception attacks."],
+    ["TLS-RPT", "SMTP TLS Reporting. A TXT record asking other mail servers to send daily reports about TLS failures when delivering to the domain."],
+    ["STARTTLS", "The SMTP command that upgrades a plaintext mail connection on port 25 to an encrypted TLS connection."],
+    ["CAA", "Certification Authority Authorization. DNS records naming the certificate authorities allowed to issue certificates for the domain."],
+    ["DNSSEC", "DNS Security Extensions. Cryptographic signatures on DNS records, anchored by a DS record at the parent zone, so resolvers can detect forged answers."],
+    ["DS record", "Delegation Signer. Published at the registrar (in the parent zone, such as .org) to link the parent's chain of trust to the domain's DNSSEC keys."],
+    ["EPP status", "Registry status codes such as clientTransferProhibited that control whether a domain can be transferred, updated or deleted."]
+  ],
+  "commands": {
+    "dig_mx": "Lists the mail exchangers (MX) that receive mail for the domain; drives the SMTP STARTTLS and MTA-STS checks.",
+    "dig_txt": "Reads apex TXT records to find the SPF record (v=spf1) and other published policies.",
+    "dig_dmarc": "Reads the DMARC policy at _dmarc.<domain>.",
+    "dig_tlsrpt": "Reads the SMTP TLS reporting record at _smtp._tls.<domain>.",
+    "dig_caa": "Reads CAA records restricting which certificate authorities may issue certificates.",
+    "dig_ds": "Asks the parent zone for the DS record that anchors DNSSEC for the domain.",
+    "dig_dnskey": "Asks the domain's zone for its DNSSEC public keys.",
+    "dig_a_dnssec": "Requests the apex A record with DNSSEC signatures (RRSIG) and records whether the resolver validated it (AD flag).",
+    "dig_aaaa_dnssec": "Requests the apex AAAA record with DNSSEC signatures.",
+    "dig_mx_dnssec": "Requests the MX records with DNSSEC signatures.",
+    "dig_txt_dnssec": "Requests the TXT records with DNSSEC signatures.",
+    "dig_ns": "Lists the authoritative nameservers delegated for the domain.",
+    "dig_soa_full": "Reads the full SOA record and response header, including the primary nameserver and resolver flags.",
+    "dig_trace": "Follows delegation from the root servers to the domain's nameservers to confirm the delegation chain resolves.",
+    "dig_mta_sts": "Reads the MTA-STS announcement record at _mta-sts.<domain>.",
+    "curl_mta_sts_policy": "Fetches the MTA-STS policy file from https://mta-sts.<domain>/.well-known/mta-sts.txt.",
+    "whois": "Reads registration data: registrar, creation and expiry dates and EPP status codes.",
+    "dig_dkim": "Reads the DKIM public key for a selector the user supplied.",
+    "smtp_starttls": "Connects to one MX host on TCP 25, issues EHLO and STARTTLS, and verifies the certificate it presents. No mail is sent.",
+    "dig_version": "Records the dig version used.",
+    "curl_version": "Records the curl version used.",
+    "openssl_version": "Records the OpenSSL version used."
+  },
+  "controls": {
+    "S18-MX-001": {
+      "category": "Mail routing",
+      "about": "Checks that the domain publishes MX records so other servers know where to deliver its mail, or a null MX (\"0 .\") if the domain should never receive mail.",
+      "pass": "The domain publishes MX records ({mx_hosts}), so mail is routed to {mail_provider}.",
+      "references": [
+        {"title": "RFC 7505 — A \"Null MX\" No Service Resource Record", "url": "https://www.rfc-editor.org/rfc/rfc7505.html"},
+        {"title": "RFC 5321 §5.1 — Locating the target host", "url": "https://www.rfc-editor.org/rfc/rfc5321.html#section-5.1"}
+      ],
+      "findings": {
+        "default": {
+          "what": "No MX records are published for {domain}.",
+          "why": [
+            "When a domain has no MX record, sending servers fall back to delivering to the domain's A record (the \"implicit MX\" rule in RFC 5321). Mail may therefore be attempted against the web server, where it either bounces slowly or, if that server happens to accept SMTP, is accepted by a system nobody monitors.",
+            "If the domain is not meant to receive mail at all, publishing nothing leaves that intent unstated. A null MX tells every sender immediately that the domain accepts no mail, and together with \"v=spf1 -all\" and a DMARC reject policy it also tells receivers that any mail claiming to come from the domain is forged."
+          ],
+          "attack": "Attackers prefer domains that look legitimate but are not protected: a domain with no MX, no SPF lockdown and no DMARC is easy to impersonate because receivers have no signal that mail from it should not exist.",
+          "severity_rationale": "Informational: missing MX records are a configuration gap rather than a direct vulnerability. The risk depends on whether the domain sends or receives mail; the related SPF and DMARC findings carry the impersonation risk.",
+          "fix": [
+            "Decide whether {domain} should receive email.",
+            {"text": "If it should, add the MX records supplied by your email provider. In {dns_provider}: {dns_edit}", "code": "{domain}.  3600  IN  MX  1  <mail host from your provider>."},
+            {"text": "If it should never receive mail, publish a null MX, a deny-all SPF record and a reject DMARC policy:", "code": "{domain}.         3600 IN MX  0 .\n{domain}.         3600 IN TXT \"v=spf1 -all\"\n_dmarc.{domain}.  3600 IN TXT \"v=DMARC1; p=reject; rua=mailto:dmarc@{domain}\""}
+          ],
+          "rollback": "Delete the added records in {dns_provider}; DNS caches clear within the record TTL (3600 seconds above).",
+          "verify": {"command": "dig {domain} MX +short", "expected": "Your provider's mail hosts, or \"0 .\" for a domain that accepts no mail."}
+        }
+      }
+    },
+    "S18-SPF-001": {
+      "category": "Email authentication",
+      "about": "Checks that the domain publishes an SPF record (a TXT record beginning v=spf1) listing the servers allowed to send its mail.",
+      "pass": "An SPF record is published: {spf_record}",
+      "references": [
+        {"title": "RFC 7208 — Sender Policy Framework (SPF)", "url": "https://www.rfc-editor.org/rfc/rfc7208.html"},
+        {"title": "Google — Email sender guidelines", "url": "https://support.google.com/a/answer/81126"}
+      ],
+      "findings": {
+        "default": {
+          "what": "No TXT record beginning \"v=spf1\" is published at {domain}. Receivers checking SPF for mail from {domain} get the result \"none\".",
+          "why": [
+            "SPF is how a receiving server asks \"is this server allowed to send mail for {domain}?\". With no record, every server on the internet is equally plausible, so receivers cannot use SPF to reject or flag mail sent by an impersonator.",
+            "Without SPF, DMARC can pass only through DKIM. Any of your legitimate services that do not sign with DKIM will fail DMARC once you enforce it.",
+            "Since February 2024 Google and Yahoo require SPF or DKIM on all mail they accept, and both for bulk senders. Mail from {domain} is more likely to be sent to spam or rejected."
+          ],
+          "attack": "An attacker sends mail with the envelope sender and From: address set to someone@{domain} from their own server. With no SPF (and no enforcing DMARC) the receiving server has no domain policy to apply, so the message is judged only by content filters.",
+          "severity_rationale": "High when the domain receives mail (it is clearly in active use and worth impersonating); medium when it publishes no MX records. It would be critical only if combined with a missing DMARC record on a domain known to send payment or account mail.",
+          "fix": [
+            "List every service that sends mail as @{domain}: your mailbox provider ({mail_provider}), the website and its contact forms, newsletters, CRM, helpdesk and invoicing systems.",
+            "Collect the SPF include for each from its documentation.",
+            {"text": "Publish one TXT record at the domain apex. In {dns_provider}: {dns_edit} A starting point based on the providers detected:", "code": "{domain}.  3600  IN  TXT  \"{spf_suggested}\""},
+            "Keep the record to ten or fewer DNS-querying terms (include, a, mx, exists, redirect).",
+            "Send a test message to a Gmail address and check \"Show original\": SPF should show PASS."
+          ],
+          "rollback": "Delete the TXT record; receivers return to SPF \"none\" within the TTL.",
+          "verify": {"command": "dig {domain} TXT +short | grep spf1", "expected": "Exactly one line beginning \"v=spf1\" and ending with ~all or -all."}
+        }
+      }
+    },
+    "S18-SPF-002": {
+      "category": "Email authentication",
+      "about": "Checks that exactly one SPF record is published. RFC 7208 requires receivers to return a permanent error when they find more than one.",
+      "pass": "Exactly one SPF record is published.",
+      "references": [
+        {"title": "RFC 7208 §4.5 — Selecting records", "url": "https://www.rfc-editor.org/rfc/rfc7208.html#section-4.5"}
+      ],
+      "findings": {
+        "default": {
+          "what": "{spf_count} SPF records are published at {domain}:\n{spf_records}",
+          "why": [
+            "RFC 7208 §4.5 says that when a receiver finds more than one v=spf1 record it must return \"permerror\". The result is the same as having a broken SPF record: SPF never passes for {domain}.",
+            "This usually happens when a second service (a newsletter tool or a web host) is set up by adding a new SPF record instead of adding its include to the existing one."
+          ],
+          "attack": "Because SPF always errors, spoofed mail is not rejected on SPF grounds, and legitimate mail loses an authentication pass that DMARC may need.",
+          "severity_rationale": "High: SPF is completely ineffective for the domain, and DMARC enforcement will fail for any sender that relies on SPF alignment.",
+          "fix": [
+            "Combine the mechanisms of all records into one, keeping a single v=spf1 at the start and a single all-mechanism at the end.",
+            {"text": "For example, merge \"v=spf1 include:a.example ~all\" and \"v=spf1 include:b.example ~all\" into:", "code": "{domain}.  3600  IN  TXT  \"v=spf1 include:a.example include:b.example ~all\""},
+            "In {dns_provider}, edit the first record to the merged value and delete the others. {dns_edit}"
+          ],
+          "rollback": "Restore the previous records from the evidence file linked below.",
+          "verify": {"command": "dig {domain} TXT +short | grep -c spf1", "expected": "1"}
+        }
+      }
+    },
+    "S18-SPF-003": {
+      "category": "Email authentication",
+      "about": "Checks the SPF record's final all-mechanism, which tells receivers what to do with mail from servers not listed: -all (fail), ~all (softfail), ?all (neutral) or +all (pass everything).",
+      "pass": "The SPF record ends with {spf_qualifier}. {spf_qualifier_note}",
+      "references": [
+        {"title": "RFC 7208 §5.1 — The all mechanism", "url": "https://www.rfc-editor.org/rfc/rfc7208.html#section-5.1"},
+        {"title": "RFC 7208 §2.6 — Results of evaluation", "url": "https://www.rfc-editor.org/rfc/rfc7208.html#section-2.6"}
+      ],
+      "findings": {
+        "plus_all": {
+          "what": "The SPF record for {domain} ends with \"{spf_qualifier}\":\n{spf_record}",
+          "why": [
+            "\"+all\" (or a bare \"all\") means every server on the internet is authorised to send mail for {domain}. SPF will pass for an attacker's server as readily as for yours.",
+            "This is worse than having no SPF record: receivers and DMARC treat the SPF pass as a positive authentication signal, so forged mail can pass DMARC through SPF alignment."
+          ],
+          "attack": "An attacker sends mail as ceo@{domain} from any server. SPF passes, the envelope domain aligns with the From: domain, and DMARC passes, so even a p=reject policy does not stop the message.",
+          "severity_rationale": "Critical: the record actively authenticates forged mail and defeats DMARC.",
+          "fix": [
+            {"text": "Replace the final mechanism with ~all or -all. In {dns_provider}: {dns_edit}", "code": "{domain}.  3600  IN  TXT  \"{spf_fixed}\""},
+            "Before changing, confirm every legitimate sender is listed by an include, a, mx or ip4/ip6 mechanism, or it will start failing SPF."
+          ],
+          "rollback": "Restore the previous record (preserved in the evidence file).",
+          "verify": {"command": "dig {domain} TXT +short | grep spf1", "expected": "A record ending with ~all or -all."}
+        },
+        "neutral": {
+          "what": "The SPF record for {domain} ends with \"?all\" (neutral):\n{spf_record}",
+          "why": [
+            "\"?all\" tells receivers to treat mail from unlisted servers as if no SPF policy existed. SPF then gives receivers no signal for rejecting or flagging forged mail.",
+            "It is normally used only briefly while testing a new record."
+          ],
+          "attack": "Mail forged from any server receives SPF \"neutral\" and is judged on content alone unless DMARC enforcement catches it through DKIM failure.",
+          "severity_rationale": "Medium: the record does not authorise attackers (unlike +all) but provides no protection; impact is reduced if DMARC is enforcing.",
+          "fix": [
+            {"text": "Change the final mechanism to ~all (softfail) or -all (fail). In {dns_provider}: {dns_edit}", "code": "{domain}.  3600  IN  TXT  \"{spf_fixed}\""}
+          ],
+          "rollback": "Restore the previous record (preserved in the evidence file).",
+          "verify": {"command": "dig {domain} TXT +short | grep spf1", "expected": "A record ending with ~all or -all."}
+        },
+        "no_all": {
+          "what": "The SPF record for {domain} has no all-mechanism:\n{spf_record}",
+          "why": [
+            "When no mechanism matches and there is no all-mechanism, RFC 7208 defines the result as \"neutral\". Unlisted servers, including an attacker's, receive no negative SPF result."
+          ],
+          "attack": "Forged mail from unlisted servers is treated as neutral rather than failing SPF.",
+          "severity_rationale": "Medium: equivalent to ?all.",
+          "fix": [
+            {"text": "Append ~all or -all to the record. In {dns_provider}: {dns_edit}", "code": "{domain}.  3600  IN  TXT  \"{spf_fixed}\""}
+          ],
+          "rollback": "Restore the previous record (preserved in the evidence file).",
+          "verify": {"command": "dig {domain} TXT +short | grep spf1", "expected": "A record ending with ~all or -all."}
+        }
+      }
+    },
+    "S18-SPF-004": {
+      "category": "Email authentication",
+      "about": "Checks that evaluating the SPF record needs at most ten DNS lookups. RFC 7208 §4.6.4 requires receivers to return permerror once the limit is exceeded.",
+      "pass": "The SPF record stays within the ten-lookup limit.",
+      "references": [
+        {"title": "RFC 7208 §4.6.4 — DNS lookup limits", "url": "https://www.rfc-editor.org/rfc/rfc7208.html#section-4.6.4"}
+      ],
+      "unknown_help": "Cyber360 counts only the DNS-querying terms in the top-level record ({spf_lookups}). Each include: can contain further lookups, so the true total may be higher. Resolve the nested records with `dig <include> TXT +short` for each include, or use an SPF checker, and confirm the total is ten or fewer.",
+      "findings": {
+        "default": {
+          "what": "The top-level SPF record alone contains {spf_lookups} DNS-querying terms, exceeding the limit of ten:\n{spf_record}",
+          "why": [
+            "Receivers stop evaluating after ten lookups and return permerror. SPF then fails for all mail, including legitimate mail."
+          ],
+          "attack": "Spoofed mail is not rejected on SPF grounds, and legitimate mail may fail DMARC once it is enforced.",
+          "severity_rationale": "High: SPF is ineffective for the domain.",
+          "fix": [
+            "Remove includes for services you no longer use.",
+            "Move marketing and bulk senders to a subdomain (for example news.{domain}) with its own SPF record.",
+            "Replace includes with explicit ip4/ip6 ranges only where the provider publishes stable ranges and you can monitor changes."
+          ],
+          "rollback": "Restore the previous record (preserved in the evidence file).",
+          "verify": {"command": "dig {domain} TXT +short | grep spf1", "expected": "A record whose fully expanded lookup count is ten or fewer."}
+        }
+      }
+    },
+    "S18-DMARC-001": {
+      "category": "Email authentication",
+      "about": "Checks that exactly one DMARC record (v=DMARC1) is published at _dmarc.<domain>. DMARC tells receivers what to do with mail whose visible From: domain is not authenticated.",
+      "pass": "A DMARC record is published: {dmarc_record}",
+      "references": [
+        {"title": "RFC 7489 — DMARC", "url": "https://www.rfc-editor.org/rfc/rfc7489.html"},
+        {"title": "Google — Set up DMARC", "url": "https://support.google.com/a/answer/2466580"},
+        {"title": "Yahoo — Sender requirements", "url": "https://senders.yahooinc.com/best-practices/"}
+      ],
+      "findings": {
+        "missing": {
+          "what": "No TXT record beginning \"v=DMARC1\" is published at _dmarc.{domain}.",
+          "why": [
+            "SPF and DKIM authenticate technical identities (the envelope sender and the signing domain), not the From: address the recipient reads. DMARC connects the two: it passes only when SPF or DKIM authenticates a domain that aligns with the visible From: domain.",
+            "With no DMARC record, receivers have no instruction from you about forged mail and send you no reports, so you cannot see who is sending mail as {domain}.",
+            "Google and Yahoo require a DMARC record for bulk senders (more than 5,000 messages a day to their users), and many receivers treat a missing record as a negative reputation signal."
+          ],
+          "attack": "An attacker sends mail with From: accounts@{domain} from their own server, using an envelope domain they control so SPF passes for their domain. The visible From: is yours, there is no DMARC policy to check alignment, and the message reaches the inbox.",
+          "severity_rationale": "High: exact-domain impersonation is unrestricted and invisible to you. It is not critical because content filtering still applies and no record actively authorises the attacker.",
+          "fix": [
+            {"text": "Publish a monitoring policy now so reports start arriving. In {dns_provider}: {dns_edit}", "code": "_dmarc.{domain}.  3600  IN  TXT  \"v=DMARC1; p=none; rua=mailto:dmarc-reports@{domain}; fo=1\""},
+            "Create the mailbox dmarc-reports@{domain} (or use a DMARC reporting service) and review the aggregate reports for two to four weeks.",
+            "Fix SPF and DKIM for every legitimate sender that the reports show failing.",
+            {"text": "Move to enforcement in stages:", "code": "v=DMARC1; p=quarantine; pct=25; rua=mailto:dmarc-reports@{domain}\nv=DMARC1; p=quarantine; rua=mailto:dmarc-reports@{domain}\nv=DMARC1; p=reject; rua=mailto:dmarc-reports@{domain}"}
+          ],
+          "rollback": "Set p=none or delete the record; it takes effect within the TTL.",
+          "verify": {"command": "dig _dmarc.{domain} TXT +short", "expected": "One record beginning \"v=DMARC1\"."}
+        },
+        "multiple": {
+          "what": "{dmarc_count} DMARC records are published at _dmarc.{domain}:\n{dmarc_records}",
+          "why": [
+            "RFC 7489 §6.6.3 requires receivers to ignore DMARC entirely when more than one record is found. The domain is effectively unprotected and no reports are sent."
+          ],
+          "attack": "Forged mail is treated as if the domain had no DMARC policy.",
+          "severity_rationale": "High: DMARC is disabled for the domain.",
+          "fix": [
+            "Keep one record containing the policy you intend and delete the others. In {dns_provider}: {dns_edit}"
+          ],
+          "rollback": "Restore the previous records from the evidence file.",
+          "verify": {"command": "dig _dmarc.{domain} TXT +short", "expected": "Exactly one record beginning \"v=DMARC1\"."}
+        }
+      }
+    },
+    "S18-DMARC-002": {
+      "category": "Email authentication",
+      "about": "Checks that the DMARC policy (p=) is quarantine or reject, so receivers act on mail that fails authentication.",
+      "pass": "The DMARC policy is p={dmarc_policy}: receivers {dmarc_policy_effect} mail that fails DMARC.",
+      "references": [
+        {"title": "RFC 7489 §6.3 — General record format (p= tag)", "url": "https://www.rfc-editor.org/rfc/rfc7489.html#section-6.3"},
+        {"title": "Google — Recommended DMARC rollout", "url": "https://support.google.com/a/answer/10032473"},
+        {"title": "M3AAWG — Email authentication recommended best practices", "url": "https://www.m3aawg.org/sites/default/files/m3aawg-email-authentication-recommended-best-practices-09-2020.pdf"}
+      ],
+      "findings": {
+        "default": {
+          "what": "_dmarc.{domain} publishes:\n{dmarc_record}\nThe policy is p={dmarc_policy}, which is \"monitor only\": receivers send you reports about failing mail but deliver it normally.",
+          "why": [
+            "Anyone can send email with a From: address at {domain} from their own server. Receivers such as Gmail, Outlook and Yahoo check DMARC, see p=none and deliver the message anyway (subject only to their spam filters).",
+            "SPF on its own does not stop this. It checks the envelope sender (Return-Path), which an attacker can set to a domain they control, while the From: address people actually see is yours.",
+            "{dmarc_rua_note}"
+          ],
+          "attack": "Typical abuse: fake invoices or payment-change requests sent to donors, customers or partners as finance@{domain}; credential phishing that copies your branding; and spam that damages the domain's sending reputation, so your own legitimate mail starts landing in spam.",
+          "severity_rationale": "Medium rather than high: a DMARC record exists and reports are {dmarc_reporting_state}, so the domain has visibility and is one change away from enforcement. A missing DMARC record or an SPF +all would rate high or critical.",
+          "fix": [
+            "{dkim_prereq}",
+            "Check that every service that sends as @{domain} passes SPF or DKIM with alignment. Senders seen in this assessment's SPF record: {spf_senders}.",
+            "Review two to four weeks of aggregate reports{dmarc_rua_suffix} and fix any legitimate source that fails.",
+            {"text": "Start enforcing on a quarter of failing mail. In {dns_provider}: {dns_edit}", "code": "_dmarc.{domain}.  3600  IN  TXT  \"{dmarc_quarantine_25}\""},
+            {"text": "After a week with no legitimate failures, apply quarantine to all failing mail, then reject:", "code": "{dmarc_quarantine_100}\n{dmarc_reject}"}
+          ],
+          "rollback": "Set p=none again. Receivers pick up the change within the record's TTL (3600 seconds above).",
+          "verify": {"command": "dig _dmarc.{domain} TXT +short", "expected": "\"v=DMARC1; p=reject; ...\" (or p=quarantine during rollout). Then run \"Cyber360 full domain audit: {domain}\" again."}
+        }
+      }
+    },
+    "S18-DMARC-003": {
+      "category": "Email authentication",
+      "about": "Checks that an enforcing DMARC policy applies to all failing mail (pct=100, the default).",
+      "pass": "The DMARC policy applies to all failing mail.",
+      "references": [
+        {"title": "RFC 7489 §6.3 — pct tag", "url": "https://www.rfc-editor.org/rfc/rfc7489.html#section-6.3"}
+      ],
+      "findings": {
+        "default": {
+          "what": "_dmarc.{domain} enforces p={dmarc_policy} on only pct={dmarc_pct}% of failing mail:\n{dmarc_record}",
+          "why": [
+            "Receivers apply the policy to the stated percentage of failing messages and treat the rest as the next weaker policy. With pct={dmarc_pct}, roughly {dmarc_pct_remaining}% of forged messages are still handled more leniently."
+          ],
+          "attack": "An attacker who sends enough forged messages will have most of them land under the weaker treatment.",
+          "severity_rationale": "Low: enforcement is in place and pct below 100 is a normal, temporary rollout stage.",
+          "fix": [
+            {"text": "Once reports show legitimate mail passing, remove pct (it defaults to 100) or set pct=100. In {dns_provider}: {dns_edit}", "code": "_dmarc.{domain}.  3600  IN  TXT  \"{dmarc_full_pct}\""}
+          ],
+          "rollback": "Restore the previous pct value.",
+          "verify": {"command": "dig _dmarc.{domain} TXT +short", "expected": "No pct tag, or pct=100."}
+        }
+      }
+    },
+    "S18-DMARC-004": {
+      "category": "Email authentication",
+      "about": "Checks that the DMARC record requests aggregate reports (rua=), giving the owner visibility of every source sending as the domain.",
+      "pass": "Aggregate reports are sent to {dmarc_rua}.",
+      "references": [
+        {"title": "RFC 7489 §7.2 — Aggregate reports", "url": "https://www.rfc-editor.org/rfc/rfc7489.html#section-7.2"}
+      ],
+      "findings": {
+        "default": {
+          "what": "The DMARC record has no rua= tag:\n{dmarc_record}",
+          "why": [
+            "Aggregate reports are daily XML summaries from receivers listing every IP address that sent mail as {domain} and whether it passed SPF, DKIM and DMARC. Without them you cannot safely move to an enforcing policy, because you cannot see which legitimate services would be blocked, and you cannot see abuse."
+          ],
+          "attack": "Impersonation campaigns go unnoticed by the domain owner.",
+          "severity_rationale": "Low: reporting does not block attacks itself, but its absence prevents safe enforcement.",
+          "fix": [
+            {"text": "Add rua= with a monitored mailbox or a DMARC reporting service. In {dns_provider}: {dns_edit}", "code": "_dmarc.{domain}.  3600  IN  TXT  \"{dmarc_with_rua}\""},
+            "If the reporting address is at another domain, that domain must publish an authorisation record (RFC 7489 §7.1)."
+          ],
+          "rollback": "Remove the rua= tag.",
+          "verify": {"command": "dig _dmarc.{domain} TXT +short", "expected": "A record containing rua=mailto:..."}
+        }
+      }
+    },
+    "S18-DKIM-001": {
+      "category": "Email authentication",
+      "about": "Checks that a DKIM public key is published for each selector the user supplied. Selectors cannot be listed from DNS; find yours in the s= value of the DKIM-Signature header of a message you sent.",
+      "pass": "A DKIM public key is published for selector {selector} at {selector}._domainkey.{domain}.",
+      "unknown_help": "No selector was supplied. Open an email you sent from {domain}, view the original message and find the DKIM-Signature header; its s= value is the selector (for {mail_provider} it is usually {dkim_selector_hint}). Re-run with --dkim-selector <selector>.",
+      "references": [
+        {"title": "RFC 6376 — DKIM Signatures", "url": "https://www.rfc-editor.org/rfc/rfc6376.html"},
+        {"title": "RFC 8301 — Cryptographic algorithm and key usage update to DKIM", "url": "https://www.rfc-editor.org/rfc/rfc8301.html"}
+      ],
+      "findings": {
+        "missing_key": {
+          "what": "No DKIM key is published at {selector}._domainkey.{domain}.",
+          "why": [
+            "Mail signed with this selector cannot be verified, so DKIM fails. If SPF also fails (for example when mail is forwarded), DMARC fails and an enforcing policy will block your own mail.",
+            "DKIM is the authentication method that survives forwarding, so it is the main way to pass DMARC reliably."
+          ],
+          "attack": "Without working DKIM, enforcing DMARC is risky, which tends to keep domains at p=none and therefore spoofable.",
+          "severity_rationale": "Medium: weakens authentication and blocks safe DMARC enforcement, but does not by itself allow spoofing.",
+          "fix": [
+            "{dkim_steps}",
+            {"text": "The published record looks like:", "code": "{selector}._domainkey.{domain}.  3600  IN  TXT  \"v=DKIM1; k=rsa; p=<public key from your provider>\""}
+          ],
+          "rollback": "Delete the selector record.",
+          "verify": {"command": "dig {selector}._domainkey.{domain} TXT +short", "expected": "A record containing v=DKIM1 and a non-empty p= value."}
+        },
+        "revoked": {
+          "what": "The DKIM record at {selector}._domainkey.{domain} has an empty p= value, which revokes the key.",
+          "why": [
+            "Messages signed with this selector will fail DKIM. This is correct only if the selector has been retired and nothing still signs with it."
+          ],
+          "attack": "As for a missing key: DMARC depends on SPF alone for this selector's mail.",
+          "severity_rationale": "Medium if the selector is still in use; informational if it was deliberately retired.",
+          "fix": [
+            "Confirm in your provider's console which selector is active. {dkim_steps}"
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "dig {selector}._domainkey.{domain} TXT +short", "expected": "A non-empty p= value for active selectors."}
+        }
+      }
+    },
+    "S18-MTASTS-001": {
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes an MTA-STS policy in enforce mode, so other mail servers must deliver to it over TLS with a valid certificate.",
+      "pass": "MTA-STS is published in enforce mode.",
+      "references": [
+        {"title": "RFC 8461 — SMTP MTA Strict Transport Security (MTA-STS)", "url": "https://www.rfc-editor.org/rfc/rfc8461.html"},
+        {"title": "Google — About MTA-STS and TLS reporting", "url": "https://support.google.com/a/answer/9261504"}
+      ],
+      "findings": {
+        "missing": {
+          "what": "No MTA-STS record is published at _mta-sts.{domain}, so other mail servers have no instruction to require TLS when delivering to {domain}.",
+          "why": [
+            "SMTP between mail servers uses opportunistic TLS. The sending server asks for STARTTLS, but if the request is stripped or the certificate is invalid it normally continues in plaintext rather than failing.",
+            "An attacker positioned on the network path (a compromised router, a malicious Wi-Fi network or a BGP/DNS hijack) can remove STARTTLS from the conversation and read or alter mail sent to {domain}. MTA-STS lets you publish \"only deliver to these MX hosts, only over valid TLS\", and compliant senders such as Gmail and Microsoft 365 then refuse to downgrade."
+          ],
+          "attack": "STARTTLS-stripping: an on-path attacker removes the STARTTLS capability from {mx_hosts}'s response, and the sender delivers password-reset emails, invoices or contracts to {domain} in plaintext, readable and modifiable in transit.",
+          "severity_rationale": "Low: exploitation requires a privileged network position, and major providers already use TLS by default. MTA-STS closes the downgrade gap.",
+          "fix": [
+            {"text": "Create the policy file. Start in testing mode, listing every MX host:", "code": "version: STSv1\nmode: testing\n{mx_policy_lines}\nmax_age: 86400"},
+            "Serve it at https://mta-sts.{domain}/.well-known/mta-sts.txt with a valid certificate for mta-sts.{domain}. Any static web host works: add the subdomain at your web host, or use a service such as Cloudflare Workers, GitHub Pages or your email provider's hosted MTA-STS.",
+            {"text": "Announce it in DNS. Change the id whenever the policy changes. In {dns_provider}: {dns_edit}", "code": "_mta-sts.{domain}.  3600  IN  TXT  \"v=STSv1; id={today_id}\""},
+            "Publish TLS-RPT (see S18-TLSRPT-001) so you receive failure reports.",
+            "After two to four weeks of clean TLS reports, change mode to enforce, raise max_age to 604800 (one week) or more, and update the id."
+          ],
+          "rollback": "Set mode: none in the policy file and update the id; remove the record after max_age has passed.",
+          "verify": {"command": "dig _mta-sts.{domain} TXT +short && curl -fsSL https://mta-sts.{domain}/.well-known/mta-sts.txt", "expected": "\"v=STSv1; id=...\" and a policy containing \"mode: enforce\" with every MX host listed."}
+        },
+        "policy_unreachable": {
+          "what": "_mta-sts.{domain} announces a policy, but https://mta-sts.{domain}/.well-known/mta-sts.txt could not be fetched.",
+          "why": [
+            "Senders that find the record but cannot fetch the policy cannot apply MTA-STS. If a previously cached enforce policy expires and cannot be refreshed, delivery behaviour becomes inconsistent."
+          ],
+          "attack": "As with no MTA-STS: STARTTLS can be stripped.",
+          "severity_rationale": "Medium: a broken deployment gives a false sense of protection and can cause delivery problems.",
+          "fix": [
+            "Check that mta-sts.{domain} resolves, serves HTTPS with a valid certificate for that exact name, and returns the file with HTTP 200 and Content-Type text/plain.",
+            "If you no longer use MTA-STS, delete the _mta-sts record."
+          ],
+          "rollback": "Delete the _mta-sts record.",
+          "verify": {"command": "curl -fsSL https://mta-sts.{domain}/.well-known/mta-sts.txt", "expected": "The policy text, beginning \"version: STSv1\"."}
+        },
+        "not_enforce": {
+          "what": "The MTA-STS policy for {domain} is in mode: {mta_sts_mode}, so senders report problems but still deliver without TLS.",
+          "why": [
+            "Testing mode is the correct first step but provides no protection against downgrade attacks."
+          ],
+          "attack": "STARTTLS-stripping remains possible.",
+          "severity_rationale": "Low: the deployment is in progress.",
+          "fix": [
+            "Review TLS-RPT reports. When there are no failures, set mode: enforce and max_age: 604800 or more in the policy file, then change the id in the _mta-sts TXT record."
+          ],
+          "rollback": "Set mode: testing and change the id.",
+          "verify": {"command": "curl -fsSL https://mta-sts.{domain}/.well-known/mta-sts.txt", "expected": "mode: enforce"}
+        }
+      }
+    },
+    "S18-TLSRPT-001": {
+      "category": "Mail transport security",
+      "about": "Checks that the domain publishes a TLS-RPT record (_smtp._tls) so other mail servers report TLS delivery failures to the owner.",
+      "pass": "TLS reporting is configured.",
+      "references": [
+        {"title": "RFC 8460 — SMTP TLS Reporting", "url": "https://www.rfc-editor.org/rfc/rfc8460.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "No TXT record beginning \"v=TLSRPTv1\" is published at _smtp._tls.{domain}.",
+          "why": [
+            "Without TLS-RPT you are not told when other servers fail to establish TLS with your MX hosts, whether from an expired certificate, a misconfiguration or an active downgrade attack. It is also the feedback loop needed before switching MTA-STS to enforce."
+          ],
+          "attack": "Interception attempts and certificate problems on inbound mail go unnoticed.",
+          "severity_rationale": "Informational: reporting only, with no direct protection.",
+          "fix": [
+            {"text": "Publish the record with a monitored address. In {dns_provider}: {dns_edit}", "code": "_smtp._tls.{domain}.  3600  IN  TXT  \"v=TLSRPTv1; rua=mailto:tls-reports@{domain}\""}
+          ],
+          "rollback": "Delete the record.",
+          "verify": {"command": "dig _smtp._tls.{domain} TXT +short", "expected": "\"v=TLSRPTv1; rua=mailto:...\""}
+        }
+      }
+    },
+    "S18-SMTP-001": {
+      "category": "Mail transport security",
+      "about": "Connects to each MX host on port 25, issues STARTTLS and checks that the certificate verifies for the MX hostname.",
+      "pass": "{mx_host} offers STARTTLS with a certificate that verifies against the local trust store.",
+      "unknown_help": "Port 25 could not be reached from the network running the assessment. Many home, office and cloud networks block outbound port 25. Re-run from a network that allows it, or check the MX host with an external SMTP TLS test service.",
+      "references": [
+        {"title": "RFC 3207 — SMTP Service Extension for Secure SMTP over TLS", "url": "https://www.rfc-editor.org/rfc/rfc3207.html"},
+        {"title": "RFC 7672 — SMTP security via opportunistic DANE TLS", "url": "https://www.rfc-editor.org/rfc/rfc7672.html"}
+      ],
+      "findings": {
+        "no_starttls": {
+          "what": "{mx_host} did not offer STARTTLS on port 25.",
+          "why": [
+            "All mail delivered to this MX host travels across the internet in plaintext, readable by anyone on the network path. Gmail and other providers show a red \"no encryption\" padlock on such messages."
+          ],
+          "attack": "Passive interception of every inbound message to {domain} that is routed through {mx_host}.",
+          "severity_rationale": "High: confidentiality of inbound mail is not protected at all on this route.",
+          "fix": [
+            "If {mx_host} belongs to {mail_provider}, contact the provider: managed providers support STARTTLS, so this usually indicates a wrong or stale MX record.",
+            {"text": "If you run the server yourself (Postfix example):", "code": "smtpd_tls_cert_file = /etc/letsencrypt/live/{mx_host}/fullchain.pem\nsmtpd_tls_key_file  = /etc/letsencrypt/live/{mx_host}/privkey.pem\nsmtpd_tls_security_level = may\nsmtpd_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1"}
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -starttls smtp -connect {mx_host}:25 -servername {mx_host} </dev/null", "expected": "A certificate chain followed by \"Verify return code: 0 (ok)\"."}
+        },
+        "cert_invalid": {
+          "what": "{mx_host} offers STARTTLS, but its certificate failed verification: {verify_error}.",
+          "why": [
+            "Opportunistic senders still encrypt, but they cannot authenticate the server, so an on-path attacker can present their own certificate and read the mail. MTA-STS in enforce mode and DANE both require a valid certificate, so this also blocks those protections."
+          ],
+          "attack": "Man-in-the-middle interception of inbound mail using a forged certificate.",
+          "severity_rationale": "Medium: traffic is encrypted, but the server is not authenticated.",
+          "fix": [
+            "Install a publicly trusted certificate whose subject alternative names include {mx_host}, served with its full intermediate chain.",
+            "If the host is managed by {mail_provider}, check that the MX record uses the provider's documented hostname."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -starttls smtp -connect {mx_host}:25 -servername {mx_host} </dev/null", "expected": "\"Verify return code: 0 (ok)\""}
+        }
+      }
+    },
+    "S18-CAA-001": {
+      "category": "Certificate issuance",
+      "about": "Checks for CAA records naming the certificate authorities allowed to issue certificates for the domain. Since 2017 every public CA must check CAA before issuing.",
+      "pass": "CAA restricts certificate issuance: {caa_records}",
+      "references": [
+        {"title": "RFC 8659 — DNS Certification Authority Authorization", "url": "https://www.rfc-editor.org/rfc/rfc8659.html"},
+        {"title": "Let's Encrypt — Certificate Authority Authorization (CAA)", "url": "https://letsencrypt.org/docs/caa/"}
+      ],
+      "findings": {
+        "default": {
+          "what": "No CAA records are published for {domain}, so any of the many publicly trusted certificate authorities may issue certificates for it.",
+          "why": [
+            "Certificate authorities validate that a requester controls a domain, but that validation can be fooled: through a hijacked web host or DNS record, a BGP hijack of the validation traffic, or a mistake at one CA. CAA shrinks the attack surface from every public CA to the one or two you actually use.",
+            "The certificate currently served on https://{domain} was issued by {caa_issuer}, so a CAA record can name that CA without affecting renewals."
+          ],
+          "attack": "An attacker who briefly controls a validation path obtains a valid certificate for {domain} from a CA you do not use, then impersonates the website or intercepts its traffic with no browser warning.",
+          "severity_rationale": "Low: exploitation requires another weakness to pass CA validation, and Certificate Transparency logs would record the rogue certificate. CAA is a cheap hardening step.",
+          "fix": [
+            {"text": "Publish CAA records naming your CA ({caa_issuer_domain}) and an incident contact. In {dns_provider}: {dns_edit}", "code": "{domain}.  3600  IN  CAA  0 issue \"{caa_issuer_domain}\"\n{domain}.  3600  IN  CAA  0 issuewild \";\"\n{domain}.  3600  IN  CAA  0 iodef \"mailto:security@{domain}\""},
+            "Add an issue line for every other CA that issues for the domain or its subdomains (for example a CDN, mail provider or managed hosting platform). Check existing certificates at https://crt.sh/?q={domain} before publishing.",
+            "issuewild \";\" forbids wildcard certificates; omit that line if you use wildcards."
+          ],
+          "rollback": "Delete the CAA records; issuance is unrestricted again immediately after the TTL.",
+          "verify": {"command": "dig {domain} CAA +short", "expected": "0 issue \"{caa_issuer_domain}\" (plus any others you added)."}
+        }
+      }
+    },
+    "S18-DNSSEC-001": {
+      "category": "DNS integrity",
+      "about": "Checks that the zone is DNSSEC-signed (DNSKEY and RRSIG records) and anchored at the parent zone with a DS record, so resolvers can detect forged DNS answers.",
+      "pass": "DNSSEC is deployed: DS, DNSKEY and RRSIG records are present.{dnssec_ad_note}",
+      "references": [
+        {"title": "RFC 4033 — DNS Security Introduction and Requirements", "url": "https://www.rfc-editor.org/rfc/rfc4033.html"},
+        {"title": "ICANN — DNSSEC: what is it and why is it important?", "url": "https://www.icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en"},
+        {"title": "RFC 7672 — DANE for SMTP (requires DNSSEC)", "url": "https://www.rfc-editor.org/rfc/rfc7672.html"}
+      ],
+      "findings": {
+        "unsigned": {
+          "what": "{domain} is not DNSSEC-signed: the parent zone has no DS record for it and the zone serves no DNSKEY records.",
+          "why": [
+            "Without DNSSEC, a resolver cannot tell a genuine answer for {domain} from a forged one. Cache-poisoning attacks (such as the Kaminsky attack class) or an attacker on the network path can return false A or MX records, sending visitors to a fake website and mail to an attacker's server.",
+            "DNSSEC is also the foundation for DANE, which lets mail servers pin your MX certificates in DNS."
+          ],
+          "attack": "A poisoned resolver at an ISP or on public Wi-Fi returns the attacker's IP address for {domain}. Visitors reach a cloned site (HTTPS warnings are the remaining defence), and other mail servers deliver mail for {domain} to the attacker's MX.",
+          "severity_rationale": "Medium: forged DNS requires a privileged position or a resolver weakness, and HTTPS still protects web users who heed warnings. Most domains remain unsigned, but DNSSEC removes a whole class of redirection attacks.",
+          "fix": [
+            "Enable signing at the DNS host. {dns_provider}: {dns_dnssec}",
+            "Copy the DS record values (key tag, algorithm, digest type and digest) that the DNS host gives you.",
+            "Add the DS record at the registrar. {registrar}: {registrar_ds}",
+            "Wait for the parent zone to publish the DS record (usually under an hour; up to 48 hours for some TLDs), then verify.",
+            "Important: if you ever move DNS hosting, remove the DS record at the registrar first and wait for its TTL to expire before switching, or validating resolvers will treat the domain as broken."
+          ],
+          "rollback": "Remove the DS record at the registrar first, wait for the parent TTL, then turn off signing.",
+          "verify": {"command": "dig {domain} DS +short && dig {domain} A +dnssec | grep -E 'flags|RRSIG'", "expected": "A DS record, RRSIG records in the answer, and the \"ad\" flag from a validating resolver (for example dig @1.1.1.1)."}
+        },
+        "no_ds": {
+          "what": "The {domain} zone serves DNSKEY records, but the parent zone has no DS record, so the chain of trust is incomplete.",
+          "why": [
+            "Resolvers cannot validate signatures without the DS link from the parent, so the domain gets none of DNSSEC's protection even though signing is configured."
+          ],
+          "attack": "As for an unsigned zone: forged answers cannot be detected.",
+          "severity_rationale": "Medium: the remaining step is small, but until it is done there is no protection.",
+          "fix": [
+            "Copy the DS values from {dns_provider}'s DNSSEC page and add them at {registrar}: {registrar_ds}"
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "dig {domain} DS +short", "expected": "A DS record matching one of the zone's DNSKEYs."}
+        }
+      }
+    },
+    "S18-DNSSEC-002": {
+      "category": "DNS integrity",
+      "about": "Checks that a DS record at the parent is matched by signed DNSKEY and RRSIG records in the zone. A mismatch makes the domain unresolvable for validating resolvers.",
+      "pass": "The DNSSEC chain of trust is consistent.",
+      "references": [
+        {"title": "RFC 4035 — Protocol modifications for DNSSEC", "url": "https://www.rfc-editor.org/rfc/rfc4035.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "The parent zone publishes a DS record for {domain}, but the zone does not serve matching DNSKEY and RRSIG records.",
+          "why": [
+            "Validating resolvers, including Google Public DNS (8.8.8.8), Cloudflare (1.1.1.1), Quad9 and many ISPs, will return SERVFAIL for every name in {domain}. Large numbers of users cannot reach the website or deliver mail to the domain."
+          ],
+          "attack": "This is an outage rather than an attack, but it can be triggered by a DNS provider migration that left the old DS record in place.",
+          "severity_rationale": "Critical: availability of the whole domain is impaired for validating resolvers.",
+          "fix": [
+            "Either re-enable signing at {dns_provider} with keys that match the DS record, or remove the DS record at {registrar} ({registrar_ds}).",
+            "Removing the DS record is the fastest recovery; re-deploy DNSSEC properly afterwards."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "dig @1.1.1.1 {domain} A +dnssec", "expected": "status: NOERROR (not SERVFAIL)."}
+        }
+      }
+    },
+    "S18-NS-001": {
+      "category": "DNS availability",
+      "about": "Checks that at least two authoritative nameservers are delegated, so DNS keeps working if one fails.",
+      "pass": "{ns_count} nameservers are delegated: {ns_list}.",
+      "references": [
+        {"title": "RFC 1034 §4.1 — Name servers (at least two required)", "url": "https://www.rfc-editor.org/rfc/rfc1034.html#section-4.1"},
+        {"title": "RFC 2182 — Selection and operation of secondary DNS servers", "url": "https://www.rfc-editor.org/rfc/rfc2182.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "Only {ns_count} nameserver is delegated for {domain}: {ns_list}.",
+          "why": [
+            "If that server is unreachable, every service on the domain (website, email, APIs) stops resolving once caches expire."
+          ],
+          "attack": "A denial-of-service attack against one server takes the whole domain offline.",
+          "severity_rationale": "Medium: an availability risk with a single point of failure.",
+          "fix": [
+            "Add at least one more nameserver, ideally on a different network, using your DNS host's secondary-DNS option, and list all of them at {registrar}."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "dig {domain} NS +short", "expected": "Two or more nameservers."}
+        }
+      }
+    },
+    "S18-REG-001": {
+      "category": "Domain registration",
+      "about": "Checks that the domain registration is not expired and does not expire within 30 days.",
+      "pass": "The registration with {registrar} is valid until {expires} ({days_left} days).",
+      "references": [
+        {"title": "ICANN — Expired Registration Recovery Policy", "url": "https://www.icann.org/resources/pages/errp-2013-02-28-en"}
+      ],
+      "findings": {
+        "expired": {
+          "what": "The registration for {domain} expired on {expires}.",
+          "why": [
+            "After expiry the registrar may park the domain, stop resolving it and eventually release it for anyone to register. Whoever registers it can receive all mail sent to {domain} and issue certificates for it."
+          ],
+          "attack": "Domain drop-catching: an attacker registers the lapsed domain and receives password-reset emails for every account tied to @{domain} addresses.",
+          "severity_rationale": "Critical: total loss of control of the domain is imminent.",
+          "fix": [
+            "Renew immediately with {registrar}. {registrar_renew}"
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "whois {domain} | grep -i expir", "expected": "An expiry date in the future."}
+        },
+        "expiring": {
+          "what": "The registration for {domain} expires in {days_left} days ({expires}).",
+          "why": [
+            "If renewal fails because of an expired card or an unmonitored contact email, the domain lapses and every service on it stops working, and it can later be registered by someone else."
+          ],
+          "attack": "Domain drop-catching after an accidental lapse.",
+          "severity_rationale": "High: the deadline is close and the consequence is complete loss of the domain.",
+          "fix": [
+            "Renew now and enable auto-renew. {registrar_renew}",
+            "Consider renewing for several years for critical domains."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "whois {domain} | grep -i expir", "expected": "An expiry date more than 30 days away."}
+        }
+      }
+    },
+    "S18-REG-002": {
+      "category": "Domain registration",
+      "about": "Checks that the registrar transfer lock (clientTransferProhibited) is set, which blocks unauthorised transfers to another registrar.",
+      "pass": "A transfer lock is set (EPP status: {epp_statuses}).",
+      "unknown_help": "The WHOIS output did not include EPP status codes. Check the lock in {registrar}'s control panel or with an RDAP lookup.",
+      "references": [
+        {"title": "ICANN — EPP status codes: what do they mean?", "url": "https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en"},
+        {"title": "RFC 5731 — EPP Domain Name Mapping", "url": "https://www.rfc-editor.org/rfc/rfc5731.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "No transfer lock is set for {domain} (EPP status: {epp_statuses}).",
+          "why": [
+            "Without the lock, a transfer to another registrar needs only the authorisation (EPP) code, which can be phished from the account owner or obtained by compromising the registrar account. A transferred domain is under the attacker's control at the new registrar."
+          ],
+          "attack": "Domain hijacking: an attacker transfers {domain} away and points it at their own servers, taking over the website, email and every account recovery that relies on @{domain} addresses.",
+          "severity_rationale": "Medium: an attacker still needs the authorisation code, but the lock is a free control that blocks this class of attack.",
+          "fix": [
+            "Turn on the transfer lock. {registrar_lock}",
+            "Enable two-factor authentication on the registrar account.",
+            "For high-value domains, ask the registrar about registry lock (serverTransferProhibited), which requires out-of-band verification for any change."
+          ],
+          "rollback": "Turn the lock off only when you intend to transfer the domain.",
+          "verify": {"command": "whois {domain} | grep -i status", "expected": "clientTransferProhibited"}
+        }
+      }
+    }
+  }
+}

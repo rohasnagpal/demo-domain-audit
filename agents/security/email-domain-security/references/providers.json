@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "last_reviewed": "2026-10-27",
+  "note": "Navigation paths change over time. Reports present them as guidance and link to the provider's own documentation.",
+  "dns_providers": [
+    {
+      "id": "dreamhost",
+      "match": ["dreamhost.com"],
+      "name": "DreamHost",
+      "edit_dns": "Sign in to the DreamHost panel, open Websites → DNS (Domains → Manage Domains → DNS on older panels), choose the domain and use \"Add Record\" (custom DNS record).",
+      "dnssec": "DreamHost has not historically offered DNSSEC signing for zones it hosts; check DreamHost's current documentation. If it is unavailable, DNSSEC requires moving the zone's DNS hosting to a provider that signs zones (for example Cloudflare, Amazon Route 53 or Google Cloud DNS) and then adding the DS record at the registrar.",
+      "docs": "https://help.dreamhost.com/hc/en-us/articles/360035516812-Adding-custom-DNS-records"
+    },
+    {
+      "id": "cloudflare",
+      "match": ["ns.cloudflare.com"],
+      "name": "Cloudflare",
+      "edit_dns": "In the Cloudflare dashboard select the domain, open DNS → Records and choose \"Add record\".",
+      "dnssec": "In the Cloudflare dashboard open DNS → Settings and select \"Enable DNSSEC\". Cloudflare then shows the DS record values to add at the registrar.",
+      "docs": "https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/"
+    },
+    {
+      "id": "route53",
+      "match": ["awsdns"],
+      "name": "Amazon Route 53",
+      "edit_dns": "In the AWS console open Route 53 → Hosted zones, select the domain and choose \"Create record\".",
+      "dnssec": "In Route 53 open the hosted zone, choose DNSSEC signing → Enable DNSSEC signing (this creates a key-signing key backed by AWS KMS), then add the DS record shown to the registrar.",
+      "docs": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating.html"
+    },
+    {
+      "id": "godaddy",
+      "match": ["domaincontrol.com"],
+      "name": "GoDaddy DNS",
+      "edit_dns": "In GoDaddy open Domain Portfolio, select the domain, choose DNS and then \"Add New Record\".",
+      "dnssec": "GoDaddy offers DNSSEC on its Premium DNS product: Domain Portfolio → the domain → DNS → DNSSEC.",
+      "docs": "https://www.godaddy.com/help/manage-dns-records-680"
+    },
+    {
+      "id": "google-cloud-dns",
+      "match": ["googledomains.com"],
+      "name": "Google Cloud DNS",
+      "edit_dns": "In the Google Cloud console open Network services → Cloud DNS, select the zone and choose \"Add standard\" record set.",
+      "dnssec": "In Cloud DNS open the zone, set DNSSEC to On, then add the DS record shown under \"Registrar setup\" at the registrar.",
+      "docs": "https://cloud.google.com/dns/docs/records"
+    },
+    {
+      "id": "namecheap",
+      "match": ["registrar-servers.com"],
+      "name": "Namecheap BasicDNS",
+      "edit_dns": "In Namecheap open Domain List → Manage next to the domain → Advanced DNS → \"Add New Record\".",
+      "dnssec": "In Namecheap open Domain List → Manage → Advanced DNS and switch DNSSEC on.",
+      "docs": "https://www.namecheap.com/support/knowledgebase/article.aspx/434/2237/how-do-i-set-up-host-records-for-a-domain/"
+    },
+    {
+      "id": "azure",
+      "match": ["azure-dns"],
+      "name": "Azure DNS",
+      "edit_dns": "In the Azure portal open DNS zones, select the zone and choose \"+ Record set\".",
+      "dnssec": "In the Azure portal open the DNS zone, choose DNSSEC → Enable, then add the DS record at the registrar.",
+      "docs": "https://learn.microsoft.com/azure/dns/dns-operations-recordsets-portal"
+    },
+    {
+      "id": "digitalocean",
+      "match": ["digitalocean.com"],
+      "name": "DigitalOcean DNS",
+      "edit_dns": "In the DigitalOcean control panel open Networking → Domains, select the domain and create the record.",
+      "dnssec": "DigitalOcean DNS does not currently sign zones; DNSSEC requires a DNS provider that does.",
+      "docs": "https://docs.digitalocean.com/products/networking/dns/how-to/manage-records/"
+    }
+  ],
+  "default_dns_provider": {
+    "id": "unknown",
+    "name": "your DNS hosting provider",
+    "edit_dns": "Open the control panel of the provider that hosts the domain's DNS (the nameservers listed in this report) and add or edit the record there.",
+    "dnssec": "Enable DNSSEC signing at the DNS hosting provider, then add the DS record it gives you at the registrar.",
+    "docs": ""
+  },
+  "mail_providers": [
+    {
+      "id": "google",
+      "match": ["google.com", "googlemail.com"],
+      "name": "Google Workspace",
+      "spf_include": "include:_spf.google.com",
+      "dkim_selectors": ["google"],
+      "dkim_steps": "In the Google Admin console open Apps → Google Workspace → Gmail → Authenticate email, select the domain, generate a 2048-bit key with the selector \"google\", publish the TXT record it shows at google._domainkey.{domain}, wait for DNS to propagate and select \"Start authentication\".",
+      "docs": "https://support.google.com/a/answer/180504"
+    },
+    {
+      "id": "microsoft",
+      "match": ["protection.outlook.com", "outlook.com"],
+      "name": "Microsoft 365",
+      "spf_include": "include:spf.protection.outlook.com",
+      "dkim_selectors": ["selector1", "selector2"],
+      "dkim_steps": "In the Microsoft Defender portal open Email & collaboration → Policies & rules → Threat policies → Email authentication settings → DKIM, select the domain, publish the two CNAME records it shows (selector1._domainkey and selector2._domainkey) and enable signing.",
+      "docs": "https://learn.microsoft.com/defender-office-365/email-authentication-dkim-configure"
+    },
+    {
+      "id": "zoho",
+      "match": ["zoho.com", "zoho.eu", "zoho.in"],
+      "name": "Zoho Mail",
+      "spf_include": "include:zohomail.com",
+      "dkim_selectors": ["zmail"],
+      "dkim_steps": "In the Zoho Mail Admin Console open Domains → the domain → Email configuration → DKIM, add a selector, publish the TXT record it shows and select Verify.",
+      "docs": "https://www.zoho.com/mail/help/adminconsole/dkim-configuration.html"
+    },
+    {
+      "id": "proton",
+      "match": ["protonmail.ch", "proton.me"],
+      "name": "Proton Mail",
+      "spf_include": "include:_spf.protonmail.ch",
+      "dkim_selectors": ["protonmail", "protonmail2", "protonmail3"],
+      "dkim_steps": "In Proton Mail settings open Domain names → the domain → DKIM and publish the three CNAME records shown.",
+      "docs": "https://proton.me/support/anti-spoofing-custom-domain"
+    },
+    {
+      "id": "fastmail",
+      "match": ["messagingengine.com"],
+      "name": "Fastmail",
+      "spf_include": "include:spf.messagingengine.com",
+      "dkim_selectors": ["fm1", "fm2", "fm3"],
+      "dkim_steps": "Publish the fm1, fm2 and fm3 ._domainkey CNAME records shown in Fastmail Settings → Domains.",
+      "docs": "https://www.fastmail.help/hc/en-us/articles/360060591153"
+    },
+    {
+      "id": "dreamhost-mail",
+      "match": ["dreamhost.com"],
+      "name": "DreamHost Mail",
+      "spf_include": "include:netblocks.dreamhost.com",
+      "dkim_selectors": ["dreamhost"],
+      "dkim_steps": "DreamHost signs outgoing mail with DKIM automatically when its mail service and DNS are both used; confirm the dreamhost._domainkey record exists in the DreamHost DNS panel.",
+      "docs": "https://help.dreamhost.com/hc/en-us/articles/216108047"
+    }
+  ],
+  "default_mail_provider": {
+    "id": "unknown",
+    "name": "your email provider",
+    "spf_include": "",
+    "dkim_selectors": [],
+    "dkim_steps": "Enable DKIM signing in your email provider's admin console and publish the selector record it gives you at <selector>._domainkey.{domain}.",
+    "docs": ""
+  },
+  "spf_include_services": {
+    "_spf.google.com": "Google Workspace",
+    "spf.protection.outlook.com": "Microsoft 365",
+    "netblocks.dreamhost.com": "DreamHost",
+    "relay.mailchannels.net": "MailChannels (relay used by many shared web hosts)",
+    "sendgrid.net": "SendGrid",
+    "mailgun.org": "Mailgun",
+    "servers.mcsv.net": "Mailchimp",
+    "spf.mandrillapp.com": "Mailchimp Transactional (Mandrill)",
+    "amazonses.com": "Amazon SES",
+    "zohomail.com": "Zoho Mail",
+    "zoho.com": "Zoho Mail",
+    "_spf.protonmail.ch": "Proton Mail",
+    "spf.messagingengine.com": "Fastmail",
+    "_spf.salesforce.com": "Salesforce",
+    "mail.zendesk.com": "Zendesk",
+    "spf.brevo.com": "Brevo (Sendinblue)",
+    "_spf.hubspotemail.net": "HubSpot"
+  },
+  "txt_token_services": {
+    "google-site-verification": "Google Search Console / Google Workspace domain verification",
+    "ms=": "Microsoft 365 domain verification",
+    "facebook-domain-verification": "Meta (Facebook) Business domain verification",
+    "apple-domain-verification": "Apple domain verification",
+    "atlassian-domain-verification": "Atlassian domain verification",
+    "docusign": "DocuSign domain verification",
+    "zoom-domain-verification": "Zoom domain verification",
+    "stripe-verification": "Stripe domain verification",
+    "openai-domain-verification": "OpenAI domain verification",
+    "adobe-idp-site-verification": "Adobe domain verification",
+    "hubspot-developer-verification": "HubSpot domain verification",
+    "zoho-verification": "Zoho domain verification",
+    "_github-challenge": "GitHub domain verification"
+  },
+  "registrars": [
+    {
+      "id": "godaddy",
+      "match": ["godaddy"],
+      "name": "GoDaddy",
+      "lock": "In GoDaddy open Domain Portfolio, select the domain, open Domain Settings and turn Domain Lock (transfer lock) on.",
+      "renew": "In GoDaddy open Domain Portfolio, select the domain and turn Auto-renew on; confirm the payment method is current.",
+      "ds": "In GoDaddy open Domain Portfolio → the domain → DNS → DNSSEC → Add DS record."
+    },
+    {
+      "id": "namecheap",
+      "match": ["namecheap"],
+      "name": "Namecheap",
+      "lock": "In Namecheap open Domain List → Manage → Sharing & Transfer and set Domain Lock to locked.",
+      "renew": "In Namecheap open Domain List and switch Auto-Renew on for the domain.",
+      "ds": "In Namecheap open Domain List → Manage → Advanced DNS → DNSSEC and add the DS record."
+    },
+    {
+      "id": "cloudflare",
+      "match": ["cloudflare"],
+      "name": "Cloudflare Registrar",
+      "lock": "Cloudflare Registrar locks domains against transfer by default; confirm under Domain Registration → Manage Domains → Configuration.",
+      "renew": "Cloudflare Registrar renews automatically; confirm the billing method under Domain Registration.",
+      "ds": "Cloudflare adds the DS record automatically when DNSSEC is enabled for a domain registered with it."
+    },
+    {
+      "id": "squarespace",
+      "match": ["squarespace", "google llc"],
+      "name": "Squarespace Domains",
+      "lock": "In Squarespace Domains open the domain → Registration settings and confirm the transfer lock is on.",
+      "renew": "In Squarespace Domains open the domain → Billing and turn auto-renew on.",
+      "ds": "In Squarespace Domains open the domain → DNS → DNSSEC to add the DS record."
+    },
+    {
+      "id": "dreamhost",
+      "match": ["dreamhost", "new dream network"],
+      "name": "DreamHost",
+      "lock": "In the DreamHost panel open Domains → Registrations and enable the transfer lock for the domain.",
+      "renew": "In the DreamHost panel open Domains → Registrations and turn auto-renew on.",
+      "ds": "Add the DS record through DreamHost support or the registration settings for the domain."
+    },
+    {
+      "id": "gandi",
+      "match": ["gandi"],
+      "name": "Gandi",
+      "lock": "In Gandi open Domain → the domain → Transfer and enable the transfer lock.",
+      "renew": "In Gandi open Domain → the domain → Overview and enable automatic renewal.",
+      "ds": "In Gandi open Domain → the domain → DNSSEC and add the key."
+    }
+  ],
+  "default_registrar": {
+    "id": "unknown",
+    "name": "the domain's registrar",
+    "lock": "In the registrar's control panel enable the transfer lock (clientTransferProhibited), sometimes called Domain Lock or Registrar Lock.",
+    "renew": "In the registrar's control panel enable auto-renew and confirm the payment method and contact email are current.",
+    "ds": "In the registrar's control panel open the DNSSEC settings for the domain and add the DS record supplied by the DNS host."
+  },
+  "certificate_authorities": {
+    "let's encrypt": "letsencrypt.org",
+    "letsencrypt": "letsencrypt.org",
+    "sectigo": "sectigo.com",
+    "comodo": "sectigo.com",
+    "digicert": "digicert.com",
+    "geotrust": "digicert.com",
+    "rapidssl": "digicert.com",
+    "thawte": "digicert.com",
+    "google trust services": "pki.goog",
+    "gts": "pki.goog",
+    "amazon": "amazon.com",
+    "globalsign": "globalsign.com",
+    "zerossl": "sectigo.com",
+    "godaddy": "godaddy.com",
+    "starfield": "starfieldtech.com",
+    "entrust": "entrust.net",
+    "buypass": "buypass.com"
+  }
+}

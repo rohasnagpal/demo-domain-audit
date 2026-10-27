@@ -1,0 +1,69 @@
+/* Cyber360 report theme: design tokens.
+   Change the look of every report here. Component styles live in report.css.
+   Severity and status colours carry meaning: keep them distinct from each other
+   and always paired with a text label or icon in the markup. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0c2538;          /* top bar, footer, dark nodes */
+  --accent:#28c76f;        /* top-bar rule */
+  --teal:#087f8c;          /* section headings, eyebrow text */
+  --green:#31b64b;         /* score bars */
+  --blue:#1787c9;
+  --amber:#eea72e;
+  --red:#d84a4a;
+  --page:#edf1f2;          /* outside the report column */
+  --paper:#ffffff;         /* report column and cards */
+  --wash:#f3f7f8;          /* subtle fills */
+
+  /* Text */
+  --ink:#14202b;
+  --muted:#667784;
+  --muted-2:#5d707b;
+
+  /* Lines */
+  --line:#d9e4e8;
+  --line-soft:#d7e3e6;
+  --border-strong:#a9c9d0;
+
+  /* Code blocks */
+  --code-bg:#0d2230;
+  --code-ink:#d7edf1;
+
+  /* Type */
+  --font-sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* Effects */
+  --shadow:0 12px 32px rgba(12,37,56,.08);
+
+  /* Severity scale (findings, bars, card borders). Ordered critical → informational. */
+  --sev-critical:#d03b3b;
+  --sev-high:#ec835a;
+  --sev-medium:#fab219;
+  --sev-low:#2a78d6;
+  --sev-informational:#8a8985;
+
+  /* Control status */
+  --st-good:#0ca30c;
+  --st-unknown:#b9c1c6;
+  --st-na:#e3e7e9;
+
+  /* Charts */
+  --series-1:#2a78d6;
+  --series-3:#1baf7a;
+  --chart-line:#c9d6da;    /* connectors and spokes */
+  --chart-arrow:#9fb1b8;   /* flow arrows and node outlines */
+  --chart-box:#f3f7f8;     /* flow-diagram boxes */
+  --chart-box-line:#c9d6da;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#52606b;
+  --viz-ink-3:#7d8a93;
+  --viz-grid:#e3e9eb;
+
+  /* Protocol matrix cells */
+  --cell-ok-bg:#dcf3dc;   --cell-ok-ink:#0a5c0a;
+  --cell-weak-bg:#fde7c4; --cell-weak-ink:#7a4c00;
+  --cell-bad-bg:#f8d4d4;  --cell-bad-ink:#8f1f1f;
+  --cell-off-bg:#f1f3f4;  --cell-off-ink:#7d8a93;
+}

@@ -1,0 +1,37 @@
+id: s11-verify
+name: Verify remediation of TLS findings
+agent: s11
+mode: read_only
+
+inputs:
+  required:
+    - original_findings
+    - pre_change_evidence
+    - target
+    - authority
+  optional:
+    - change_record
+
+steps:
+  - id: independence
+    action: Review the original finding and required evidence without assuming the change succeeded.
+  - id: retest
+    action: Rerun every registered check necessary to prove or disprove the claimed fix.
+  - id: bypass
+    action: Test directly relevant alternate protocol or identity paths within the original authority.
+  - id: compare
+    action: Compare pre-change and post-change evidence and identify residual risk.
+  - id: conclude
+    action: Assign the permitted verification outcome and explain its evidentiary basis.
+
+permitted_outcomes:
+  - verified_fixed
+  - partially_fixed
+  - not_fixed
+  - not_reproducible
+  - verification_blocked
+
+outputs:
+  - cyber360-reports/<report-id>/evidence/post-change/
+  - cyber360-reports/<report-id>/verification-results.json
+  - cyber360-reports/<report-id>/report.html

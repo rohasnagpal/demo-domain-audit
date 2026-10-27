@@ -1,0 +1,115 @@
+schema_version: 1
+id: cyber360-s11-baseline
+title: TLS and certificate assessment baseline
+version: 0.1.0
+last_reviewed: 2026-10-26
+
+statuses:
+  - pass
+  - confirmed
+  - unknown
+  - not_applicable
+
+controls:
+  - id: TLS-PROTO-001
+    title: Deprecated TLS protocol accepted
+    condition: The server completes a TLS 1.0 or TLS 1.1 handshake.
+    default_severity: high
+    evidence_required: [tested_protocol, handshake_result, command, tool_version, timestamp_utc]
+    authority: RFC8996
+    remediation: Disable TLS 1.0 and TLS 1.1 at the actual TLS termination point.
+
+  - id: TLS-PROTO-002
+    title: No currently acceptable TLS protocol demonstrated
+    condition: TLS 1.2 and TLS 1.3 both fail and an older protocol succeeds.
+    default_severity: critical
+    evidence_required: [tls_1_2_result, tls_1_3_result, older_protocol_result, tool_version]
+    authority: RFC8996
+    remediation: Enable TLS 1.2 or TLS 1.3 and remove dependence on deprecated versions.
+
+  - id: TLS-CERT-001
+    title: Certificate expired
+    condition: The assessment time is later than the certificate notAfter value.
+    default_severity: high
+    evidence_required: [certificate_sha256, not_after, assessment_time_utc]
+    authority: CABF-BR
+    remediation: Replace the certificate and correct renewal monitoring or automation.
+
+  - id: TLS-CERT-002
+    title: Certificate not yet valid
+    condition: The assessment time is earlier than the certificate notBefore value.
+    default_severity: high
+    evidence_required: [certificate_sha256, not_before, assessment_time_utc]
+    authority: CABF-BR
+    remediation: Install a certificate valid at the time of use and investigate time or deployment errors.
+
+  - id: TLS-CERT-003
+    title: Certificate identity mismatch
+    condition: The requested DNS hostname or IP address is not covered by the corresponding SAN name form.
+    default_severity: high
+    evidence_required: [requested_identifier, identifier_type, subject_alternative_names, verification_result]
+    authority: CABF-IP
+    remediation: Issue and deploy a certificate containing the correct DNS SAN or iPAddress SAN.
+
+  - id: TLS-CERT-004
+    title: Certificate chain validation failed
+    condition: Validation to the selected trust store fails.
+    default_severity: high
+    evidence_required: [presented_chain, trust_store_context, verification_error]
+    authority: RFC9325
+    remediation: Deploy the correct certificate chain and confirm the intended trust anchor.
+
+  - id: TLS-CERT-005
+    title: Certificate uses an unrecognised trust anchor
+    condition: The certificate is self-signed or private-CA-issued and the intended client trust context is not established.
+    default_severity: medium
+    evidence_required: [certificate_sha256, issuer, subject, trust_store_context]
+    authority: RFC9325
+    remediation: Use an appropriate publicly trusted certificate or securely distribute and manage the intended private trust anchor.
+    qualification: May be acceptable in a documented private PKI; do not report as confirmed when that context is unknown.
+
+  - id: TLS-KEY-001
+    title: RSA certificate key is below 2048 bits
+    condition: The certificate public key algorithm is RSA and its modulus is below 2048 bits.
+    default_severity: high
+    evidence_required: [certificate_sha256, public_key_algorithm, rsa_modulus_bits]
+    authority: RFC9325
+    remediation: Replace the certificate and key with an approved key type and strength.
+
+  - id: TLS-SIG-001
+    title: Certificate uses an MD5 or SHA-1 signature
+    condition: The certificate signature algorithm uses MD5 or SHA-1.
+    default_severity: high
+    evidence_required: [certificate_sha256, signature_algorithm]
+    authority: RFC9325
+    remediation: Reissue the certificate using an approved signature algorithm.
+
+  - id: TLS-CIPHER-001
+    title: Prohibited cipher suite accepted
+    condition: The server negotiates NULL encryption, RC4 or export-level encryption.
+    default_severity: critical
+    evidence_required: [offered_cipher, negotiated_cipher, protocol, handshake_result]
+    authority: RFC9325
+    remediation: Remove the prohibited cipher suite at the TLS termination point.
+
+  - id: TLS-CIPHER-002
+    title: Static RSA key transport accepted
+    condition: A TLS 1.2 cipher suite using static RSA key transport is negotiated.
+    default_severity: medium
+    evidence_required: [offered_cipher, negotiated_cipher, protocol, handshake_result]
+    authority: RFC9325
+    remediation: Prefer TLS 1.3 or forward-secret TLS 1.2 suites and remove static RSA key transport after compatibility review.
+
+  - id: TLS-CERT-006
+    title: Certificate nearing expiry
+    condition: The certificate expires within the policy warning period.
+    default_severity: low
+    evidence_required: [certificate_sha256, not_after, assessment_time_utc, warning_period_days]
+    authority: local-policy
+    remediation: Renew and deploy the replacement certificate before expiry; verify renewal automation.
+    qualification: The default warning period is 30 days and is an operational policy choice, not a universal standards threshold.
+
+policy_defaults:
+  certificate_expiry_warning_days: 30
+  require_tls_1_3: false
+  minimum_protocol: TLSv1.2

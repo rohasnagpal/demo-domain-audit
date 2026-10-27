@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cyber360:schema:s11-tls-report:0.3.2",
+  "title": "Cyber360 S11 TLS assessment report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report_id", "agent_id", "generated_at", "scope", "tooling", "summary", "findings", "unknowns"],
+  "properties": {
+    "report_id": {"type": "string", "minLength": 1},
+    "agent_id": {"const": "s11"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "tooling": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/tool"},
+      "minItems": 1
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall_assessment", "confirmed_findings", "unknown_controls"],
+      "properties": {
+        "overall_assessment": {"type": "string"},
+        "confirmed_findings": {"type": "integer", "minimum": 0},
+        "unknown_controls": {"type": "integer", "minimum": 0}
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/unknown"}
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "technical": {"$ref": "#/$defs/technical"},
+    "external_assessment": {
+      "type": "object",
+      "description": "Provider-specific assessment data. The complete provider response remains in the referenced raw JSON evidence file.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "port", "identifier_type", "authority", "started_at", "completed_at"],
+      "properties": {
+        "target": {"type": "string", "minLength": 1},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "identifier_type": {"enum": ["hostname", "ip"]},
+        "authority": {"type": "string", "minLength": 1},
+        "started_at": {"type": "string", "format": "date-time"},
+        "completed_at": {"type": "string", "format": "date-time"},
+        "exclusions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "command", "captured_at", "exit_status", "path", "sha256"],
+      "properties": {
+        "evidence_id": {"type": "string", "minLength": 1},
+        "command": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "exit_status": {"type": "integer"},
+        "path": {"type": "string", "minLength": 1, "description": "Local path below cyber360-reports/<report-id>/evidence/."},
+        "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+        "excerpt": {"type": "string"}
+        ,"api_field": {"type": "string"}
+        ,"value": {}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding_id", "rule_id", "status", "severity", "title", "analysis", "evidence", "remediation", "verification"],
+      "properties": {
+        "finding_id": {"type": "string", "pattern": "^S11-[0-9]{3}$"},
+        "rule_id": {"type": "string", "pattern": "^TLS-[A-Z]+-[0-9]{3}$"},
+        "status": {"const": "confirmed"},
+        "severity": {"enum": ["critical", "high", "medium", "low", "informational"]},
+        "title": {"type": "string", "minLength": 1},
+        "analysis": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}, "minItems": 1},
+        "authority": {"type": "string"},
+        "remediation": {"type": "string", "minLength": 1},
+        "verification": {
+          "enum": ["not_started", "verified_fixed", "partially_fixed", "not_fixed", "not_reproducible", "verification_blocked"]
+        },
+        "residual_risk": {"type": "string"}
+      }
+    },
+    "unknown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "reason", "evidence_needed"],
+      "properties": {
+        "rule_id": {"type": "string"},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_needed": {"type": "string", "minLength": 1}
+      }
+    },
+    "technical": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "grade": {"type": "string", "enum": ["A+", "A", "A-", "B", "C", "D", "E", "F", "T", "M", "N/A"]},
+        "score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "grade_basis": {"type": "string", "minLength": 1},
+        "coverage": {"type": "integer", "minimum": 0, "maximum": 100},
+        "policy_id": {"type": "string", "minLength": 1},
+        "score_components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "score"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100}
+            }
+          }
+        },
+        "certificates": {"type": "array", "items": {"$ref": "#/$defs/certificate"}},
+        "protocols": {"type": "array", "items": {"$ref": "#/$defs/protocol"}},
+        "cipher_suites": {"type": "array", "items": {"$ref": "#/$defs/cipher_suite"}},
+        "client_simulations": {"type": "array", "items": {"$ref": "#/$defs/client_simulation"}},
+        "server_features": {"type": "array", "items": {"$ref": "#/$defs/server_feature"}},
+        "passed_controls": {"type": "array", "items": {"$ref": "#/$defs/passed_control"}}
+      }
+    },
+    "certificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "subject", "issuer", "status"],
+      "properties": {
+        "position": {"type": "string"},
+        "subject": {"type": "string"},
+        "issuer": {"type": "string"},
+        "status": {"enum": ["pass", "finding", "unknown", "observed"]},
+        "serial_number": {"type": "string"},
+        "subject_alternative_names": {"type": "array", "items": {"type": "string"}},
+        "not_before": {"type": "string"},
+        "not_after": {"type": "string"},
+        "public_key": {"type": "string"},
+        "signature_algorithm": {"type": "string"},
+        "sha256_fingerprint": {"type": "string"},
+        "trust_result": {"type": "string"},
+        "identity_result": {"type": "string"}
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status"],
+      "properties": {
+        "name": {"type": "string"},
+        "status": {"enum": ["supported", "not_supported", "unknown", "not_tested"]},
+        "negotiated_cipher": {"type": "string"},
+        "evidence_id": {"type": "string"}
+      }
+    },
+    "cipher_suite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "name", "status"],
+      "properties": {
+        "protocol": {"type": "string"},
+        "name": {"type": "string"},
+        "strength_bits": {"type": "integer", "minimum": 0},
+        "key_exchange": {"type": "string"},
+        "status": {"enum": ["accepted", "rejected", "preferred", "unknown"]}
+      }
+    },
+    "client_simulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["client", "result"],
+      "properties": {
+        "client": {"type": "string"},
+        "platform": {"type": "string"},
+        "result": {"enum": ["success", "fail", "unknown"]},
+        "protocol": {"type": "string"},
+        "cipher": {"type": "string"}
+      }
+    },
+    "server_feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status"],
+      "properties": {
+        "name": {"type": "string"},
+        "status": {"enum": ["supported", "not_supported", "pass", "finding", "observed", "unknown", "not_tested"]},
+        "details": {"type": "string"}
+      }
+    },
+    "passed_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "title", "evidence_ids"],
+      "properties": {
+        "rule_id": {"type": "string"},
+        "title": {"type": "string"},
+        "evidence_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+      }
+    }
+  }
+}

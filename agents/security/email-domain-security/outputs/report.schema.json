@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:demo-domain-audit:schema:s18-report:0.1.0",
+  "title": "Cyber360 S18 email and domain security section",
+  "type": "object",
+  "required": ["controls"],
+  "properties": {
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "status", "detail", "evidence_ids"],
+        "properties": {
+          "rule_id": {"type": "string", "pattern": "^S18-[A-Z]+-\\d{3}$"},
+          "status": {"enum": ["pass", "confirmed", "unknown", "not_applicable"]},
+          "severity": {"enum": ["critical", "high", "medium", "low", "informational"]},
+          "detail": {"type": "string"},
+          "evidence_ids": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

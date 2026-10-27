@@ -1,0 +1,21 @@
+{
+  "name": "demo-domain-audit",
+  "owner": {
+    "name": "Rohas Nagpal",
+    "url": "https://rohasnagpal.com"
+  },
+  "description": "Teaching demo: build and run your first AI security agents.",
+  "plugins": [
+    {
+      "name": "demo-domain-audit",
+      "version": "0.1.0",
+      "source": ".",
+      "license": "Apache-2.0",
+      "description": "Three AI security agents (H1 Reconnaissance, S11 TLS, S18 Email & Domain) and a Chief that coordinates them to audit a domain you own. A teaching demo based on Cyber360.",
+      "author": {
+        "name": "Rohas Nagpal",
+        "url": "https://rohasnagpal.com"
+      }
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "agent": "h1",
+  "last_reviewed": "2026-10-27",
+  "glossary": [
+    ["Attack surface", "Everything about a domain that is reachable or visible from the internet: hostnames, IP addresses, open ports, services, software banners and third-party providers."],
+    ["A / AAAA", "DNS records mapping a name to an IPv4 (A) or IPv6 (AAAA) address."],
+    ["CNAME", "An alias from one name to another; the apex of a domain cannot normally be a CNAME."],
+    ["MX", "Mail exchanger records naming the servers that receive mail for the domain."],
+    ["NS", "Nameserver records naming the authoritative DNS servers for the domain."],
+    ["SOA", "Start of Authority: the primary nameserver, the responsible mailbox and the zone's timing values."],
+    ["TXT", "Free-form text records used for SPF, domain verification tokens and other policies."],
+    ["CAA", "Records naming the certificate authorities allowed to issue certificates for the domain."],
+    ["HSTS", "HTTP Strict Transport Security: a response header telling browsers to use only HTTPS for the site for a set period."],
+    ["Banner", "Software name or version disclosed in a response header, such as Server: Apache/2.4.58."]
+  ],
+  "commands": {
+    "dig_a": "Resolves the apex IPv4 addresses: where the website is hosted.",
+    "dig_aaaa": "Resolves the apex IPv6 addresses.",
+    "dig_cname": "Checks whether the apex is an alias for another name.",
+    "dig_mx": "Lists the mail servers, which reveal the email provider.",
+    "dig_txt": "Reads TXT records, which reveal SPF senders and third-party verification tokens.",
+    "dig_ns": "Lists the authoritative nameservers, which reveal the DNS host.",
+    "dig_soa": "Reads the SOA record: primary nameserver, hostmaster contact and zone timers.",
+    "dig_caa": "Reads CAA records, which reveal which certificate authorities are allowed.",
+    "dig_trace": "Follows delegation from the root to the domain's nameservers to confirm the delegation path.",
+    "host": "Cross-checks address and mail records with a second resolver client.",
+    "whois": "Reads registration data: registrar, dates and EPP status codes.",
+    "ping": "Sends four ICMP echo requests to measure reachability and latency. No reply usually means ICMP is filtered.",
+    "traceroute": "Maps the network path (at most 20 hops, one probe each) to show the hosting network.",
+    "curl_headers": "Requests https://<domain> and follows redirects, recording every status code and response header.",
+    "curl_timing": "Records the final HTTPS status code, total response time and the IP address actually connected to.",
+    "curl_http": "Requests http://<domain> (plain HTTP) without following redirects, to check that it redirects to HTTPS.",
+    "nc_port_80": "Tests whether TCP port 80 (HTTP) accepts connections.",
+    "nc_port_443": "Tests whether TCP port 443 (HTTPS) accepts connections.",
+    "dig_version": "Records the dig version used.",
+    "curl_version": "Records the curl version used.",
+    "openssl_version": "Records the OpenSSL version used."
+  },
+  "inventory_explanations": {
+    "a": "IPv4 addresses the domain's website resolves to. An attacker uses these to find the hosting provider and to look for other sites and services on the same IP addresses.",
+    "aaaa": "IPv6 addresses. Services reachable over IPv6 sometimes have weaker firewall rules than their IPv4 equivalents.",
+    "cname": "An apex alias, if any. CNAMEs pointing at deprovisioned third-party services are the classic source of subdomain takeovers.",
+    "mx": "Mail servers. They reveal the email provider, which tells an attacker which login page to clone for credential phishing.",
+    "ns": "Authoritative nameservers. They reveal the DNS host; whoever controls that account controls the domain's website and email.",
+    "soa": "The primary nameserver, the responsible-party mailbox and the zone's refresh, retry, expire and minimum TTL timers.",
+    "txt": "TXT records: SPF, verification tokens and other policies. They reveal the SaaS services the organisation uses.",
+    "caa": "Certificate authorities allowed to issue certificates. An empty list means any CA may issue.",
+    "delegation": "Whether a full trace from the root servers reached the domain's nameservers.",
+    "registration": "Registrar, creation and expiry dates and EPP locks. Recently registered domains and lapsing domains both attract attention.",
+    "http": "The HTTPS response chain and headers. Headers reveal software, frameworks and security policies.",
+    "ports": "Whether the standard web ports accept TCP connections. No other ports were tested.",
+    "reachability": "ICMP and traceroute results, which show the hosting network and whether ICMP is filtered."
+  },
+  "controls": {
+    "H1-WEB-001": {
+      "category": "Information disclosure",
+      "about": "Checks whether the Server response header discloses the web server product or version.",
+      "pass": "The HTTPS response does not disclose server software in a Server header.",
+      "references": [
+        {"title": "OWASP WSTG — Fingerprint Web Server (WSTG-INFO-02)", "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Information_Gathering/02-Fingerprint_Web_Server"},
+        {"title": "Apache — ServerTokens directive", "url": "https://httpd.apache.org/docs/2.4/mod/core.html#servertokens"},
+        {"title": "nginx — server_tokens directive", "url": "http://nginx.org/en/docs/http/ngx_http_core_module.html#server_tokens"}
+      ],
+      "findings": {
+        "with_version": {
+          "what": "https://{domain} returns the header:\nServer: {server_header}\nThis discloses both the product and its version.",
+          "why": [
+            "A version number lets an attacker match the server directly against published vulnerabilities (CVE lists and exploit databases) without probing further. Automated scanners on the internet do exactly this and target hosts whose banner matches a vulnerable version."
+          ],
+          "attack": "A scanner reads the Server header, looks up CVEs for that exact version and launches the matching exploit, skipping the noisier fingerprinting that might trigger alerts.",
+          "severity_rationale": "Low: disclosure alone is not exploitable, but it speeds up attacks against unpatched software.",
+          "fix": [
+            {"text": "Apache (main server configuration; not available in .htaccess):", "code": "ServerTokens Prod\nServerSignature Off"},
+            {"text": "nginx (http block):", "code": "server_tokens off;"},
+            "On shared hosting the main server configuration belongs to the host ({hosting_provider}). Ask the host to apply it, or accept the residual risk and make sure the host keeps the software patched.",
+            "Most importantly, keep the server software patched. Hiding the version does not fix a vulnerable version."
+          ],
+          "rollback": "Restore the previous directives and reload the web server.",
+          "verify": {"command": "curl -sI https://{domain} | grep -i '^server:'", "expected": "No version number (for example \"Server: Apache\"), or no Server header."}
+        },
+        "product_only": {
+          "what": "https://{domain} returns the header:\nServer: {server_header}\nThe product is disclosed but not its version.",
+          "why": [
+            "Knowing the product ({server_header}) narrows down which attacks and misconfigurations to try. It is minor because the version is hidden and the product can usually be identified by other means anyway."
+          ],
+          "attack": "Product-specific probing, such as Apache-specific paths and modules, without needing to fingerprint first.",
+          "severity_rationale": "Informational: product-only banners are common and give little advantage.",
+          "fix": [
+            "No action is required. If you control the server and want to remove the header entirely, use a reverse proxy or CDN that rewrites it, or Apache's mod_security SecServerSignature."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "curl -sI https://{domain} | grep -i '^server:'", "expected": "No change required."}
+        }
+      }
+    },
+    "H1-WEB-002": {
+      "category": "Information disclosure",
+      "about": "Checks whether X-Powered-By or similar headers disclose the application framework or language version.",
+      "pass": "No X-Powered-By header is returned.",
+      "references": [
+        {"title": "OWASP Secure Headers Project — headers to remove", "url": "https://owasp.org/www-project-secure-headers/#div-headers"},
+        {"title": "PHP — expose_php", "url": "https://www.php.net/manual/en/ini.core.php#ini.expose-php"}
+      ],
+      "findings": {
+        "default": {
+          "what": "https://{domain} returns:\nX-Powered-By: {powered_by}",
+          "why": [
+            "Framework and language versions, such as PHP/8.1.2, are high-value fingerprinting data. Application-layer vulnerabilities are usually tied to a specific version."
+          ],
+          "attack": "An attacker matches the disclosed version against known application or interpreter vulnerabilities.",
+          "severity_rationale": "Low: disclosure only.",
+          "fix": [
+            {"text": "PHP (php.ini, or the host's PHP settings panel):", "code": "expose_php = Off"},
+            {"text": "Express (Node.js):", "code": "app.disable('x-powered-by');"},
+            {"text": "Apache with mod_headers (.htaccess):", "code": "Header always unset X-Powered-By"}
+          ],
+          "rollback": "Re-enable the setting.",
+          "verify": {"command": "curl -sI https://{domain} | grep -i x-powered-by", "expected": "No output."}
+        }
+      }
+    },
+    "H1-WEB-003": {
+      "category": "Transport security",
+      "about": "Checks that plain HTTP on port 80 permanently redirects to HTTPS, so visitors who type the bare domain or follow an old link end up on the encrypted site.",
+      "pass": "http://{domain} returns {http_status} redirecting to {http_location}.",
+      "unknown_help": "The plain-HTTP request did not complete, so redirect behaviour is unknown. Check the evidence file for the error.",
+      "references": [
+        {"title": "OWASP — Transport Layer Security Cheat Sheet", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html"},
+        {"title": "Mozilla — Web security guidelines: HTTP redirections", "url": "https://infosec.mozilla.org/guidelines/web_security#http-redirections"}
+      ],
+      "findings": {
+        "no_redirect": {
+          "what": "http://{domain} (port 80) returned HTTP {http_status} without redirecting to HTTPS.",
+          "why": [
+            "Visitors who type {domain} into a browser, or follow an old http:// link, load the site over plain HTTP. Everything they send and receive (form submissions, session cookies without the Secure flag, page content) can be read or altered by anyone on the network path."
+          ],
+          "attack": "On public Wi-Fi an attacker intercepts the plain-HTTP page and injects a fake login form or malicious script. Because the user never reached HTTPS, there is no certificate warning.",
+          "severity_rationale": "Medium: the site works over HTTPS, but a predictable share of visits begin unencrypted.",
+          "fix": [
+            {"text": "Apache (.htaccess in the site root):", "code": "RewriteEngine On\nRewriteCond %{HTTPS} off\nRewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]"},
+            {"text": "nginx:", "code": "server {\n    listen 80;\n    server_name {domain} www.{domain};\n    return 301 https://$host$request_uri;\n}"},
+            "Many hosts, including {hosting_provider}, offer a \"force HTTPS\" or \"secure hosting\" switch in their control panel that does the same.",
+            "Then add HSTS (H1-WEB-004) so browsers skip the HTTP request entirely."
+          ],
+          "rollback": "Remove the redirect rule.",
+          "verify": {"command": "curl -sI http://{domain} | head -3", "expected": "HTTP/1.1 301 Moved Permanently with Location: https://{domain}/"}
+        },
+        "redirect_not_https": {
+          "what": "http://{domain} redirects ({http_status}) to {http_location}, which is not an HTTPS URL.",
+          "why": [
+            "The redirect keeps the visitor on plain HTTP, so the connection remains unencrypted."
+          ],
+          "attack": "As for no redirect: content and credentials can be intercepted.",
+          "severity_rationale": "Medium.",
+          "fix": [
+            "Change the redirect target to https://{domain}/ using a 301 (permanent) status."
+          ],
+          "rollback": "Restore the previous rule.",
+          "verify": {"command": "curl -sI http://{domain} | head -3", "expected": "Location: https://..."}
+        }
+      }
+    },
+    "H1-WEB-004": {
+      "category": "Transport security",
+      "about": "Checks for a Strict-Transport-Security (HSTS) header with a max-age of at least six months, which tells browsers to use only HTTPS for the site.",
+      "pass": "HSTS is set: Strict-Transport-Security: {hsts}",
+      "references": [
+        {"title": "RFC 6797 — HTTP Strict Transport Security", "url": "https://www.rfc-editor.org/rfc/rfc6797.html"},
+        {"title": "OWASP — HTTP Strict Transport Security Cheat Sheet", "url": "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html"},
+        {"title": "hstspreload.org — submission requirements", "url": "https://hstspreload.org/"}
+      ],
+      "findings": {
+        "missing": {
+          "what": "The HTTPS response from https://{domain} has no Strict-Transport-Security header.",
+          "why": [
+            "Even with an HTTP-to-HTTPS redirect, a browser's first request to http://{domain} goes out unencrypted, and the redirect itself can be intercepted. HSTS tells the browser to rewrite every future http:// request to https:// itself, before anything is sent, and to refuse to click through certificate warnings for the site."
+          ],
+          "attack": "SSL stripping (sslstrip): an attacker on the network intercepts the initial HTTP request, suppresses the redirect and proxies the site to the victim over HTTP while talking HTTPS to the real server.",
+          "severity_rationale": "Low: requires an on-path attacker and a user who reaches the site over HTTP first.",
+          "fix": [
+            {"text": "Apache (.htaccess or virtual host, with mod_headers):", "code": "Header always set Strict-Transport-Security \"max-age=31536000; includeSubDomains\""},
+            {"text": "nginx (inside the HTTPS server block):", "code": "add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"},
+            "Start with a short max-age (for example 300) and increase it once every subdomain works over HTTPS. includeSubDomains applies the policy to every subdomain.",
+            "Optionally, once stable, add \"; preload\" and submit the domain at hstspreload.org so browsers enforce HTTPS from the first visit."
+          ],
+          "rollback": "Set max-age=0 to tell browsers to forget the policy.",
+          "verify": {"command": "curl -sI https://{domain} | grep -i strict-transport", "expected": "strict-transport-security: max-age=31536000; includeSubDomains"}
+        },
+        "short_max_age": {
+          "what": "HSTS is set with a short max-age:\nStrict-Transport-Security: {hsts}",
+          "why": [
+            "A max-age under six months (15768000 seconds) means returning visitors' browsers frequently forget the policy, reopening the SSL-stripping window. hstspreload.org requires at least one year."
+          ],
+          "attack": "SSL stripping against visitors whose cached policy has expired.",
+          "severity_rationale": "Low.",
+          "fix": [
+            "Raise max-age to 31536000 (one year) once HTTPS is stable across all subdomains."
+          ],
+          "rollback": "Lower max-age.",
+          "verify": {"command": "curl -sI https://{domain} | grep -i strict-transport", "expected": "max-age=31536000 or more."}
+        }
+      }
+    },
+    "H1-DNS-001": {
+      "category": "Information disclosure",
+      "about": "Identifies the third-party services the domain's public DNS reveals (email, DNS and web hosts, SaaS verification tokens and SPF senders), the information an attacker gathers first.",
+      "pass": "No third-party services were identified from public DNS.",
+      "references": [
+        {"title": "MITRE ATT&CK T1590.002 — Gather Victim Network Information: DNS", "url": "https://attack.mitre.org/techniques/T1590/002/"},
+        {"title": "MITRE ATT&CK T1593 — Search Open Websites/Domains", "url": "https://attack.mitre.org/techniques/T1593/"}
+      ],
+      "findings": {
+        "default": {
+          "what": "Public DNS for {domain} reveals these providers and services:\n{services_list}",
+          "why": [
+            "This is normal and largely unavoidable: SPF, MX and verification records must be public to work. It is reported so you know exactly what an attacker learns in seconds.",
+            "Each service is a phishing pretext (\"Your Google Workspace password expires today\") and an account to protect. Verification tokens for services you no longer use add noise and can indicate forgotten accounts still linked to the domain."
+          ],
+          "attack": "An attacker sees that {domain} uses {mail_provider} for email and clones that provider's login page for a targeted credential-phishing campaign against your staff.",
+          "severity_rationale": "Informational: no misconfiguration. Exposure is inherent to how these records work.",
+          "fix": [
+            "Remove verification TXT records and SPF includes for services you no longer use. In {dns_provider}: {dns_edit}",
+            "Enforce multi-factor authentication on every listed service, especially the email provider ({mail_provider}) and the DNS host ({dns_provider}), whose accounts control the domain.",
+            "Brief staff that phishing will imitate these specific providers."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "dig {domain} TXT +short", "expected": "Only records for services in active use."}
+        }
+      }
+    }
+  }
+}

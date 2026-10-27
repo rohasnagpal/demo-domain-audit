@@ -1,0 +1,41 @@
+schema_version: 1
+title: TLS authorities
+last_checked: "2026-10-26"
+
+instructions:
+  - Verify the current version before presenting time-sensitive requirements as current.
+  - Cite the exact authority and section where a report relies on a normative requirement.
+  - Do not apply public-PKI rules automatically to a private PKI.
+  - Treat Mozilla profiles as deployment recommendations, not proof of legal or regulatory compliance.
+  - Identify stricter local policy as local policy and preserve its version.
+
+authorities:
+  - id: RFC8996
+    title: RFC 8996 — Deprecating TLS 1.0 and TLS 1.1
+    url: https://www.rfc-editor.org/rfc/rfc8996.html
+    proposition: TLS 1.0 and TLS 1.1 are deprecated; protocol fallback to them is prohibited.
+
+  - id: RFC9325
+    title: RFC 9325 — Recommendations for Secure Use of TLS and DTLS
+    url: https://www.rfc-editor.org/rfc/rfc9325.html
+    proposition: Current IETF deployment guidance for protocol versions, cipher suites, key exchange, forward secrecy, signatures and key sizes.
+
+  - id: CABF-BR
+    title: CA/Browser Forum Server Certificate Baseline Requirements
+    url: https://cabforum.org/working-groups/server/baseline-requirements/requirements/
+    proposition: Current public-trust certificate profile, validation and issuance requirements.
+
+  - id: CABF-IP
+    title: CA/Browser Forum Guidance on IP Addresses in Certificates
+    url: https://cabforum.org/working-groups/server/guidance-ip-addresses-certificates/
+    proposition: An IP identity belongs in the SAN as an iPAddress, not as a dNSName.
+
+  - id: MOZILLA-TLS
+    title: Mozilla Server Side TLS
+    url: https://mozilla.github.io/server-side-tls/
+    proposition: Operational configuration profiles and configuration generator; advisory rather than a universal compliance standard.
+
+  - id: LE-IP
+    title: Let's Encrypt — IP Address Certificates
+    url: https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability/
+    proposition: Let's Encrypt public IPv4 and IPv6 certificates are short-lived and require automated renewal.

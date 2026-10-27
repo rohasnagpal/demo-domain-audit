@@ -1,0 +1,111 @@
+/* Cyber360 "assurance" theme: design tokens.
+   A calm, document-like audit theme: deep ink brand, one teal accent, and a
+   severity scale that does all the alarming. Component styles live in report.css.
+
+   Every colour variable from the default theme is redefined here with the same
+   name, so the charts (which read --sev-*, --st-*, --series-*, --chart-*, --cell-*)
+   restyle automatically. Type, spacing and radius variables are additions used
+   only by this theme's report.css.
+
+   Contrast against --paper (#fff), measured with WCAG 2 relative luminance:
+     text  --ink 17.5  --muted 5.9  --muted-2 8.3  --viz-ink-3 5.0  --teal 6.1
+     marks --sev-critical 6.9  --sev-high 4.3  --sev-medium 3.8  --sev-low 5.6
+           --sev-informational 5.0  --st-good 5.0  --st-unknown 5.7  --st-na 3.1
+           --series-1 5.8  --chart-arrow 3.8
+   Severity and status colours are never the only signal: every use in the markup
+   is paired with a text label or an icon, and report.css adds shape cues. */
+:root{
+  /* Brand and surfaces */
+  --navy:#0b1a2a;          /* top bar, footer, dark chart nodes, step numbers */
+  --accent:#2bb5a5;        /* thin rule under the top bar (decorative, on navy) */
+  --teal:#0f6e6a;          /* links, eyebrow, "how to fix" emphasis */
+  --green:#16803c;         /* positive grades and evidence bars */
+  --blue:#1f63cf;
+  --amber:#b07800;
+  --red:#b3102e;
+  --page:#eef1f4;          /* behind the report */
+  --paper:#ffffff;         /* panels and cards */
+  --wash:#f6f7f9;          /* table heads, quiet fills */
+
+  /* Text */
+  --ink:#111a24;
+  --muted:#5b6573;         /* secondary text, 5.9:1 on paper, 5.5:1 on wash */
+  --muted-2:#454f5c;       /* labels (dt, meta), 8.3:1 */
+
+  /* Lines */
+  --line:#e1e5ea;          /* hairlines between rows */
+  --line-soft:#eaedf1;     /* inner dividers */
+  --border-strong:#c9d0d8; /* card and panel outlines */
+
+  /* Code blocks */
+  --code-bg:#0f1b28;
+  --code-ink:#dde6ef;      /* 14.6:1 on --code-bg */
+
+  /* Type: system fonts only, no downloads */
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono","DejaVu Sans Mono",monospace;
+  --fs-2xs:10.5px;         /* table heads, overlines */
+  --fs-xs:11.5px;          /* badges, meta, captions */
+  --fs-sm:12.5px;          /* code, secondary text */
+  --fs-base:14px;          /* body */
+  --fs-md:16px;            /* lede, card titles */
+  --fs-lg:19px;            /* section (panel) titles, finding titles */
+  --fs-xl:24px;            /* summary numbers */
+  --fs-2xl:30px;           /* report title */
+  --fs-display:64px;       /* evidence grade */
+  --lh-tight:1.25;
+  --lh-base:1.6;
+  --fw-medium:500;
+  --fw-semibold:600;
+  --fw-bold:700;
+
+  /* Spacing (4px base) */
+  --sp-1:4px;
+  --sp-2:8px;
+  --sp-3:12px;
+  --sp-4:16px;
+  --sp-5:24px;
+  --sp-6:32px;
+  --sp-7:48px;
+
+  /* Corner radii */
+  --radius-sm:4px;         /* badges, code, cells */
+  --radius:8px;            /* cards, notices */
+  --radius-lg:12px;        /* panels */
+  --radius-pill:999px;
+
+  /* Effects */
+  --shadow:0 1px 2px rgba(11,26,42,.06),0 4px 16px rgba(11,26,42,.05);
+
+  /* Severity scale (findings, bars, card bands). Ordered critical → informational:
+     hue runs from crimson to grey, and only critical and high get solid badges. */
+  --sev-critical:#b3102e;
+  --sev-high:#d9480f;
+  --sev-medium:#b07800;
+  --sev-low:#1f63cf;
+  --sev-informational:#667080;
+
+  /* Control status */
+  --st-good:#16803c;
+  --st-unknown:#7353b8;    /* violet: unverified, never confused with a pass or a severity */
+  --st-na:#8c949c;
+
+  /* Charts */
+  --series-1:#0e6f86;      /* neutral data series: petrol blue, distinct from --sev-low */
+  --series-3:#3d4f7c;
+  --chart-line:#c3cad3;    /* connectors and spokes */
+  --chart-arrow:#7b8591;   /* flow arrows and node outlines, 3.8:1 */
+  --chart-box:#f6f7f9;     /* flow-diagram boxes */
+  --chart-box-line:#c9d0d8;
+  --viz-surface:var(--paper);
+  --viz-ink:var(--ink);
+  --viz-ink-2:#4c5663;     /* chart labels, 7.5:1 */
+  --viz-ink-3:#65707d;     /* faint chart text, still 5.0:1 */
+  --viz-grid:#e6e9ed;
+
+  /* Protocol matrix cells (every cell also carries a text label) */
+  --cell-ok-bg:#e2f1e7;   --cell-ok-ink:#145c2e;
+  --cell-weak-bg:#fbefd6; --cell-weak-ink:#6b4900;
+  --cell-bad-bg:#f9dfe4;  --cell-bad-ink:#8b0c24;
+  --cell-off-bg:#f1f3f5;  --cell-off-ink:#5b6573;
+}

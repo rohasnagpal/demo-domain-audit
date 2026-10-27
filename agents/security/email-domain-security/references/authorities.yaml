@@ -1,0 +1,73 @@
+schema_version: 1
+title: Email and domain security authorities
+last_checked: "2026-10-27"
+
+instructions:
+  - Cite the exact authority when a report relies on a normative requirement.
+  - Distinguish protocol requirements from operational recommendations such as moving DMARC to p=reject.
+
+authorities:
+  - id: RFC7208
+    title: RFC 7208 — Sender Policy Framework (SPF)
+    url: https://www.rfc-editor.org/rfc/rfc7208.html
+    proposition: One SPF record per domain; the ten-DNS-lookup limit; all-mechanism qualifiers.
+
+  - id: RFC7489
+    title: RFC 7489 — Domain-based Message Authentication, Reporting and Conformance (DMARC)
+    url: https://www.rfc-editor.org/rfc/rfc7489.html
+    proposition: DMARC record syntax, policies, pct and aggregate reporting.
+
+  - id: RFC6376
+    title: RFC 6376 — DomainKeys Identified Mail (DKIM) Signatures
+    url: https://www.rfc-editor.org/rfc/rfc6376.html
+    proposition: Selector-based DKIM key publication; an empty p= revokes a key.
+
+  - id: RFC8461
+    title: RFC 8461 — SMTP MTA Strict Transport Security (MTA-STS)
+    url: https://www.rfc-editor.org/rfc/rfc8461.html
+    proposition: The _mta-sts record, the HTTPS policy file and testing versus enforce modes.
+
+  - id: RFC8460
+    title: RFC 8460 — SMTP TLS Reporting
+    url: https://www.rfc-editor.org/rfc/rfc8460.html
+    proposition: TLS-RPT records for reporting SMTP TLS failures.
+
+  - id: RFC3207
+    title: RFC 3207 — SMTP Service Extension for Secure SMTP over TLS
+    url: https://www.rfc-editor.org/rfc/rfc3207.html
+    proposition: The STARTTLS extension for SMTP.
+
+  - id: RFC7505
+    title: RFC 7505 — A "Null MX" No Service Resource Record
+    url: https://www.rfc-editor.org/rfc/rfc7505.html
+    proposition: Domains that accept no mail should publish a null MX.
+
+  - id: RFC8659
+    title: RFC 8659 — DNS Certification Authority Authorization (CAA)
+    url: https://www.rfc-editor.org/rfc/rfc8659.html
+    proposition: CAA records restrict certificate issuance.
+
+  - id: RFC4033
+    title: RFC 4033 — DNS Security Introduction and Requirements
+    url: https://www.rfc-editor.org/rfc/rfc4033.html
+    proposition: DNSSEC goals and the chain of trust.
+
+  - id: RFC4035
+    title: RFC 4035 — Protocol Modifications for the DNS Security Extensions
+    url: https://www.rfc-editor.org/rfc/rfc4035.html
+    proposition: Validation of DS, DNSKEY and RRSIG records.
+
+  - id: RFC1034
+    title: RFC 1034 — Domain Names, Concepts and Facilities
+    url: https://www.rfc-editor.org/rfc/rfc1034.html
+    proposition: Zones should have at least two nameservers.
+
+  - id: ICANN-RAA
+    title: ICANN Registrar Accreditation Agreement and Expired Registration Recovery Policy
+    url: https://www.icann.org/resources/pages/errp-2013-02-28-en
+    proposition: Registration expiry, renewal and recovery.
+
+  - id: ICANN-EPP
+    title: ICANN — EPP Status Codes
+    url: https://www.icann.org/epp
+    proposition: Meaning of clientTransferProhibited and related locks.

@@ -1,0 +1,36 @@
+id: s11-remediate
+name: Remediate a validated TLS finding
+agent: s11
+mode: write
+
+inputs:
+  required:
+    - finding_ids
+    - change_authority
+    - tls_terminating_technology
+    - configuration_location
+  optional:
+    - maintenance_window
+    - rollback_plan
+
+steps:
+  - id: authorise
+    action: Confirm the exact findings, files or resources and permitted changes.
+    stop_if: Change authority or target configuration is unclear.
+  - id: preserve
+    action: Preserve pre-change configuration and evidence using the environment's approved recovery mechanism.
+  - id: plan
+    action: Propose the smallest technology-specific change and its compatibility impact.
+  - id: change
+    action: Apply only the authorised change.
+  - id: validate_configuration
+    action: Use the TLS terminator's native configuration validation when available.
+  - id: reload
+    action: Reload or restart only when authorised and necessary.
+  - id: handoff
+    action: Invoke the verification workflow without treating successful deployment as proof of remediation.
+
+outputs:
+  - cyber360-reports/<report-id>/change-record.json
+  - cyber360-reports/<report-id>/rollback-record.json
+  - cyber360-reports/<report-id>/verification-request.json

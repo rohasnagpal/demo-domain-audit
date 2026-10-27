@@ -1,0 +1,38 @@
+id: h1-assess
+name: Map the attack surface of an authorised domain
+agent: h1
+mode: read_only
+
+inputs:
+  required:
+    - domain
+    - authority
+  optional:
+    - time_window
+    - source_ip_restrictions
+
+steps:
+  - id: scope
+    action: Confirm the exact domain, authority and exclusions.
+    stop_if: The domain or authority is unclear, or the target is a URL, wildcard or range.
+  - id: preflight
+    action: Discover which registered executables are installed. Record a missing tool as a skipped check.
+  - id: output_store
+    action: Create cyber360-reports/<report-id>/ and its evidence subfolder with the shared output-store helper.
+  - id: dns
+    action: Run the registered dig and host invocations and preserve each raw output.
+  - id: registration
+    action: Run the registered whois invocation and extract registrar, dates and EPP status codes.
+  - id: reachability
+    action: Run the bounded ping and traceroute invocations; treat no reply as filtered or unknown.
+  - id: web
+    action: Run the two registered curl invocations and the nc checks for TCP 80 and 443.
+  - id: inventory
+    action: Build the inventory and observations from captured evidence only, without assigning severity.
+  - id: handoff
+    action: Return the inventory to the Chief for consolidation with S11 and S18.
+
+outputs:
+  - cyber360-reports/<report-id>/evidence/
+  - cyber360-reports/<report-id>/report.json
+  - cyber360-reports/<report-id>/report.html

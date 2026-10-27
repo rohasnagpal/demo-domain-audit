@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "agent": "s11",
+  "last_reviewed": "2026-10-27",
+  "commands": {
+    "E01": "Records the OpenSSL version used for the handshakes.",
+    "E02": "Records the testssl.sh version used for enumeration.",
+    "E03": "Retrieves the certificate chain the server presents (openssl s_client -showcerts) without judging trust.",
+    "E04": "Preserves the leaf certificate extracted from the presented chain.",
+    "E05": "Decodes the leaf certificate: subject, issuer, validity dates, key, signature and extensions.",
+    "E06": "Performs a strict handshake that verifies the hostname (or IP) and the trust chain, and fails on any error.",
+    "E07": "Runs testssl.sh to enumerate protocols, cipher suites per protocol, forward secrecy, server defaults and client simulations.",
+    "E08": "Preserves testssl.sh's structured JSON, from which the tables and controls in this report are built."
+  },
+  "glossary": [
+    ["TLS", "Transport Layer Security, the protocol that encrypts HTTPS. Versions 1.2 and 1.3 are current; 1.0 and 1.1 are deprecated (RFC 8996)."],
+    ["Cipher suite", "The combination of key exchange, authentication, bulk encryption and integrity algorithms negotiated for a connection, for example TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256."],
+    ["AEAD", "Authenticated Encryption with Associated Data (AES-GCM, ChaCha20-Poly1305): modern modes that encrypt and authenticate in one step."],
+    ["CBC", "Cipher Block Chaining: an older mode that relies on a separate MAC and has a long history of padding-oracle and timing attacks."],
+    ["Forward secrecy", "Ephemeral (EC)DHE key exchange ensures that a stolen server private key cannot decrypt previously recorded traffic."],
+    ["SAN", "Subject Alternative Name: the list of hostnames and IP addresses a certificate is valid for."],
+    ["Chain of trust", "The path from the server's certificate through intermediate certificates to a root certificate trusted by the client."]
+  ],
+  "controls": {
+    "TLS-PROTO-001": {
+      "category": "Protocols",
+      "about": "Checks that TLS 1.0 and TLS 1.1 are not offered. Both were formally deprecated by RFC 8996 in 2021 and are disabled in all major browsers.",
+      "pass": "TLS 1.0 and TLS 1.1 are not offered on {domain}:{port}.",
+      "references": [
+        {"title": "RFC 8996 — Deprecating TLS 1.0 and TLS 1.1", "url": "https://www.rfc-editor.org/rfc/rfc8996.html"},
+        {"title": "PCI DSS — Use of SSL/early TLS", "url": "https://www.pcisecuritystandards.org/"}
+      ],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} completes handshakes with deprecated protocol versions: {deprecated_protocols}.",
+          "why": [
+            "TLS 1.0 and 1.1 rely on SHA-1 and MD5 in the handshake, lack AEAD cipher suites and are exposed to attacks such as BEAST and POODLE-TLS. No current browser uses them, so they serve only outdated or malicious clients.",
+            "Offering them can let an attacker who interferes with the handshake push a client down to a weaker protocol, and it fails compliance requirements such as PCI DSS."
+          ],
+          "attack": "A downgrade attacker forces an old client onto TLS 1.0 and exploits CBC weaknesses to recover cookies or other secrets.",
+          "severity_rationale": "High: deprecated, non-compliant protocols are enabled on a public endpoint.",
+          "fix": [
+            {"text": "Apache (mod_ssl):", "code": "SSLProtocol -all +TLSv1.2 +TLSv1.3"},
+            {"text": "nginx:", "code": "ssl_protocols TLSv1.2 TLSv1.3;"},
+            "On managed or shared hosting ({server_product}), use the host's TLS settings or ask the host; at a CDN or load balancer, select a policy with TLS 1.2 as the minimum."
+          ],
+          "rollback": "Restore the previous protocol line and reload the server.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -tls1_1 </dev/null", "expected": "The handshake fails (for example \"no protocols available\" or an alert)."}
+        }
+      }
+    },
+    "TLS-PROTO-002": {
+      "category": "Protocols",
+      "about": "Checks that at least one current protocol (TLS 1.2 or TLS 1.3) is offered.",
+      "pass": "Current protocols are offered: {modern_protocols}.",
+      "references": [
+        {"title": "RFC 9325 — Recommendations for Secure Use of TLS", "url": "https://www.rfc-editor.org/rfc/rfc9325.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "Neither TLS 1.2 nor TLS 1.3 completed a handshake with {domain}:{port}, while an older protocol did.",
+          "why": ["Modern browsers refuse to connect, and the only connections possible use deprecated cryptography."],
+          "attack": "All traffic is exposed to known protocol attacks.",
+          "severity_rationale": "Critical: no secure protocol is available.",
+          "fix": [
+            {"text": "Apache:", "code": "SSLProtocol -all +TLSv1.2 +TLSv1.3"},
+            {"text": "nginx:", "code": "ssl_protocols TLSv1.2 TLSv1.3;"},
+            "Upgrade OpenSSL and the web server if they predate TLS 1.2 support."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -tls1_2 </dev/null", "expected": "A completed handshake showing Protocol: TLSv1.2."}
+        }
+      }
+    },
+    "TLS-PROTO-003": {
+      "category": "Protocols",
+      "about": "Checks that SSL 2.0 and SSL 3.0 are not offered. Both are fundamentally broken (DROWN, POODLE).",
+      "pass": "SSL 2.0 and SSL 3.0 are not offered.",
+      "references": [
+        {"title": "RFC 7568 — Deprecating SSL 3.0", "url": "https://www.rfc-editor.org/rfc/rfc7568.html"},
+        {"title": "RFC 6176 — Prohibiting SSL 2.0", "url": "https://www.rfc-editor.org/rfc/rfc6176.html"}
+      ],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} accepts SSL 2.0 or SSL 3.0.",
+          "why": ["SSL 3.0 is vulnerable to POODLE, which decrypts secrets byte by byte. SSL 2.0 enables DROWN, which can decrypt TLS sessions on any server sharing the same key."],
+          "attack": "DROWN or POODLE decryption of HTTPS traffic.",
+          "severity_rationale": "Critical: practical decryption attacks exist.",
+          "fix": [
+            {"text": "Apache:", "code": "SSLProtocol -all +TLSv1.2 +TLSv1.3"},
+            {"text": "nginx:", "code": "ssl_protocols TLSv1.2 TLSv1.3;"}
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "testssl.sh --protocols {domain}:{port}", "expected": "SSLv2 and SSLv3 shown as not offered."}
+        }
+      }
+    },
+    "TLS-CERT-001": {
+      "category": "Certificate",
+      "about": "Checks that the certificate has not expired.",
+      "pass": "The certificate is within its validity period (valid until {cert_not_after}).",
+      "references": [{"title": "CA/Browser Forum Baseline Requirements", "url": "https://cabforum.org/working-groups/server/baseline-requirements/requirements/"}],
+      "findings": {
+        "default": {
+          "what": "The certificate presented by {domain}:{port} expired on {cert_not_after}.",
+          "why": ["Every browser shows a full-page security error. Users who click through are trained to ignore warnings, and API clients fail outright."],
+          "attack": "Users who habitually bypass the warning will also bypass the warning for an attacker's interception certificate.",
+          "severity_rationale": "High: an outage plus erosion of the trust signal.",
+          "fix": [
+            "Renew the certificate now (for Let's Encrypt: certbot renew, or the host's \"renew\" button) and reload the server.",
+            "Fix the renewal automation and add expiry monitoring that alerts 30 days ahead."
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "echo | openssl s_client -connect {domain}:{port} -servername {domain} 2>/dev/null | openssl x509 -noout -enddate", "expected": "A notAfter date in the future."}
+        }
+      }
+    },
+    "TLS-CERT-002": {
+      "category": "Certificate",
+      "about": "Checks that the certificate's validity has started (notBefore is in the past).",
+      "pass": "The certificate's validity period has started ({cert_not_before}).",
+      "references": [{"title": "CA/Browser Forum Baseline Requirements", "url": "https://cabforum.org/working-groups/server/baseline-requirements/requirements/"}],
+      "findings": {
+        "default": {
+          "what": "The certificate presented by {domain}:{port} is not valid until {cert_not_before}.",
+          "why": ["Clients reject it. This usually indicates a server clock problem or a certificate deployed too early."],
+          "attack": "As for an expired certificate: availability loss and warning fatigue.",
+          "severity_rationale": "High.",
+          "fix": ["Correct the server clock (enable NTP) or deploy a currently valid certificate."],
+          "rollback": "Not applicable.",
+          "verify": {"command": "echo | openssl s_client -connect {domain}:{port} -servername {domain} 2>/dev/null | openssl x509 -noout -startdate", "expected": "A notBefore date in the past."}
+        }
+      }
+    },
+    "TLS-CERT-003": {
+      "category": "Certificate",
+      "about": "Checks that the certificate's Subject Alternative Names include the requested hostname.",
+      "pass": "The certificate covers {domain} (SANs: {cert_sans}).",
+      "references": [{"title": "RFC 9525 — Service identity in TLS", "url": "https://www.rfc-editor.org/rfc/rfc9525.html"}],
+      "findings": {
+        "default": {
+          "what": "The certificate presented by {domain}:{port} does not cover {domain}. SANs: {cert_sans}. Detail: {observed}",
+          "why": ["Browsers show a name-mismatch error. Users either leave or learn to click through security warnings."],
+          "attack": "Warning fatigue makes real interception attacks succeed.",
+          "severity_rationale": "High.",
+          "fix": [
+            "Reissue the certificate with every name served, for example both {domain} and www.{domain}. For Let's Encrypt: certbot --expand -d {domain} -d www.{domain}"
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -verify_hostname {domain} -verify_return_error </dev/null", "expected": "Verify return code: 0 (ok)"}
+        }
+      }
+    },
+    "TLS-CERT-004": {
+      "category": "Certificate",
+      "about": "Checks that the presented chain validates to a trusted root, including any required intermediate certificates.",
+      "pass": "The chain of trust validates ({cert_trust}).",
+      "references": [{"title": "RFC 5280 — Certification path validation", "url": "https://www.rfc-editor.org/rfc/rfc5280.html#section-6"}],
+      "findings": {
+        "default": {
+          "what": "The certificate chain from {domain}:{port} failed validation: {observed}",
+          "why": ["Clients that cannot build a path to a trusted root reject the connection. A missing intermediate typically breaks Android, curl, Java and API clients while desktop browsers that cache intermediates still work."],
+          "attack": "Intermittent failures encourage users and developers to disable certificate verification.",
+          "severity_rationale": "High.",
+          "fix": [
+            {"text": "Serve the full chain. Apache 2.4.8+:", "code": "SSLCertificateFile /path/to/fullchain.pem"},
+            {"text": "nginx:", "code": "ssl_certificate /path/to/fullchain.pem;"}
+          ],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -verify_return_error </dev/null", "expected": "Verify return code: 0 (ok)"}
+        }
+      }
+    },
+    "TLS-CERT-005": {
+      "category": "Certificate",
+      "about": "Checks whether the chain ends at a trust anchor that public clients do not recognise, such as a private CA.",
+      "pass": "The chain ends at a publicly recognised root.",
+      "references": [{"title": "RFC 9325 — Recommendations for Secure Use of TLS", "url": "https://www.rfc-editor.org/rfc/rfc9325.html"}],
+      "findings": {
+        "default": {
+          "what": "The chain from {domain}:{port} ends at an unrecognised trust anchor: {observed}",
+          "why": ["Public visitors see an untrusted-certificate error. This is acceptable only for internal services whose clients have the private root installed."],
+          "attack": "Warning fatigue; interception is indistinguishable from normal operation.",
+          "severity_rationale": "Medium.",
+          "fix": ["Use a publicly trusted certificate (for example free from Let's Encrypt) for public endpoints."],
+          "rollback": "Not applicable.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -verify_return_error </dev/null", "expected": "Verify return code: 0 (ok)"}
+        }
+      }
+    },
+    "TLS-CERT-006": {
+      "category": "Certificate",
+      "about": "Checks that the certificate does not expire within 30 days.",
+      "pass": "The certificate does not expire within 30 days (valid until {cert_not_after}).",
+      "references": [{"title": "Let's Encrypt — Integration guide (renewal)", "url": "https://letsencrypt.org/docs/integration-guide/"}],
+      "findings": {
+        "default": {
+          "what": "The certificate for {domain} expires soon: {observed} (notAfter {cert_not_after}).",
+          "why": ["If renewal automation fails, the site goes down with a security error on that date."],
+          "attack": "None directly; an availability risk.",
+          "severity_rationale": "Low. 90-day certificates renew about 30 days before expiry, so short remaining validity is normal if automation works.",
+          "fix": ["Confirm that automated renewal is scheduled and has succeeded recently (certbot renew --dry-run), and add expiry monitoring."],
+          "rollback": "Not applicable.",
+          "verify": {"command": "echo | openssl s_client -connect {domain}:{port} -servername {domain} 2>/dev/null | openssl x509 -noout -enddate", "expected": "A date more than 30 days away after renewal."}
+        }
+      }
+    },
+    "TLS-KEY-001": {
+      "category": "Certificate",
+      "about": "Checks that an RSA certificate key is at least 2048 bits.",
+      "pass": "The certificate key is {cert_key}.",
+      "references": [{"title": "NIST SP 800-57 Part 1 — Key sizes", "url": "https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final"}],
+      "findings": {
+        "default": {
+          "what": "The certificate key is {cert_key}, below the 2048-bit minimum.",
+          "why": ["RSA keys under 2048 bits are within reach of factoring by well-resourced attackers and are no longer issued by public CAs."],
+          "attack": "Factoring the key allows impersonation of the server.",
+          "severity_rationale": "High.",
+          "fix": ["Generate a new ECDSA P-256 or RSA 2048+ key and reissue the certificate."],
+          "rollback": "Not applicable.",
+          "verify": {"command": "echo | openssl s_client -connect {domain}:{port} -servername {domain} 2>/dev/null | openssl x509 -noout -text | grep 'Public-Key'", "expected": "Public-Key: (2048 bit) or larger, or an EC key."}
+        }
+      }
+    },
+    "TLS-SIG-001": {
+      "category": "Certificate",
+      "about": "Checks that the certificate is not signed with MD5 or SHA-1.",
+      "pass": "The certificate signature uses {cert_sig}.",
+      "references": [{"title": "RFC 9155 — Deprecating MD5 and SHA-1 signature hashes in TLS 1.2", "url": "https://www.rfc-editor.org/rfc/rfc9155.html"}],
+      "findings": {
+        "default": {
+          "what": "The certificate is signed with {cert_sig}.",
+          "why": ["SHA-1 collisions are practical (SHAttered, 2017), so a SHA-1 signature no longer proves the certificate was not forged."],
+          "attack": "Collision-based certificate forgery.",
+          "severity_rationale": "High.",
+          "fix": ["Reissue the certificate with a SHA-256 or stronger signature."],
+          "rollback": "Not applicable.",
+          "verify": {"command": "echo | openssl s_client -connect {domain}:{port} -servername {domain} 2>/dev/null | openssl x509 -noout -text | grep 'Signature Algorithm'", "expected": "sha256WithRSAEncryption, ecdsa-with-SHA256 or stronger."}
+        }
+      }
+    },
+    "TLS-CIPHER-001": {
+      "category": "Cipher suites",
+      "about": "Checks that no prohibited cipher suites (NULL, anonymous, EXPORT, RC4 and similar) are accepted.",
+      "pass": "No NULL, anonymous, EXPORT or RC4 cipher suites are accepted.",
+      "references": [
+        {"title": "RFC 7465 — Prohibiting RC4 cipher suites", "url": "https://www.rfc-editor.org/rfc/rfc7465.html"},
+        {"title": "RFC 9325 §4.1", "url": "https://www.rfc-editor.org/rfc/rfc9325.html#section-4.1"}
+      ],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} accepts prohibited cipher suites: {observed}",
+          "why": ["These suites provide no encryption (NULL), no authentication (anonymous), deliberately weakened keys (EXPORT) or a broken stream cipher (RC4)."],
+          "attack": "Traffic decryption or trivial man-in-the-middle attacks for clients that negotiate these suites.",
+          "severity_rationale": "Critical.",
+          "fix": [
+            {"text": "Apache (Mozilla \"intermediate\" profile):", "code": "SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384\nSSLHonorCipherOrder off"},
+            {"text": "nginx:", "code": "ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;\nssl_prefer_server_ciphers off;"}
+          ],
+          "rollback": "Restore the previous cipher string.",
+          "verify": {"command": "testssl.sh --cipher-per-proto {domain}:{port}", "expected": "No NULL, aNULL, EXPORT or RC4 suites listed."}
+        }
+      }
+    },
+    "TLS-CIPHER-002": {
+      "category": "Cipher suites",
+      "about": "Checks that static RSA key-exchange suites (TLS_RSA_WITH_*) are not accepted, because they provide no forward secrecy.",
+      "pass": "No static RSA key-exchange suites are accepted.",
+      "references": [{"title": "RFC 9325 §4.1 — Cipher suites", "url": "https://www.rfc-editor.org/rfc/rfc9325.html#section-4.1"}],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} accepts {static_rsa_count} static RSA key-exchange suite(s):\n{static_rsa_suites}",
+          "why": ["With static RSA, the session key is encrypted with the server's long-term key. Anyone who records traffic today and obtains the private key later (through a breach, a legal demand or a vulnerability) can decrypt every recorded session. These suites are also the target of ROBOT-style oracle attacks."],
+          "attack": "Record-now-decrypt-later: captured traffic is decrypted after the server key leaks.",
+          "severity_rationale": "Medium: forward-secret suites are offered too, so modern clients are not affected, but downgrade and legacy clients are.",
+          "fix": [
+            {"text": "Remove kRSA suites. Apache:", "code": "SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305"},
+            {"text": "nginx:", "code": "ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;"}
+          ],
+          "rollback": "Restore the previous cipher string.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -tls1_2 -cipher kRSA </dev/null", "expected": "Handshake failure."}
+        }
+      }
+    },
+    "TLS-CIPHER-003": {
+      "category": "Cipher suites",
+      "about": "Checks that 64-bit block ciphers (3DES, IDEA) are not accepted; they are vulnerable to Sweet32 birthday attacks.",
+      "pass": "No 64-bit block ciphers (3DES, IDEA) are accepted.",
+      "references": [{"title": "Sweet32: Birthday attacks on 64-bit block ciphers", "url": "https://sweet32.info/"}],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} accepts 64-bit block ciphers: {observed}",
+          "why": ["After about 32 GB of traffic on one connection, collisions in 64-bit blocks leak plaintext (Sweet32)."],
+          "attack": "Recovery of session cookies from long-lived connections.",
+          "severity_rationale": "Medium.",
+          "fix": [{"text": "Append to the cipher string:", "code": "!3DES:!IDEA"}],
+          "rollback": "Restore the previous cipher string.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -tls1_2 -cipher 3DES </dev/null", "expected": "Handshake failure."}
+        }
+      }
+    },
+    "TLS-CIPHER-004": {
+      "category": "Cipher suites",
+      "about": "Checks whether cipher suites using CBC mode are accepted. CBC suites are not broken when the server is patched, but they rely on a separate MAC and have a long history of padding-oracle and timing attacks (Lucky13, POODLE-TLS, GOLDENDOODLE). Modern guidance prefers AEAD suites (AES-GCM, ChaCha20-Poly1305) only.",
+      "pass": "No CBC-mode cipher suites are accepted; only AEAD suites are offered.",
+      "references": [
+        {"title": "RFC 9325 §4.2 — Cipher suites (AEAD recommended)", "url": "https://www.rfc-editor.org/rfc/rfc9325.html#section-4.2"},
+        {"title": "Mozilla — Server Side TLS (intermediate profile)", "url": "https://wiki.mozilla.org/Security/Server_Side_TLS"},
+        {"title": "Mozilla SSL Configuration Generator", "url": "https://ssl-config.mozilla.org/"}
+      ],
+      "findings": {
+        "default": {
+          "what": "{domain}:{port} accepts {cbc_count} CBC-mode cipher suite(s) on {cbc_protocols}:\n{cbc_suites}\nAEAD suites are also offered, so modern browsers negotiate GCM or ChaCha20 and are not affected.",
+          "why": [
+            "CBC suites authenticate with a separate HMAC applied before encryption (MAC-then-encrypt). This design is the root cause of the padding-oracle family of attacks, where an attacker learns plaintext from how the server reacts to tampered ciphertext. Several were practical against major TLS libraries between 2013 and 2019 (Lucky13, POODLE-TLS, Zombie POODLE, GOLDENDOODLE).",
+            "Current OpenSSL builds mitigate the known attacks, so this is defence in depth rather than an active vulnerability. Removing CBC suites eliminates the class of attack and simplifies the configuration. TLS 1.3 removed CBC entirely."
+          ],
+          "attack": "If a future implementation flaw re-opens a CBC padding oracle, an attacker who can make a victim's browser send repeated requests (for example through injected JavaScript on another site) and observe the encrypted traffic could recover session cookies a byte at a time, but only for clients that negotiate a CBC suite.",
+          "severity_rationale": "Low: no known attack applies to current patched servers, and modern clients prefer the AEAD suites already offered. It would be medium if no AEAD suite were available.",
+          "fix": [
+            "Check the client simulations in this report: every client listed as connecting with an AEAD suite will be unaffected. Removing CBC drops support only for very old clients such as Internet Explorer 11 on Windows 7 and Android 4.x.",
+            {"text": "Apache (this server reports \"Server: {server_product}\") — set the Mozilla \"intermediate\" profile in the SSL virtual host or ssl.conf:", "code": "SSLProtocol -all +TLSv1.2 +TLSv1.3\nSSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384\nSSLHonorCipherOrder off"},
+            {"text": "nginx:", "code": "ssl_protocols TLSv1.2 TLSv1.3;\nssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;\nssl_prefer_server_ciphers off;"},
+            "On shared or managed hosting the TLS configuration belongs to the host ({hosting_provider}). Ask the host whether a modern-only TLS profile is available; if not, record this as an accepted low risk.",
+            "Reload the web server (for example apachectl -k graceful or nginx -s reload) and re-run the assessment."
+          ],
+          "rollback": "Restore the previous SSLCipherSuite or ssl_ciphers line and reload.",
+          "verify": {"command": "openssl s_client -connect {domain}:{port} -servername {domain} -tls1_2 -cipher 'ECDHE+AES+SHA1:ECDHE+AES+SHA256:ECDHE+AES+SHA384:@SECLEVEL=0' </dev/null", "expected": "Handshake failure (no shared cipher). testssl.sh should list only GCM and CHACHA20 suites for TLS 1.2."}
+        }
+      }
+    },
+    "TLS-FS-001": {
+      "category": "Key exchange",
+      "about": "Checks that forward-secret key exchange (ECDHE or DHE) is supported.",
+      "pass": "Forward secrecy is supported.",
+      "references": [{"title": "RFC 9325 §4.1", "url": "https://www.rfc-editor.org/rfc/rfc9325.html#section-4.1"}],
+      "findings": {
+        "default": {
+          "what": "Forward secrecy was not demonstrated for {domain}:{port}: {observed}",
+          "why": ["Without (EC)DHE, recorded traffic can be decrypted later by anyone who obtains the server's private key."],
+          "attack": "Record-now-decrypt-later.",
+          "severity_rationale": "Medium.",
+          "fix": [{"text": "Enable ECDHE suites and TLS 1.3 (see TLS-CIPHER-002 for a cipher string).", "code": "ssl_protocols TLSv1.2 TLSv1.3;"}],
+          "rollback": "Not applicable.",
+          "verify": {"command": "testssl.sh --fs {domain}:{port}", "expected": "Forward Secrecy strong encryption ciphers offered."}
+        }
+      }
+    }
+  }
+}

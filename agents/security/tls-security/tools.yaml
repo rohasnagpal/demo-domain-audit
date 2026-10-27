@@ -1,0 +1,152 @@
+schema_version: 1
+agent: s11
+
+execution_policy:
+  local_first: true
+  arbitrary_shell: false
+  network_target_requires_explicit_authority: true
+  preserve_raw_output: true
+  default_timeout_seconds: 20
+  max_parallel_connections_per_target: 1
+
+variables:
+  host:
+    type: hostname_or_ip
+    required: true
+  port:
+    type: integer
+    minimum: 1
+    maximum: 65535
+    default: 443
+  hostname:
+    type: dns_hostname
+    required_when: identifier_type_is_hostname
+  ip_address:
+    type: ip_address
+    required_when: identifier_type_is_ip
+  connect_address:
+    type: tls_connect_address
+    derived_from: host_and_port
+    format: Use host:port for DNS and IPv4 targets; use "[IPv6]:port" for IPv6 targets.
+  certificate_path:
+    type: local_evidence_path
+    constraint: Must resolve below ./cyber360-reports/<report-id>/evidence/.
+
+tools:
+  - id: openssl
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: openssl
+    discovery:
+      argv: [openssl, version]
+    purposes:
+      - establish_tls_connection
+      - retrieve_certificate_chain
+      - inspect_certificate
+      - validate_hostname_or_ip
+      - test_protocol_version
+    invocations:
+      - id: retrieve_chain_hostname
+        use_when: target_identifier_is_hostname
+        argv:
+          - openssl
+          - s_client
+          - -connect
+          - "{{connect_address}}"
+          - -servername
+          - "{{hostname}}"
+          - -showcerts
+      - id: verify_hostname
+        use_when: target_identifier_is_hostname
+        argv:
+          - openssl
+          - s_client
+          - -connect
+          - "{{connect_address}}"
+          - -servername
+          - "{{hostname}}"
+          - -verify_hostname
+          - "{{hostname}}"
+          - -verify_return_error
+          - -brief
+      - id: retrieve_chain_ip
+        use_when: target_identifier_is_ip
+        argv:
+          - openssl
+          - s_client
+          - -connect
+          - "{{connect_address}}"
+          - -showcerts
+      - id: verify_ip
+        use_when: target_identifier_is_ip
+        argv:
+          - openssl
+          - s_client
+          - -connect
+          - "{{connect_address}}"
+          - -verify_ip
+          - "{{ip_address}}"
+          - -verify_return_error
+          - -brief
+      - id: inspect_certificate
+        argv:
+          - openssl
+          - x509
+          - -in
+          - "{{certificate_path}}"
+          - -noout
+          - -subject
+          - -issuer
+          - -serial
+          - -dates
+          - -fingerprint
+          - -sha256
+          - -text
+      - id: test_hostname_tls_1_0
+        use_when: target_identifier_is_hostname
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -servername, "{{hostname}}", -tls1, -brief]
+      - id: test_hostname_tls_1_1
+        use_when: target_identifier_is_hostname
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -servername, "{{hostname}}", -tls1_1, -brief]
+      - id: test_hostname_tls_1_2
+        use_when: target_identifier_is_hostname
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -servername, "{{hostname}}", -tls1_2, -brief]
+      - id: test_hostname_tls_1_3
+        use_when: target_identifier_is_hostname
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -servername, "{{hostname}}", -tls1_3, -brief]
+      - id: test_ip_tls_1_0
+        use_when: target_identifier_is_ip
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -tls1, -brief]
+      - id: test_ip_tls_1_1
+        use_when: target_identifier_is_ip
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -tls1_1, -brief]
+      - id: test_ip_tls_1_2
+        use_when: target_identifier_is_ip
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -tls1_2, -brief]
+      - id: test_ip_tls_1_3
+        use_when: target_identifier_is_ip
+        argv: [openssl, s_client, -connect, "{{connect_address}}", -tls1_3, -brief]
+
+  - id: testssl
+    required: false
+    classroom_install: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: testssl.sh
+    discovery:
+      argv: [testssl.sh, --version]
+    purposes:
+      - enumerate_protocols_and_ciphers
+      - collect_additional_tls_diagnostics
+    invocation:
+      argv:
+        - testssl.sh
+        - --quiet
+        - --warnings
+        - batch
+        - --color
+        - "0"
+        - "{{connect_address}}"
+    restrictions:
+      - Run only against the single authorised host and port.
+      - Do not add vulnerability, mass-scan or offensive options.
+      - Absence of this optional tool must not block the OpenSSL assessment.

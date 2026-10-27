@@ -1,0 +1,98 @@
+schema_version: 1
+agent: s18
+
+execution_policy:
+  local_first: true
+  arbitrary_shell: false
+  network_target_requires_explicit_authority: true
+  preserve_raw_output: true
+  default_timeout_seconds: 15
+  implementation: engine/domain/commands.py
+
+variables:
+  domain:
+    type: dns_domain
+    required: true
+  selector:
+    type: dkim_selector
+    required: false
+    constraint: Only selectors supplied by the user; never guessed or enumerated.
+  mx_host:
+    type: dns_hostname
+    derived_from: dig_mx
+    constraint: Only hostnames returned by the domain's own MX records, at most ten.
+
+tools:
+  - id: dig
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: dig
+    discovery:
+      argv: [dig, -v]
+    invocations:
+      # Mail infrastructure
+      - id: dig_mx
+        argv: [dig, "{{domain}}", MX, +short]
+      - id: dig_txt
+        argv: [dig, "{{domain}}", TXT, +short]
+      - id: dig_dmarc
+        argv: [dig, "_dmarc.{{domain}}", TXT, +short]
+      - id: dig_tlsrpt
+        argv: [dig, "_smtp._tls.{{domain}}", TXT, +short]
+      - id: dig_caa
+        argv: [dig, "{{domain}}", CAA, +short]
+      # DNSSEC
+      - id: dig_ds
+        argv: [dig, "{{domain}}", DS, +dnssec]
+      - id: dig_dnskey
+        argv: [dig, "{{domain}}", DNSKEY, +dnssec]
+      - id: dig_a_dnssec
+        argv: [dig, "{{domain}}", A, +dnssec]
+      - id: dig_aaaa_dnssec
+        argv: [dig, "{{domain}}", AAAA, +dnssec]
+      - id: dig_mx_dnssec
+        argv: [dig, "{{domain}}", MX, +dnssec]
+      - id: dig_txt_dnssec
+        argv: [dig, "{{domain}}", TXT, +dnssec]
+      # Nameserver and delegation
+      - id: dig_ns
+        argv: [dig, "{{domain}}", NS, +short]
+      - id: dig_soa_full
+        argv: [dig, "{{domain}}", SOA]
+      - id: dig_trace
+        argv: [dig, "{{domain}}", +trace]
+      # MTA-STS
+      - id: dig_mta_sts
+        argv: [dig, "_mta-sts.{{domain}}", TXT, +short]
+      # DKIM, once per supplied selector
+      - id: dig_dkim
+        per: selector
+        argv: [dig, "{{selector}}._domainkey.{{domain}}", TXT, +short]
+
+  - id: curl
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: curl
+    invocations:
+      - id: curl_mta_sts_policy
+        argv: [curl, -fsSL, "https://mta-sts.{{domain}}/.well-known/mta-sts.txt"]
+
+  - id: openssl
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: openssl
+    invocations:
+      # SMTP TLS, once per MX hostname; stdin is empty, equivalent to </dev/null
+      - id: smtp_starttls
+        per: mx_host
+        argv: [openssl, s_client, -starttls, smtp, -connect, "{{mx_host}}:25", -servername, "{{mx_host}}"]
+    restrictions:
+      - EHLO and STARTTLS only; never send mail or test relaying.
+
+  - id: whois
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: whois
+    invocations:
+      - id: whois
+        argv: [whois, "{{domain}}"]

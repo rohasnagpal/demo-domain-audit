@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "framework_version": "0.3.2",
+  "chief": {
+    "id": "chief",
+    "name": "Chief Cyber360 Officer",
+    "path": "orchestrator/chief-cyber360-officer.md"
+  },
+  "catalog": {
+    "specialist_count": 3,
+    "implemented_count": 3,
+    "implemented_ids": [
+      "h1",
+      "s11",
+      "s18"
+    ]
+  },
+  "agents": [
+    {
+      "id": "h1",
+      "name": "Reconnaissance Agent",
+      "category": "hacking",
+      "status": "available",
+      "agent_path": "agents/hacking/reconnaissance/agent.md",
+      "entry_skill_path": "skills/reconnaissance/SKILL.md",
+      "canonical_skill_path": "agents/hacking/reconnaissance/skills/domain-reconnaissance/SKILL.md",
+      "tools_path": "agents/hacking/reconnaissance/tools.yaml",
+      "workflow_paths": [
+        "agents/hacking/reconnaissance/workflows/assess.yaml"
+      ],
+      "knowledge_paths": [
+        "agents/hacking/reconnaissance/references/authorities.yaml",
+        "agents/hacking/reconnaissance/references/knowledge.json"
+      ],
+      "output_paths": [
+        "agents/hacking/reconnaissance/outputs/report.schema.json"
+      ],
+      "stages": [
+        "hack",
+        "audit",
+        "repeat"
+      ],
+      "signals": [
+        "reconnaissance",
+        "recon",
+        "attack surface",
+        "attack-surface",
+        "dns records",
+        "whois",
+        "traceroute",
+        "footprint",
+        "digital footprint"
+      ],
+      "network_authority_required": true
+    },
+    {
+      "id": "s11",
+      "name": "TLS & Cryptography Security Agent",
+      "category": "security",
+      "status": "available",
+      "agent_path": "agents/security/tls-security/agent.md",
+      "entry_skill_path": "skills/tls-security/SKILL.md",
+      "canonical_skill_path": "agents/security/tls-security/skills/tls-assessment/SKILL.md",
+      "tools_path": "agents/security/tls-security/tools.yaml",
+      "workflow_paths": [
+        "agents/security/tls-security/workflows/assess.yaml",
+        "agents/security/tls-security/workflows/remediate.yaml",
+        "agents/security/tls-security/workflows/verify.yaml"
+      ],
+      "knowledge_paths": [
+        "agents/security/tls-security/references/tls-baseline.yaml",
+        "agents/security/tls-security/references/authorities.yaml",
+        "agents/security/tls-security/references/knowledge.json"
+      ],
+      "output_paths": [
+        "agents/security/tls-security/outputs/report.schema.json",
+        "agents/security/tls-security/outputs/report-template.yaml"
+      ],
+      "stages": [
+        "secure",
+        "audit",
+        "repeat"
+      ],
+      "signals": [
+        "tls",
+        "ssl",
+        "https",
+        "certificate",
+        "x.509",
+        "x509",
+        "cipher",
+        "openssl",
+        "trust chain",
+        "subject alternative name",
+        "pki"
+      ],
+      "network_authority_required": true
+    },
+    {
+      "id": "s18",
+      "name": "Email & Domain Security Agent",
+      "category": "security",
+      "status": "available",
+      "agent_path": "agents/security/email-domain-security/agent.md",
+      "entry_skill_path": "skills/email-domain-security/SKILL.md",
+      "canonical_skill_path": "agents/security/email-domain-security/skills/email-domain-assessment/SKILL.md",
+      "tools_path": "agents/security/email-domain-security/tools.yaml",
+      "workflow_paths": [
+        "agents/security/email-domain-security/workflows/assess.yaml"
+      ],
+      "knowledge_paths": [
+        "agents/security/email-domain-security/references/baseline.json",
+        "agents/security/email-domain-security/references/authorities.yaml",
+        "agents/security/email-domain-security/references/knowledge.json",
+        "agents/security/email-domain-security/references/providers.json"
+      ],
+      "output_paths": [
+        "agents/security/email-domain-security/outputs/report.schema.json"
+      ],
+      "stages": [
+        "secure",
+        "audit",
+        "repeat"
+      ],
+      "signals": [
+        "spf",
+        "dkim",
+        "dmarc",
+        "mta-sts",
+        "tlsrpt",
+        "dnssec",
+        "caa",
+        "mx record",
+        "mx records",
+        "email security",
+        "email spoofing",
+        "domain spoofing",
+        "domain hijacking",
+        "domain expiry",
+        "transfer lock",
+        "nameserver",
+        "nameservers"
+      ],
+      "network_authority_required": true
+    }
+  ],
+  "workflows": [
+    {
+      "id": "full-domain-audit",
+      "name": "Full domain audit",
+      "path": "orchestrator/workflows/full-domain-audit.yaml",
+      "entry_skill_path": "skills/full-domain-audit/SKILL.md",
+      "agents": [
+        "h1",
+        "s11",
+        "s18"
+      ],
+      "triggers": [
+        "full domain audit",
+        "domain audit",
+        "full audit of domain",
+        "audit this domain",
+        "audit the domain"
+      ],
+      "network_authority_required": true
+    }
+  ]
+}

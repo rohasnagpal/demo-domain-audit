@@ -1,0 +1,43 @@
+id: s18-assess
+name: Assess email and domain security
+agent: s18
+mode: read_only
+
+inputs:
+  required:
+    - domain
+    - authority
+  optional:
+    - dkim_selectors
+    - time_window
+
+steps:
+  - id: scope
+    action: Confirm the exact domain, authority, supplied DKIM selectors and exclusions.
+    stop_if: The domain or authority is unclear.
+  - id: preflight
+    action: Discover which registered executables are installed. Record a missing tool as a skipped check.
+  - id: output_store
+    action: Create cyber360-reports/<report-id>/ and its evidence subfolder with the shared output-store helper.
+  - id: mail_records
+    action: Collect MX, TXT (SPF), _dmarc, _smtp._tls, _mta-sts and CAA records and fetch the MTA-STS policy.
+  - id: dkim
+    action: Query <selector>._domainkey only for supplied selectors.
+    optional: true
+  - id: dnssec
+    action: Collect DS, DNSKEY and DNSSEC-signed answers and record whether the resolver set the AD flag.
+  - id: delegation
+    action: Collect NS, SOA and the delegation trace.
+  - id: smtp_tls
+    action: Open one STARTTLS session per published MX host and record certificate verification.
+  - id: registration
+    action: Collect WHOIS and extract expiry and EPP status codes.
+  - id: evaluate
+    action: Apply references/baseline.json and record pass, confirmed, unknown or not_applicable for each control.
+  - id: report
+    action: Write report.json and report.html under cyber360-reports/<domain>/S18-email-domain/ with every control explained and detailed findings from references/knowledge.json.
+
+outputs:
+  - cyber360-reports/<report-id>/evidence/
+  - cyber360-reports/<report-id>/report.json
+  - cyber360-reports/<report-id>/report.html

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "id": "cyber360-s18-baseline",
+  "title": "Email and domain security baseline",
+  "version": "0.1.0",
+  "last_reviewed": "2026-10-27",
+  "statuses": ["pass", "confirmed", "unknown", "not_applicable"],
+  "controls": {
+    "S18-MX-001": {
+      "title": "Mail exchanger configuration",
+      "authority": "RFC7505",
+      "remediation": "Publish MX records for domains that receive mail. For domains that never receive mail, publish a null MX (\"0 .\") together with \"v=spf1 -all\"."
+    },
+    "S18-SPF-001": {
+      "title": "SPF record missing",
+      "authority": "RFC7208",
+      "remediation": "Publish one TXT record beginning \"v=spf1\" that lists every legitimate sending service and ends with ~all or -all."
+    },
+    "S18-SPF-002": {
+      "title": "Multiple SPF records",
+      "authority": "RFC7208",
+      "remediation": "Merge all SPF mechanisms into a single v=spf1 record; multiple records cause a permanent error."
+    },
+    "S18-SPF-003": {
+      "title": "Permissive SPF all-qualifier",
+      "authority": "RFC7208",
+      "remediation": "End the SPF record with -all (fail) or ~all (softfail paired with an enforcing DMARC policy). Never use +all."
+    },
+    "S18-SPF-004": {
+      "title": "SPF DNS-lookup limit exceeded",
+      "authority": "RFC7208",
+      "remediation": "Reduce include:, a, mx, ptr and exists terms to ten or fewer DNS lookups, flattening includes where necessary."
+    },
+    "S18-DMARC-001": {
+      "title": "DMARC record missing or invalid",
+      "authority": "RFC7489",
+      "remediation": "Publish exactly one TXT record at _dmarc.<domain> beginning \"v=DMARC1\" with a policy and an aggregate-report address."
+    },
+    "S18-DMARC-002": {
+      "title": "DMARC policy not enforcing",
+      "authority": "RFC7489",
+      "remediation": "After reviewing aggregate reports and aligning SPF and DKIM for legitimate senders, move from p=none to p=quarantine and then p=reject."
+    },
+    "S18-DMARC-003": {
+      "title": "Partial DMARC enforcement",
+      "authority": "RFC7489",
+      "remediation": "Raise pct to 100 once legitimate mail is aligned so the policy applies to all failing messages."
+    },
+    "S18-DMARC-004": {
+      "title": "DMARC aggregate reporting not configured",
+      "authority": "RFC7489",
+      "remediation": "Add rua=mailto:<monitored address> so the owner receives aggregate authentication reports."
+    },
+    "S18-DKIM-001": {
+      "title": "DKIM key for supplied selector",
+      "authority": "RFC6376",
+      "remediation": "Publish the sending service's DKIM public key at <selector>._domainkey.<domain> and enable signing; rotate keys of 2048 bits or more periodically."
+    },
+    "S18-MTASTS-001": {
+      "title": "MTA-STS not enforced",
+      "authority": "RFC8461",
+      "remediation": "Publish _mta-sts TXT (v=STSv1; id=...) and serve a policy at https://mta-sts.<domain>/.well-known/mta-sts.txt listing every MX, moving from mode: testing to mode: enforce."
+    },
+    "S18-TLSRPT-001": {
+      "title": "SMTP TLS reporting not configured",
+      "authority": "RFC8460",
+      "remediation": "Publish _smtp._tls.<domain> TXT \"v=TLSRPTv1; rua=mailto:<address>\" to receive SMTP TLS failure reports."
+    },
+    "S18-SMTP-001": {
+      "title": "Inbound SMTP STARTTLS",
+      "authority": "RFC3207",
+      "remediation": "Enable STARTTLS on every MX host with a publicly trusted certificate whose name matches the MX hostname."
+    },
+    "S18-CAA-001": {
+      "title": "CAA record missing",
+      "authority": "RFC8659",
+      "remediation": "Publish CAA records naming only the certificate authorities the organisation uses, optionally with an iodef contact."
+    },
+    "S18-DNSSEC-001": {
+      "title": "DNSSEC not deployed",
+      "authority": "RFC4033",
+      "remediation": "Sign the zone at the DNS provider and publish the resulting DS record at the registrar to complete the chain of trust."
+    },
+    "S18-DNSSEC-002": {
+      "title": "Broken DNSSEC chain of trust",
+      "authority": "RFC4035",
+      "remediation": "Urgently either restore zone signing so it matches the published DS record, or remove the DS record at the registrar."
+    },
+    "S18-NS-001": {
+      "title": "Insufficient nameserver redundancy",
+      "authority": "RFC1034",
+      "remediation": "Delegate at least two authoritative nameservers, preferably on separate networks."
+    },
+    "S18-REG-001": {
+      "title": "Domain registration expiry",
+      "authority": "ICANN-RAA",
+      "remediation": "Renew the registration, enable auto-renew and keep registrar contact details current."
+    },
+    "S18-REG-002": {
+      "title": "Registrar transfer lock not set",
+      "authority": "ICANN-EPP",
+      "remediation": "Enable the registrar transfer lock (clientTransferProhibited) and, where offered, registry lock for critical domains."
+    }
+  }
+}

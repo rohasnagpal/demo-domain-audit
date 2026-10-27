@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:demo-domain-audit:schema:h1-report:0.1.0",
+  "title": "Cyber360 H1 reconnaissance section",
+  "type": "object",
+  "required": ["inventory", "observations"],
+  "properties": {
+    "inventory": {
+      "type": "object",
+      "required": ["dns", "registration", "http", "ports", "reachability"],
+      "properties": {
+        "dns": {
+          "type": "object",
+          "properties": {
+            "a": {"type": "array", "items": {"type": "string"}},
+            "aaaa": {"type": "array", "items": {"type": "string"}},
+            "cname": {"type": "array", "items": {"type": "string"}},
+            "mx": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["preference", "host"],
+                "properties": {"preference": {"type": "integer"}, "host": {"type": "string"}}
+              }
+            },
+            "ns": {"type": "array", "items": {"type": "string"}},
+            "soa": {"type": "array", "items": {"type": "string"}},
+            "txt": {"type": "array", "items": {"type": "string"}},
+            "caa": {"type": "array", "items": {"type": "string"}},
+            "delegation_traced": {"type": "boolean"}
+          }
+        },
+        "host": {"type": "array", "items": {"type": "string"}},
+        "registration": {
+          "type": "object",
+          "properties": {
+            "registrar": {"type": "string"},
+            "created": {"type": "string"},
+            "expires": {"type": "string"},
+            "updated": {"type": "string"},
+            "statuses": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "http": {
+          "type": "object",
+          "properties": {
+            "chain": {"type": "array", "items": {"type": "object"}},
+            "final_headers": {"type": "object"},
+            "timing": {"type": "object"}
+          }
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["port", "state"],
+            "properties": {
+              "port": {"type": "integer"},
+              "state": {"enum": ["open", "closed", "filtered_or_unreachable", "unknown", "not_run"]}
+            }
+          }
+        },
+        "reachability": {"type": "object"}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "detail"],
+        "properties": {"title": {"type": "string"}, "detail": {"type": "string"}}
+      }
+    }
+  }
+}

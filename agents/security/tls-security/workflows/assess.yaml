@@ -1,0 +1,48 @@
+id: s11-assess
+name: Assess a TLS service
+agent: s11
+mode: read_only
+
+inputs:
+  required:
+    - target
+    - identifier_type
+    - authority
+  optional:
+    - port
+    - time_window
+    - source_ip_restrictions
+    - policy_profile
+
+steps:
+  - id: scope
+    action: Confirm the exact target, port, identifier type, authority and exclusions.
+    stop_if: Target or authority is unclear.
+  - id: preflight
+    action: Discover registered tool availability and versions.
+    stop_if: Required OpenSSL tool is unavailable.
+  - id: output_store
+    action: Create cyber360-reports/<report-id>/ and its evidence subfolder with the shared output-store helper. Use only this directory for generated files.
+  - id: retrieve_chain
+    action: Retrieve and preserve the presented certificate chain without treating retrieval as successful validation.
+  - id: verify_identity_and_trust
+    action: Run the separate registered hostname or IP verification invocation and preserve its result.
+  - id: certificate
+    action: Inspect the presented leaf certificate and evaluate identity, validity and trust separately.
+  - id: protocols
+    action: Test explicitly selected TLS versions using registered invocations.
+    optional: true
+  - id: extended
+    action: Run the optional testssl invocation when broader authorised coverage is required.
+    optional: true
+  - id: evaluate
+    action: Apply selected controls from the TLS baseline and record passes, findings and unknowns.
+  - id: interpret
+    action: Explain confirmed results and recommend fixes.
+  - id: report
+    action: Produce schema-valid JSON and a self-contained HTML report. Populate technical sections only from captured evidence; use unknown or not_tested rather than inference.
+
+outputs:
+  - cyber360-reports/<report-id>/evidence/
+  - cyber360-reports/<report-id>/report.json
+  - cyber360-reports/<report-id>/report.html

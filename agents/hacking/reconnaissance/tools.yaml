@@ -1,0 +1,105 @@
+schema_version: 1
+agent: h1
+
+execution_policy:
+  local_first: true
+  arbitrary_shell: false
+  network_target_requires_explicit_authority: true
+  preserve_raw_output: true
+  default_timeout_seconds: 15
+  implementation: engine/domain/commands.py
+
+variables:
+  domain:
+    type: dns_domain
+    required: true
+    constraint: One authorised DNS domain; no scheme, path, port, wildcard or range.
+
+tools:
+  - id: dig
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: dig
+    discovery:
+      argv: [dig, -v]
+    invocations:
+      - id: dig_a
+        argv: [dig, "{{domain}}", A, +short]
+      - id: dig_aaaa
+        argv: [dig, "{{domain}}", AAAA, +short]
+      - id: dig_cname
+        argv: [dig, "{{domain}}", CNAME, +short]
+      - id: dig_mx
+        argv: [dig, "{{domain}}", MX, +short]
+      - id: dig_txt
+        argv: [dig, "{{domain}}", TXT, +short]
+      - id: dig_ns
+        argv: [dig, "{{domain}}", NS, +short]
+      - id: dig_soa
+        argv: [dig, "{{domain}}", SOA, +short]
+      - id: dig_caa
+        argv: [dig, "{{domain}}", CAA, +short]
+      - id: dig_trace
+        argv: [dig, "{{domain}}", +trace]
+
+  - id: host
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: host
+    invocations:
+      - id: host
+        argv: [host, "{{domain}}"]
+
+  - id: whois
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: whois
+    invocations:
+      - id: whois
+        argv: [whois, "{{domain}}"]
+
+  - id: ping
+    required: false
+    provisioned_by: scripts/setup-tools.sh
+    executable: ping
+    invocations:
+      - id: ping
+        argv: [ping, -c, "4", "{{domain}}"]
+    restrictions:
+      - No reply is recorded as filtered or unknown, never as host down.
+
+  - id: traceroute
+    required: false
+    provisioned_by: scripts/setup-tools.sh
+    executable: traceroute
+    invocations:
+      - id: traceroute
+        argv: [traceroute, -q, "1", -w, "2", -m, "20", "{{domain}}"]
+    restrictions:
+      - One probe per hop, a two-second wait and at most twenty hops keep the run bounded.
+
+  - id: curl
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: curl
+    discovery:
+      argv: [curl, --version]
+    invocations:
+      - id: curl_headers
+        argv: [curl, -IL, "https://{{domain}}"]
+      - id: curl_timing
+        argv: [curl, -sS, -o, /dev/null, -w, 'Status: %{http_code}\nTime: %{time_total}s\nRemote IP: %{remote_ip}\n', "https://{{domain}}"]
+      - id: curl_http
+        argv: [curl, -sSI, "http://{{domain}}"]
+
+  - id: nc
+    required: true
+    provisioned_by: scripts/setup-tools.sh
+    executable: nc
+    invocations:
+      - id: nc_port_80
+        argv: [nc, -zv, -w, "2", "{{domain}}", "80"]
+      - id: nc_port_443
+        argv: [nc, -zv, -w, "2", "{{domain}}", "443"]
+    restrictions:
+      - TCP 80 and 443 only. One port per call because macOS nc reports only the first port of a list.

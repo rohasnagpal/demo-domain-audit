@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "demo-domain-audit",
+  "displayName": "Demo: Domain Audit Agents",
+  "version": "0.1.0",
+  "description": "Three AI security agents (H1 Reconnaissance, S11 TLS, S18 Email & Domain) and a Chief that coordinates them to audit a domain you own. A teaching demo based on Cyber360.",
+  "author": {
+    "name": "Rohas Nagpal",
+    "url": "https://rohasnagpal.com"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "ai-agents",
+    "cybersecurity",
+    "dns",
+    "tls",
+    "email-security",
+    "teaching"
+  ],
+  "skills": [
+    "./skills/"
+  ],
+  "agents": [
+    "./agents/chief-cyber360-officer.md",
+    "./agents/hacking/reconnaissance/agent.md",
+    "./agents/security/tls-security/agent.md",
+    "./agents/security/email-domain-security/agent.md"
+  ]
+}

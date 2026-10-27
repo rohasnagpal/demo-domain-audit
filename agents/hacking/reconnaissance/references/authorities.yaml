@@ -1,0 +1,43 @@
+schema_version: 1
+title: Reconnaissance authorities
+last_checked: "2026-10-27"
+
+instructions:
+  - Cite the record-type definition when explaining what an observation means.
+  - Reconnaissance observations are facts about exposure, not findings; severity belongs to the domain specialist.
+
+authorities:
+  - id: RFC1034
+    title: RFC 1034 — Domain Names, Concepts and Facilities
+    url: https://www.rfc-editor.org/rfc/rfc1034.html
+    proposition: DNS delegation, NS and SOA semantics.
+
+  - id: RFC1035
+    title: RFC 1035 — Domain Names, Implementation and Specification
+    url: https://www.rfc-editor.org/rfc/rfc1035.html
+    proposition: A, CNAME, MX, NS, SOA and TXT record formats.
+
+  - id: RFC3596
+    title: RFC 3596 — DNS Extensions to Support IP Version 6
+    url: https://www.rfc-editor.org/rfc/rfc3596.html
+    proposition: AAAA record format.
+
+  - id: RFC8659
+    title: RFC 8659 — DNS Certification Authority Authorization (CAA) Resource Record
+    url: https://www.rfc-editor.org/rfc/rfc8659.html
+    proposition: CAA records restrict which certificate authorities may issue for a domain.
+
+  - id: RFC3912
+    title: RFC 3912 — WHOIS Protocol Specification
+    url: https://www.rfc-editor.org/rfc/rfc3912.html
+    proposition: WHOIS query protocol; content and field names vary by registry and registrar.
+
+  - id: RFC5731
+    title: RFC 5731 — EPP Domain Name Mapping
+    url: https://www.rfc-editor.org/rfc/rfc5731.html
+    proposition: Meaning of domain status codes such as clientTransferProhibited.
+
+  - id: RFC9110
+    title: RFC 9110 — HTTP Semantics
+    url: https://www.rfc-editor.org/rfc/rfc9110.html
+    proposition: HTTP status codes, redirects and the Server header.

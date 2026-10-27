@@ -1,0 +1,54 @@
+id: full-domain-audit
+name: Full domain audit
+mode: read_only
+trigger_examples:
+  - "Cyber360 full domain audit: example.org"
+  - "Run a full domain audit of example.org"
+
+agents:
+  - id: h1
+    role: Attack-surface inventory from DNS, WHOIS, reachability and the HTTPS response.
+  - id: s11
+    role: TLS assessment of https://<domain> on TCP 443.
+  - id: s18
+    role: Email authentication, mail transport security, DNSSEC, delegation, CAA and registration.
+
+implementation:
+  argv: [python3, engine/domain/full_audit.py, "{{domain}}", --authority, "{{authority}}"]
+  optional_arguments:
+    - "--dkim-selector {{selector}} (repeatable; only selectors the user supplies)"
+    - "--skip-tls (omit S11)"
+    - "--tls-profile extended (adds S11 vulnerability and header checks)"
+
+inputs:
+  required:
+    - domain
+    - authority
+  optional:
+    - dkim_selectors
+    - tls_profile
+
+steps:
+  - id: scope
+    action: Extract exactly one domain from the request and confirm the user's authority to test it.
+    stop_if: No single domain is given, or authority is not stated or confirmed.
+  - id: preflight
+    action: Run scripts/setup-tools.sh --check and report any missing tool before starting.
+  - id: execute
+    action: Run the implementation argv once. S11 runs in parallel with the H1 and S18 commands; commands shared by H1 and S18 run once and their evidence is shared.
+  - id: interpret
+    action: Read each agent's report.json. Explain the most severe findings across agents first, cite evidence IDs, and keep unknowns and limitations visible.
+  - id: deliver
+    action: Give the user the paths to the three report.html files. Each agent has its own report; there is no combined report.
+
+outputs:
+  - cyber360-reports/<domain>/H1-reconnaissance/report.html
+  - cyber360-reports/<domain>/H1-reconnaissance/report.json
+  - cyber360-reports/<domain>/H1-reconnaissance/evidence/
+  - cyber360-reports/<domain>/S11-tls/report.html
+  - cyber360-reports/<domain>/S11-tls/report.json
+  - cyber360-reports/<domain>/S11-tls/evidence/
+  - cyber360-reports/<domain>/S18-email-domain/report.html
+  - cyber360-reports/<domain>/S18-email-domain/report.json
+  - cyber360-reports/<domain>/S18-email-domain/evidence/
+  - cyber360-reports/<domain>/archive/<timestamp>/ (previous run)

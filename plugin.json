@@ -1,0 +1,40 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "demo-domain-audit",
+  "version": "0.1.0",
+  "description": "Three AI security agents (H1 Reconnaissance, S11 TLS, S18 Email & Domain) and a Chief that coordinates them to audit a domain you own. A teaching demo based on Cyber360.",
+  "author": {
+    "name": "Rohas Nagpal",
+    "url": "https://rohasnagpal.com"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "ai-agents",
+    "cybersecurity",
+    "dns",
+    "tls",
+    "email-security",
+    "teaching"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Demo: Domain Audit Agents",
+        "shortDescription": "Build and run your first AI security agents",
+        "longDescription": "A teaching demo extracted from Cyber360. The Chief confirms your authority, then runs H1 Reconnaissance, S11 TLS & Cryptography Security and S18 Email & Domain Security against a domain you own and writes an evidence-backed HTML and JSON report for each agent.",
+        "developerName": "Rohas Nagpal",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Cyber360 full domain audit: example.org",
+          "Hi Cyber 360",
+          "Use $demo-domain-audit:setup-tools to install and verify the required tools."
+        ]
+      }
+    }
+  }
+}

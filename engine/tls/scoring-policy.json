@@ -1,0 +1,45 @@
+{
+  "id": "cyber360-tls-score-v1",
+  "version": "1.0.0",
+  "description": "Evidence-aware TLS posture scoring. A grade is withheld below the minimum coverage threshold and capped when controls remain unknown.",
+  "minimum_coverage_for_grade": 80,
+  "unknown_grade_max_score": 89,
+  "weights": {
+    "certificate": 30,
+    "protocols": 30,
+    "key_exchange": 20,
+    "cipher_strength": 20
+  },
+  "deductions": {
+    "TLS-PROTO-001": 35,
+    "TLS-PROTO-002": 100,
+    "TLS-PROTO-003": 70,
+    "TLS-CERT-001": 70,
+    "TLS-CERT-002": 70,
+    "TLS-CERT-003": 70,
+    "TLS-CERT-004": 70,
+    "TLS-CERT-005": 30,
+    "TLS-CERT-006": 8,
+    "TLS-KEY-001": 60,
+    "TLS-SIG-001": 60,
+    "TLS-CIPHER-001": 100,
+    "TLS-CIPHER-002": 25,
+    "TLS-CIPHER-003": 35,
+    "TLS-CIPHER-004": 10,
+    "TLS-FS-001": 35
+  },
+  "severity_score_caps": {
+    "critical": 59,
+    "high": 79,
+    "medium": 89
+  },
+  "grades": [
+    {"minimum": 95, "grade": "A+"},
+    {"minimum": 90, "grade": "A"},
+    {"minimum": 80, "grade": "B"},
+    {"minimum": 70, "grade": "C"},
+    {"minimum": 60, "grade": "D"},
+    {"minimum": 0, "grade": "F"}
+  ]
+}
+
