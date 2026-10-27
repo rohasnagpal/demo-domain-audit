@@ -3,7 +3,7 @@
 3 AI security agents, plus a "Chief" agent that coordinates them, packaged as a Codex / Claude Code plugin. Point them at a domain you own and they will map what it exposes, check its HTTPS security and check its email and DNS protection, then write a detailed report for each agent.
 
 ```text
-Cyber360 full domain audit: example.org
+setup the plugin from https://github.com/rohasnagpal/demo-domain-audit and run a full domain audit against example.com
 ```
 
 This is a teaching demo extracted from Cyber360, an agentic cybersecurity framework by Rohas Nagpal.
@@ -79,47 +79,6 @@ mkdir -p ~/my-first-audit && cd ~/my-first-audit
 claude        # or: codex
 ```
 
-## Run it
-
-Type:
-
-```text
-Cyber360 full domain audit: yourdomain.com
-```
-
-The Chief asks you to confirm you are authorised to test the domain, checks your tools, then runs all three agents. It takes about three to five minutes, mostly S11's TLS scan.
-
-Both hosts ask permission before running commands; approve them to continue. Codex runs commands in a sandbox with no network access by default, so when it asks to run the audit with network access (outside the sandbox), approve it. To allow network access for the whole session instead, start Codex with:
-
-```bash
-codex -c sandbox_workspace_write.network_access=true
-```
-
-You can also say `Hi Cyber 360`, or run one agent on its own. In Claude Code, skills start with `/`:
-
-```text
-/demo-domain-audit:reconnaissance map the attack surface of yourdomain.com (I own it)
-/demo-domain-audit:email-domain-security check SPF, DMARC and DNSSEC for yourdomain.com (I own it)
-/demo-domain-audit:tls-security assess yourdomain.com:443 (I own it)
-```
-
-In Codex, they start with `$`:
-
-```text
-$demo-domain-audit:reconnaissance map the attack surface of yourdomain.com (I own it)
-$demo-domain-audit:email-domain-security check SPF, DMARC and DNSSEC for yourdomain.com (I own it)
-$demo-domain-audit:tls-security assess yourdomain.com:443 (I own it)
-```
-
-To check DKIM, name your email provider's selector (for Google Workspace it is usually `google`): `… DKIM selector google`.
-
-Without Claude Code or Codex, the same engine runs directly:
-
-```bash
-python3 /path/to/demo-domain-audit/engine/domain/full_audit.py yourdomain.com \
-  --authority "I own yourdomain.com" --dkim-selector google
-```
-
 ## The reports
 
 Each agent writes its own report in the folder you started Claude Code or Codex from:
@@ -188,26 +147,9 @@ demo-domain-audit/
 └── scripts/               tool setup and request routing
 ```
 
-## Try it yourself: give an agent a new check
-
-A good first exercise is adding one command to H1. For example, check whether `www.<domain>` resolves:
-
-1. **Tool:** add the invocation to `agents/hacking/reconnaissance/tools.yaml` and to `H1_INVOCATIONS` in `engine/domain/commands.py` (the two lists must match).
-2. **Analysis:** read its output in `engine/domain/analysis.py`.
-3. **Knowledge:** explain the result in `agents/hacking/reconnaissance/references/knowledge.json`.
-4. Run the audit again and find your check in the H1 report.
-
 ## Safety
 
 Only test domains you own or have written permission to test. The agents make ordinary, low-volume requests (DNS lookups, one web request, a TLS scan of port 443 and one mail-server handshake per MX host) but some organisations treat any scan as hostile. Reports and evidence stay on your computer.
-
-## Troubleshooting
-
-- **The plugin doesn't respond:** start a new session after installing. In Claude Code, check `claude plugin list` shows `demo-domain-audit` as enabled; in Codex, check `codex plugin list --marketplace demo-domain-audit`.
-- **Every check shows "unknown" in Codex:** the audit ran inside Codex's sandbox without network access. Approve the request to run it with network access, or start Codex with `codex -c sandbox_workspace_write.network_access=true`.
-- **S11 didn't run:** install `testssl.sh` with `./scripts/setup-tools.sh --install`.
-- **SMTP STARTTLS shows "unknown":** many home, office and cloud networks block outbound port 25. That is expected and is reported honestly as unknown.
-- **DKIM shows "unknown":** selectors can't be discovered from DNS. Give your selector (see above).
 
 ## Licence
 
