@@ -41,44 +41,6 @@ Every agent has the same 6 parts:
 - macOS or Linux with Homebrew or `apt-get`
 - **A domain you own or have written permission to test**
 
-## Setup
-
-**1. Get the folder** and open a terminal in it:
-
-```bash
-cd demo-domain-audit
-```
-
-**2. Install the command-line tools.** `dig`, `whois`, `curl`, `nc`, `ping`, `traceroute` and `openssl` usually come with macOS; `testssl.sh` usually needs installing. The script shows the exact install command and asks before changing anything:
-
-```bash
-./scripts/setup-tools.sh --check      # see what is missing
-./scripts/setup-tools.sh --install    # install it
-```
-
-**3. Install the plugin** in Claude Code or Codex. The same folder works in both.
-
-Claude Code:
-
-```bash
-claude plugin marketplace add "$(pwd)" --scope user
-claude plugin install demo-domain-audit@demo-domain-audit --scope user
-```
-
-Codex:
-
-```bash
-codex plugin marketplace add "$(pwd)"
-codex plugin add demo-domain-audit@demo-domain-audit
-```
-
-**4. Start a new session** so the plugin loads, in any folder where you want the reports saved:
-
-```bash
-mkdir -p ~/my-first-audit && cd ~/my-first-audit
-claude        # or: codex
-```
-
 ## The reports
 
 Each agent writes its own report in the folder you started Claude Code or Codex from:
